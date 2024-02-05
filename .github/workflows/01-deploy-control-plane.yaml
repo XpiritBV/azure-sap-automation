@@ -1,0 +1,46 @@
+# /*---------------------------------------------------------------------------8
+# |                                                                            |
+# |               This pipeline deploys the control plane in GitHub Actions    |
+# |                                                                            |
+# +------------------------------------4--------------------------------------*/
+
+name: Deploy Control Plane
+on: 
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      use_webapp_param:
+        description: Deploy the configuration web application infrastructure
+        type: boolean
+        default: true
+      deploy_webapp_software:
+        description: Deploy the configuration web application software
+        type: boolean
+        default: true
+
+jobs:
+  prepare_deployer:
+    name: Prepare the self hosted agent(s)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+  deploy_controlplane:
+    name: Deploy the control plane
+    runs-on: ubuntu-latest
+    needs: prepare_deployer
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+  web_app_deployment:
+    name: Deploy SAP configuration Web App
+    runs-on: ubuntu-latest
+    needs: deploy_controlplane
+    if: ${{ inputs.use_webapp_param }} && ${{ inputs.deploy_webapp_software }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
