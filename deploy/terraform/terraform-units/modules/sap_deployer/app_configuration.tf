@@ -22,11 +22,12 @@ resource "time_sleep" "wait_for_appconf_dataowner_assignment" {
   ]
 }
 
-resource "azurerm_app_configuration_key" "test" {
+resource "azurerm_app_configuration_key" "deployer_app_configuration_keys" {
+  for_each               = var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {}
   configuration_store_id = azurerm_app_configuration.app_config[0].id
-  key                    = "appConfKey1"
-  label                  = "somelabel"
-  value                  = "a test"
+  key                    = each.key
+  label                  = each.value.label
+  value                  = each.value.value
 
   depends_on = [
     time_sleep.wait_for_appconf_dataowner_assignment
