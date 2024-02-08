@@ -523,6 +523,13 @@ variable "tfstate_resource_id" {
   }
 
 }
+
+variable "deployer_app_configuration_arm_id" {
+  description = "Azure resource identifier for the app configuration"
+  type        = string
+  default     = ""
+}
+
 variable "deployer_pipeline_parameters" {
   description = "Values to define the pipeline parameters for the deployer and store them in app configuration"
   type = map(object({

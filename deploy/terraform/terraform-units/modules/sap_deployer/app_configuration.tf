@@ -1,5 +1,5 @@
 resource "azurerm_app_configuration" "app_config" {
-  count               = var.deployer.pipeline_parameters != null ? 1 : 0
+  count               = length(var.deployer.deployer_app_configuration_arm_id) > 0 ? 0 : 1
   name                = var.naming.appconfig_names.DEPLOYER
   resource_group_name = local.resourcegroup_name
   location = local.resource_group_exists ? (
