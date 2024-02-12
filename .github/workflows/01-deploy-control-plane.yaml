@@ -46,6 +46,7 @@ on:
 
 env:
   CONFIG_REPO_PATH: s/config
+  SAP_AUTOMATION_REPO_PATH: s/sap-automation
 
 permissions:
   id-token: write
@@ -60,7 +61,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: azure/sap-automation
-          path: s/sap-automation
+          path: ${{ env.SAP_AUTOMATION_REPO_PATH }}
 
       - name: Checkout the code
         uses: actions/checkout@v4
