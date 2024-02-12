@@ -15,8 +15,8 @@
       LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs) ;    echo Location ${LOCATION}
       deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 
-  echo -e "$green--- Configure devops CLI extension ---$reset"
-    #  az config set extension.use_dynamic_install=yes_without_prompt
+  start_group "$green--- Configure devops CLI extension ---$reset"
+      # az config set extension.use_dynamic_install=yes_without_prompt
 
     #  az extension add --name azure-devops --output none
 
@@ -74,16 +74,17 @@
           fi
         fi
       fi
-    #  echo "Agent: " ${this_agent}
-    #   if [ -z ${VARIABLE_GROUP_ID} ]; then
-    #       exit_error "Variable group ${variable_group} could not be found." 2
-    #   fi
+      # echo "Agent: " ${this_agent}
+      # if [ -z ${VARIABLE_GROUP_ID} ]; then
+      #     exit_error "Variable group ${variable_group} could not be found." 2
+      # fi
+  end_group
   echo -e "$green--- Variables ---$reset"
       storage_account_parameter=""
-  echo -e "$green--- Validations ---$reset"
-    #   if [ -z ${TF_VAR_ansible_core_version} ]; then
-    #       export TF_VAR_ansible_core_version=2.15
-    #   fi
+  start_group "$green--- Validations ---$reset"
+      # if [ -z ${TF_VAR_ansible_core_version} ]; then
+      #     export TF_VAR_ansible_core_version=2.15
+      # fi
       if [ -z ${ARM_SUBSCRIPTION_ID} ]; then
           exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
       fi
@@ -97,11 +98,13 @@
           exit_error "Variable ARM_TENANT_ID was not defined." 2
       fi
       export TF_VAR_use_webapp=${use_webapp}
-  echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
+  end_group
+  start_group -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
       cd $CONFIG_REPO_PATH
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
-  echo -e "$green--- File Validations ---$reset"
+  end_group
+  start_group "$green--- File Validations ---$reset"
       if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
           echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$reset"
           exit_error "File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
@@ -126,12 +129,14 @@
       rm -f terraform_${tf_version}_linux_amd64.zip
       az extension add --name storage-blob-preview >/dev/null
   fi
-  echo -e "$green--- Configure parameters ---$reset"
+  start_group "$green--- Configure parameters ---$reset"
       echo -e "$green--- Convert config files to UX format ---$reset"
       dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
       dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
       echo -e "$green--- Configuring variables ---$reset"
       deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
+  end_group
+  start_group "Deployment"
   echo -e "$green--- az login ---$reset"
       az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
       return_code=$?
@@ -206,7 +211,7 @@
           library_random_id=$(cat ${deployer_environment_file_name} | grep library_random_id= | awk -F'=' '{print $2}' | xargs)
 
       fi
-  echo -e "$green--- Update repo ---$reset"
+  start_group "$green--- Update repo ---$reset"
       if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
           git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
           added=1
@@ -227,13 +232,13 @@
       if [ 1 == $added ]; then
           if [ -z ${GITHUB_CONTEXT} ]; then
             git config --global user.email "${Build.RequestedForEmail}"
-            git config --global user.name "${Build.RequestedFor}" 
-            git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"     
-            git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}   
+            git config --global user.name "${Build.RequestedFor}"
+            git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
+            git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
           else
             git config --global user.email github-actions@github.com
             git config --global user.name github-actions
-            git commit -m "Added updates from GitHub workflow $GITHUB_WORKFLOW [skip ci]"   
+            git commit -m "Added updates from GitHub workflow $GITHUB_WORKFLOW [skip ci]"
             git push
           fi
       fi
@@ -241,7 +246,8 @@
       if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
           echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
       fi
-  echo -e "$green--- Adding variables to the variable group:" ${variable_group} "---$reset"
+  end_group
+  start_group "$green--- Adding variables to the variable group:" ${variable_group} "---$reset"
       if [ 0 == $return_code ]; then
           az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_State_FileName.value")
           if [ -z ${az_var} ]; then
@@ -268,7 +274,6 @@
           else
               az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name ControlPlaneLocation --value ${LOCATION} --output none --only-show-errors
           fi
-
-
       fi
+  end_group
   exit $return_code
