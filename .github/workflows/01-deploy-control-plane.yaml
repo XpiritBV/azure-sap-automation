@@ -59,6 +59,16 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+        with:
+          repository: azure/sap-automation
+          path: s/sap-automation
+
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          path: s/config
+          fetch-depth: 0
+          # persistCredentials: true # rdv: ignored for now.
 
       - name: Azure Login
         if: false
