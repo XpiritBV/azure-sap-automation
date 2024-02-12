@@ -20,7 +20,7 @@
 
       az extension add --name azure-devops --output none
 
-      az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
+      az devops configure --defaults organization=${System_CollectionUri} project='${System_TeamProject}' --output none
       export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
       echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 
@@ -146,7 +146,7 @@
       fi
       if [ -n ${POOL} ]; then
           echo 'Deployer Agent Pool' ${POOL}
-          POOL_NAME=$(az pipelines pool list --organization ${System.CollectionUri} --query "[?name=='${POOL}'].name | [0]")
+          POOL_NAME=$(az pipelines pool list --organization ${System_CollectionUri} --query "[?name=='${POOL}'].name | [0]")
           if [ ${#POOL_NAME} -eq 0 ]; then
               log_warning "Agent Pool ${POOL} does not exist." 2
           fi
@@ -221,12 +221,21 @@
         git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
         added=1
       fi
+
       if [ 1 == $added ]; then
-          git config --global user.email "${Build.RequestedForEmail}"
-          git config --global user.name "${Build.RequestedFor}"
-          git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
-          git -c http.extraheader="AUTHORIZATION: bearer ${System.AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
+          if [ -z ${GITHUB_CONTEXT} ]; then
+            git config --global user.email "${Build.RequestedForEmail}"
+            git config --global user.name "${Build.RequestedFor}" 
+            git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"     
+            git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}   
+          else
+            git config --global user.email github-actions@github.com
+            git config --global user.name github-actions
+            git commit -m "Added updates from GitHub workflow $GITHUB_WORKFLOW [skip ci]"   
+            git push
+          fi
       fi
+      
       if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
           echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
       fi
