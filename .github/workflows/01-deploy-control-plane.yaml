@@ -94,10 +94,10 @@ jobs:
           this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
           use_webapp: ${{ inputs.use_webapp_param }}
           variable_group: SDAF-${{ inputs.environment }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: 'x' # ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_CLIENT_ID: 'x' # ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: 'x' # ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_TENANT_ID: 'x' # ${{ secrets.AZURE_TENANT_ID }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
 
   deploy_controlplane:
