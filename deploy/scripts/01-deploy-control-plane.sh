@@ -101,7 +101,7 @@
   end_group
   # TODO: Is this necessary on GitHub?
   start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
-      echo "Current Directory" $(pwd)"
+      echo "Current Directory $(pwd)"
       ls -la
       cd $CONFIG_REPO_PATH
       mkdir -p .sap_deployment_automation
