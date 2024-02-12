@@ -78,7 +78,8 @@ jobs:
       #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: run 01-deploy-control-plane.sh script
-        run: ./$CONFIG_REPO_PATH/deploy/scripts/01-deploy-control-plane.sh
+        run: deploy/scripts/01-deploy-control-plane.sh
+        working-directory: ${{ env.CONFIG_REPO_PATH }}
         env:
           connection_name: ${{ inputs.connection_name }}
           deployer_environment: ${{ inputs.environment }}
