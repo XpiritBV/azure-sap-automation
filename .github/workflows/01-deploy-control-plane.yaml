@@ -39,10 +39,6 @@ on:
       sap_automation_repo_path:
         description: The local path on the agent where the sap_automation repo can be found
         type: string
-      CONFIG_REPO_PATH:
-        description: The local path on the agent where the config repo can be found
-        type: string
-        default: $GITHUB_WORKSPACE
       force_reset:
         description: Force a re-install - may require multiple re-runs
         type: boolean
@@ -69,7 +65,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
         with:
-          path: $CONFIG_REPO_PATH
+          path: ${{ env.CONFIG_REPO_PATH }}
           fetch-depth: 0
           # persistCredentials: true # rdv: ignored for now.
 
