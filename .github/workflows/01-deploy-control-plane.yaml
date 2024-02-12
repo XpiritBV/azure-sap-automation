@@ -5,28 +5,92 @@
 # +------------------------------------4--------------------------------------*/
 
 name: Deploy Control Plane
+
 on: 
   push:
     branches:
       - main
   workflow_dispatch:
     inputs:
+      deployer:
+        description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
+        type: string
+        default: MGMT-WEEU-DEP01-INFRASTRUCTURE
+      library: 
+        description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
+        type: string
+        default: MGMT-WEEU-SAP_LIBRARY
+      environment:
+        description: Environment name, MGMT, DEV, QA, etc
+        type: string
+        default: MGMT
       use_webapp_param:
         description: Deploy the configuration web application infrastructure
         type: boolean
         default: true
       deploy_webapp_software:
-        description: Deploy the configuration web application software
+        description: "Deploy the configuration web application software"
         type: boolean
         default: true
+      use_deployer:
+        description: Run on self hosted agent
+        type: boolean
+        default: false
+      sap_automation_repo_path:
+        description: The local path on the agent where the sap_automation repo can be found
+        type: string
+      config_repo_path:
+        description: The local path on the agent where the config repo can be found
+        type: string
+        default: $GITHUB_WORKSPACE
+      force_reset:
+        description: Force a re-install - may require multiple re-runs
+        type: boolean
+        default: false
+
+env:
+  run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
+  variable_group: SDAF-${{ inputs.environment }}
+  use_webapp: ${{ inputs.use_webapp_param }}
+  deployerfolder: ${{ inputs.deployer }}
+  deployerconfig: ${{ inputs.deployer }}.tfvars
+  libraryfolder: ${{ inputs.library }}
+  libraryconfig: ${{ inputs.library }}.tfvars
+  log: logfile_$(Build.BuildId)
+  tf_url: https://releases.hashicorp.com/terraform/$(tf_version)/terraform_$(tf_version)_linux_amd64.zip
+  this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
+  connection_name: ${{ inputs.connection_name }}
+  deployer_environment: ${{ inputs.environment }}
 
 jobs:
   prepare_deployer:
     name: Prepare the self hosted agent(s)
     runs-on: ubuntu-latest
     steps:
+      - name: Prepare control plane (1/x)
+        run: |
+          echo "eploying the control plane defined in $(deployerfolder) $(libraryfolder)"
+                        
+          set -eu
+          file_deployer_tfstate_key=$(deployerfolder).tfstate
+
+          ENVIRONMENT=$(echo $(deployerfolder) | awk -F'-' '{print $1}' | xargs) ; echo Environment ${ENVIRONMENT}
+          LOCATION=$(echo $(deployerfolder) | awk -F'-' '{print $2}' | xargs) ;    echo Location ${LOCATION}
+          deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
+
       - name: Checkout the code
         uses: actions/checkout@v4
+        with:
+          path: $CONFIG_REPO_PATH
+
+      - name: Prepare control plane (2/x)
+        if: ${{ inputs.force_reset }}
+        run: |
+          echo "Forcing a re-install"
+
+          sed -i 's/step=1/step=0/' $deployer_environment_file_name
+          sed -i 's/step=2/step=0/' $deployer_environment_file_name
+          sed -i 's/step=3/step=0/' $deployer_environment_file_name
 
   deploy_controlplane:
     name: Deploy the control plane
