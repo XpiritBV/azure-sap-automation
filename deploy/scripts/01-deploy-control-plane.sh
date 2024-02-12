@@ -81,9 +81,9 @@
   echo -e "$green--- Variables ---$reset"
       storage_account_parameter=""
   echo -e "$green--- Validations ---$reset"
-      if [ -z ${TF_VAR_ansible_core_version} ]; then
-          export TF_VAR_ansible_core_version=2.15
-      fi
+    #   if [ -z ${TF_VAR_ansible_core_version} ]; then
+    #       export TF_VAR_ansible_core_version=2.15
+    #   fi
       if [ -z ${ARM_SUBSCRIPTION_ID} ]; then
           exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
       fi
