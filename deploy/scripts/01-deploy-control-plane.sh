@@ -120,6 +120,7 @@
       else
           echo "Library Config File found:" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
       fi
+  end_group
 
   # Check if running on deployer
   if [ ! -f /etc/profile.d/deploy_server.sh ]; then
