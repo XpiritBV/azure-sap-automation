@@ -33,9 +33,9 @@ on:
         description: Run on self hosted agent
         type: boolean
         default: false
-      sap_automation_repo_path:
-        description: The local path on the agent where the sap_automation repo can be found
-        type: string
+      # TODO: sap_automation_repo_path:
+      # TODO:   description: The local path on the agent where the sap_automation repo can be found
+      # TODO:   type: string
       force_reset:
         description: Force a re-install - may require multiple re-runs
         type: boolean
