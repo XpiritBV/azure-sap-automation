@@ -99,6 +99,7 @@
       fi
       export TF_VAR_use_webapp=${use_webapp}
   end_group
+  # TODO: Is this necessary on GitHub?
   start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
       # We are already in this folder? cd $CONFIG_REPO_PATH
       mkdir -p .sap_deployment_automation
