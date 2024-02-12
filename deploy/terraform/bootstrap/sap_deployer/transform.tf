@@ -191,36 +191,35 @@ locals {
                                            deployer_app_configuration_arm_id   = var.deployer_app_configuration_arm_id                                           
                                            pipeline_parameters                 = merge(var.deployer_pipeline_parameters,
                                             {
-                                              "Deployer_State_FileName.value" = {
+                                              "Deployer_State_FileName" = {
                                                 label = local.infrastructure.pipeline_parameter_label
                                                 value = ""
                                               }
-                                              "Deployer_Key_Vault.value" = {
+                                              "Deployer_Key_Vault" = {
                                                 label = local.infrastructure.pipeline_parameter_label
                                                 value = ""
                                               }
-                                              "ControlPlaneEnvironment.value" = {
+                                              "ControlPlaneEnvironment" = {
                                                 label = local.infrastructure.pipeline_parameter_label
                                                 value = ""
                                               }
-                                              "ControlPlaneLocation.value" = {
+                                              "ControlPlaneLocation" = {
                                                 label = local.infrastructure.pipeline_parameter_label
                                                 value = ""
                                               }
-                                              "Terraform_Remote_Storage_Subscription.value" = {
+                                              "Terraform_Remote_Storage_Subscription" = {
                                                 label = local.infrastructure.pipeline_parameter_label
                                                 value = ""
                                               }
-                                              "Terraform_Remote_Storage_Account_Name.value" = {
+                                              "Terraform_Remote_Storage_Account_Name" = {
                                                 label = local.infrastructure.pipeline_parameter_label
                                                 value = ""
                                               }
-                                              "Terraform_Remote_Storage_Resource_Group_Name.value" = {
+                                              "Terraform_Remote_Storage_Resource_Group_Name" = {
                                                 label = local.infrastructure.pipeline_parameter_label
                                                 value = ""
                                               }
                                             })
-
                                          }
 
   authentication                       = {
