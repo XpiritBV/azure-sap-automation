@@ -7,9 +7,9 @@
 name: Deploy Control Plane
 
 on: 
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   workflow_dispatch:
     inputs:
       deployer:
@@ -62,35 +62,28 @@ env:
   connection_name: ${{ inputs.connection_name }}
   deployer_environment: ${{ inputs.environment }}
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   prepare_deployer:
     name: Prepare the self hosted agent(s)
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare control plane (1/x)
-        shell: bash
-        run: |
-          echo "Deploying the control plane defined in $deployerfolder $libraryfolder"
-                        
-          set -eu
-
-          file_deployer_tfstate_key=$deployerfolder.tfstate
-
-          ENVIRONMENT=$(echo $deployerfolder | awk -F'-' '{print $1}' | xargs) ;                                 echo Environment: $ENVIRONMENT
-          LOCATION=$(echo $deployerfolder | awk -F'-' '{print $2}' | xargs) ;                                    echo Location: $LOCATION
-          deployer_environment_file_name=.sap_deployment_automation/${ENVIRONMENT}${LOCATION}; echo Deployer_environment_file_name: $deployer_environment_file_name
-         
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Prepare control plane (2/x)
-        if: ${{ inputs.force_reset }}
-        run: |
-          echo "Forcing a re-install"
-
-          sed -i 's/step=1/step=0/' $deployer_environment_file_name
-          sed -i 's/step=2/step=0/' $deployer_environment_file_name
-          sed -i 's/step=3/step=0/' $deployer_environment_file_name
+      - name: Azure Login
+        if: false
+        uses: Azure/Login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          
+      - name: run 01-deploy-control-plane.sh script
+        run: ./deploy/scripts/01-deploy-control-plane.sh
 
   deploy_controlplane:
     name: Deploy the control plane
