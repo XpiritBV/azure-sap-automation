@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. ${CONFIG_REPO_PATH}deploy/scripts/shared_functions.sh
+. deploy/scripts/shared_functions.sh
 
   echo "Deploying the control plane defined in ${deployerfolder} ${libraryfolder}"
       green="\e[1;32m"
