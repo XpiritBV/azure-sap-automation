@@ -16,8 +16,26 @@ function log_warning() {
   MESSAGE=$1
 
   if [ -z ${GITHUB_CONTEXT} ]; then
-    echo "::error::${MESSAGE}"
+    echo "::warning::${MESSAGE}"
   else
     echo "##vso[task.logissue type=warning]${MESSAGE}"
+  fi
+}
+
+function start_group() {
+  MESSAGE=$1
+
+  if [ -z ${GITHUB_CONTEXT} ]; then
+    echo "::group::${MESSAGE}"
+  else
+    echo "##[group]${MESSAGE}"
+  fi
+}
+
+function end_group() {
+  if [ -z ${GITHUB_CONTEXT} ]; then
+    echo "::endgroup::"
+  else
+    echo "##[endgroup]"
   fi
 }
