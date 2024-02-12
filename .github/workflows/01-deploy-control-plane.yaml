@@ -69,13 +69,13 @@ jobs:
           fetch-depth: 0
           # persistCredentials: true # rdv: ignored for now.
 
-      - name: Azure Login
-        if: false
-        uses: Azure/Login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # - name: Azure Login
+      #   if: false
+      #   uses: Azure/Login@v1
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: run 01-deploy-control-plane.sh script
         run: ./$CONFIG_REPO_PATH/deploy/scripts/01-deploy-control-plane.sh
