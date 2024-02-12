@@ -15,9 +15,6 @@ source shared_functions.sh
       LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs) ;    echo Location ${LOCATION}
       deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 
-  echo -e "$green--- Checkout $(Build.SourceBranchName) ---$reset"
-      cd $CONFIG_REPO_PATH
-      git checkout -q $(Build.SourceBranchName)
   echo -e "$green--- Configure devops CLI extension ---$reset"
       az config set extension.use_dynamic_install=yes_without_prompt
 
