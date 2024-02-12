@@ -68,20 +68,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Prepare control plane (1/x)
+        shell: bash
         run: |
           echo "Deploying the control plane defined in $deployerfolder $libraryfolder"
                         
           set -eu
+
           file_deployer_tfstate_key=$deployerfolder.tfstate
 
           ENVIRONMENT=$(echo $deployerfolder | awk -F'-' '{print $1}' | xargs) ;                                 echo Environment: $ENVIRONMENT
           LOCATION=$(echo $deployerfolder | awk -F'-' '{print $2}' | xargs) ;                                    echo Location: $LOCATION
-          deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}; echo Deployer_environment_file_name: $deployer_environment_file_name
+          deployer_environment_file_name=.sap_deployment_automation/${ENVIRONMENT}${LOCATION}; echo Deployer_environment_file_name: $deployer_environment_file_name
          
       - name: Checkout the code
         uses: actions/checkout@v4
-        with:
-          path: $CONFIG_REPO_PATH
 
       - name: Prepare control plane (2/x)
         if: ${{ inputs.force_reset }}
