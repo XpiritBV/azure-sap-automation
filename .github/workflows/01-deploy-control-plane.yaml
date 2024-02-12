@@ -67,11 +67,6 @@ jobs:
           fetch-depth: 0
           # persistCredentials: true # rdv: ignored for now.
 
-      - name: Install Terraform
-        uses: little-core-labs/install-terraform@v2.0.0
-        with:
-            version: 1.6.2
-
       # - name: Azure Login
       #   if: false
       #   uses: Azure/Login@v1

@@ -101,9 +101,7 @@
   end_group
   # TODO: Is this necessary on GitHub?
   start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
-      echo "Current Directory $(pwd)"
-      ls -la
-      
+      echo "Current Directory $(pwd)"      
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
   end_group
@@ -130,16 +128,16 @@
       echo -e "$green --- Install zip ---$reset"
       sudo apt -qq install zip
 
-    #   tf_url="https://releases.hashicorp.com/terraform/${tf_version}/terraform_${tf_version}_linux_amd64.zip"
+      tf_url="https://releases.hashicorp.com/terraform/${tf_version}/terraform_${tf_version}_linux_amd64.zip"
 
-    #   echo -e "$green --- Install terraform ${tf_version} from ${tf_url} ---$reset"
-    #   wget -q ${tf_url}
-    #   return_code=$?
-    #   if [ 0 != $return_code ]; then
-    #       exit_error "Unable to download Terraform version ${tf_version}." 2
-    #   fi
-    #   unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
-    #   rm -f terraform_${tf_version}_linux_amd64.zip 
+      echo -e "$green --- Install terraform ${tf_version} from ${tf_url} ---$reset"
+      wget -q ${tf_url}
+      return_code=$?
+      if [ 0 != $return_code ]; then
+          exit_error "Unable to download Terraform version ${tf_version}." 2
+      fi
+      unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
+      rm -f terraform_${tf_version}_linux_amd64.zip 
       terraform --version
 
       az extension add --name storage-blob-preview >/dev/null
