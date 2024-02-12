@@ -25,8 +25,8 @@
       export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
       echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 
-      echo "Force reset: ${ parameters.force_reset }"
-      if [ ${{ parameters.force_reset }} == "True" ]; then
+      echo "Force reset: ${force_reset}"
+      if [ ${force_reset} == "True" ]; then
         echo "##vso[task.logissue type=warning]Forcing a re-install"
         echo "running on ${this_agent}"
         sed -i 's/step=1/step=0/' $deployer_environment_file_name
