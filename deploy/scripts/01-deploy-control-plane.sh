@@ -103,7 +103,7 @@
   start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
       echo "Current Directory $(pwd)"
       ls -la
-      cd $CONFIG_REPO_PATH
+      
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
   end_group
