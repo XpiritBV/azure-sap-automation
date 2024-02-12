@@ -96,7 +96,7 @@
       if [ -z ${ARM_TENANT_ID} ]; then
           exit_error "Variable ARM_TENANT_ID was not defined." 2
       fi
-      export TF_VAR_use_webapp=${use_webapp)
+      export TF_VAR_use_webapp=${use_webapp}
   echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
       cd $CONFIG_REPO_PATH
       mkdir -p .sap_deployment_automation
@@ -110,6 +110,7 @@
           echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$reset"
           exit_error "File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found." 2
       fi
+      
   # Check if running on deployer
   if [ ! -f /etc/profile.d/deploy_server.sh ]; then
       echo -e "$green --- Install dos2unix ---$reset"
@@ -158,7 +159,7 @@
           unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
       fi
 
-    if [ ${use_webapp) == "true" ]; then
+    if [ ${use_webapp,,} == "true" ]; then
         echo "Use WebApp is selected"
 
         if [ -z ${APP_REGISTRATION_APP_ID} ]; then
