@@ -130,7 +130,7 @@
       echo -e "$green --- Install zip ---$reset"
       sudo apt -qq install zip
 
-      echo -e "$green --- Install terraform ---$reset"
+      echo -e "$green --- Install terraform ${tf_version} from ${tf_url} ---$reset"
       wget -q ${tf_url}
       return_code=$?
       if [ 0 != $return_code ]; then
