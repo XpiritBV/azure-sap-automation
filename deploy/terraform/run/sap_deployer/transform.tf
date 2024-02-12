@@ -127,6 +127,10 @@ locals {
                                               }
                                             }
                                           }
+    pipeline_parameter_label           = "SDAF-${coalesce(
+                                          var.environment,
+                                          try(var.infrastructure.environment, "")
+                                          )}"
                                         }
   deployer                             = {
                                            size = try(
@@ -186,7 +190,37 @@ locals {
                                            app_service_SKU                     = var.app_service_SKU_name
 
                                            deployer_app_configuration_arm_id   = var.deployer_app_configuration_arm_id
-                                           pipeline_parameters                 = var.deployer_pipeline_parameters
+                                           pipeline_parameters                 = merge(var.deployer_pipeline_parameters,
+                                            {
+                                              "Deployer_State_FileName.value" = {
+                                                label = local.infrastructure.pipeline_parameter_label
+                                                value = ""
+                                              }
+                                              "Deployer_Key_Vault.value" = {
+                                                label = local.infrastructure.pipeline_parameter_label
+                                                value = ""
+                                              }
+                                              "ControlPlaneEnvironment.value" = {
+                                                label = local.infrastructure.pipeline_parameter_label
+                                                value = ""
+                                              }
+                                              "ControlPlaneLocation.value" = {
+                                                label = local.infrastructure.pipeline_parameter_label
+                                                value = ""
+                                              }
+                                              "Terraform_Remote_Storage_Subscription.value" = {
+                                                label = local.infrastructure.pipeline_parameter_label
+                                                value = ""
+                                              }
+                                              "Terraform_Remote_Storage_Account_Name.value" = {
+                                                label = local.infrastructure.pipeline_parameter_label
+                                                value = ""
+                                              }
+                                              "Terraform_Remote_Storage_Resource_Group_Name.value" = {
+                                                label = local.infrastructure.pipeline_parameter_label
+                                                value = ""
+                                              }
+                                            })
 
                                          }
 
