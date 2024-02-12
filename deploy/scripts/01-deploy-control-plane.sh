@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source shared_functions.sh
+. shared_functions.sh
 
   echo "Deploying the control plane defined in ${deployerfolder} ${libraryfolder}"
       green="\e[1;32m"
