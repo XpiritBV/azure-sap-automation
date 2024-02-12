@@ -101,7 +101,7 @@
   end_group
   # TODO: Is this necessary on GitHub?
   start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
-      echo "Current Directory $(pwd)"      
+      echo "Current Directory $(pwd)"
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
   end_group
@@ -137,7 +137,7 @@
           exit_error "Unable to download Terraform version ${tf_version}." 2
       fi
       unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
-      rm -f terraform_${tf_version}_linux_amd64.zip 
+      rm -f terraform_${tf_version}_linux_amd64.zip
       terraform --version
 
       az extension add --name storage-blob-preview >/dev/null
