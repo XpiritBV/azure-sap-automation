@@ -22,10 +22,10 @@
       az extension add --name azure-devops --output none
 
       az devops configure --defaults organization=$(System.CollectionUri) project='$(System.TeamProject)' --output none
-      export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group)}'].id | [0]")
+      export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
       echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 
-      echo ${{ parameters.force_reset }}
+      echo "Force reset: ${ parameters.force_reset }"
       if [ ${{ parameters.force_reset }} == "True" ]; then
         echo "##vso[task.logissue type=warning]Forcing a re-install"
         echo "running on ${this_agent}"
