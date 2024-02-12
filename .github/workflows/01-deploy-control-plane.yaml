@@ -89,6 +89,7 @@ jobs:
           libraryfolder: ${{ inputs.library }}
           log: logfile_$(Build.BuildId)
           run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
+          tf_version: 1.6.2
           tf_url: https://releases.hashicorp.com/terraform/$(tf_version)/terraform_$(tf_version)_linux_amd64.zip
           this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
           use_webapp: ${{ inputs.use_webapp_param }}
@@ -98,7 +99,6 @@ jobs:
           ARM_CLIENT_SECRET: 'x' # ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_TENANT_ID: 'x' # ${{ secrets.AZURE_TENANT_ID }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
-          tf_version: 1.6.2
           CONFIG_REPO_PATH: ./WORKSPACES # TODO: Folder need to be retrieved from App Configurations (Deployment_Configuration_Path)
 
   deploy_controlplane:

@@ -131,19 +131,13 @@
       sudo apt -qq install zip
 
       echo -e "$green --- Install terraform ---$reset"
-      # wget -q ${tf_url}
-      # return_code=$?
-      # if [ 0 != $return_code ]; then
-      #     exit_error "Unable to download Terraform version ${tf_version}." 2
-      # fi
-      # unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
-      # rm -f terraform_${tf_version}_linux_amd64.zip
-      wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-      gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
-      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-      sudo apt update -qq
-      echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) test" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-      sudo apt -qq install terraform=${tf_version}
+      wget -q ${tf_url}
+      return_code=$?
+      if [ 0 != $return_code ]; then
+          exit_error "Unable to download Terraform version ${tf_version}." 2
+      fi
+      unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
+      rm -f terraform_${tf_version}_linux_amd64.zip 
 
       az extension add --name storage-blob-preview >/dev/null
   fi
