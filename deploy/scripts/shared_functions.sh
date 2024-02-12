@@ -39,3 +39,15 @@ function end_group() {
     echo "##[endgroup]"
   fi
 }
+
+function set_or_update_key_value() {
+  $key=$1
+  $value=$2
+
+  var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${key}.value")
+  if [ -z ${var} ]; then
+      az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name "${key}" --value ${value} --output none --only-show-errors
+  else
+      az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name "${key}" --value ${value} --output none --only-show-errors
+  fi
+}
