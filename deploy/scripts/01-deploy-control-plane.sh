@@ -16,13 +16,13 @@
       deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 
   echo -e "$green--- Configure devops CLI extension ---$reset"
-      az config set extension.use_dynamic_install=yes_without_prompt
+    #  az config set extension.use_dynamic_install=yes_without_prompt
 
-      az extension add --name azure-devops --output none
+    #  az extension add --name azure-devops --output none
 
-      az devops configure --defaults organization=${System_CollectionUri} project='${System_TeamProject}' --output none
-      export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
-      echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
+    #   az devops configure --defaults organization=${System_CollectionUri} project='${System_TeamProject}' --output none
+    #   export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
+    #   echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 
       echo "Force reset: ${force_reset}"
       if [ ${force_reset,,} == "true" ]; then
@@ -74,10 +74,10 @@
           fi
         fi
       fi
-      echo "Agent: " ${this_agent}
-      if [ -z ${VARIABLE_GROUP_ID} ]; then
-          exit_error "Variable group ${variable_group} could not be found." 2
-      fi
+    #  echo "Agent: " ${this_agent}
+    #   if [ -z ${VARIABLE_GROUP_ID} ]; then
+    #       exit_error "Variable group ${variable_group} could not be found." 2
+    #   fi
   echo -e "$green--- Variables ---$reset"
       storage_account_parameter=""
   echo -e "$green--- Validations ---$reset"
@@ -235,7 +235,7 @@
             git push
           fi
       fi
-      
+
       if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
           echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
       fi
