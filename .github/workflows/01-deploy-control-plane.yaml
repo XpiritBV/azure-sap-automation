@@ -48,20 +48,6 @@ on:
         type: boolean
         default: false
 
-env:
-  run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
-  variable_group: SDAF-${{ inputs.environment }}
-  use_webapp: ${{ inputs.use_webapp_param }}
-  deployerfolder: ${{ inputs.deployer }}
-  deployerconfig: ${{ inputs.deployer }}.tfvars
-  libraryfolder: ${{ inputs.library }}
-  libraryconfig: ${{ inputs.library }}.tfvars
-  log: logfile_$(Build.BuildId)
-  tf_url: https://releases.hashicorp.com/terraform/$(tf_version)/terraform_$(tf_version)_linux_amd64.zip
-  this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
-  connection_name: ${{ inputs.connection_name }}
-  deployer_environment: ${{ inputs.environment }}
-
 permissions:
   id-token: write
   contents: read
@@ -84,6 +70,19 @@ jobs:
           
       - name: run 01-deploy-control-plane.sh script
         run: ./deploy/scripts/01-deploy-control-plane.sh
+        env:
+          run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
+          variable_group: SDAF-${{ inputs.environment }}
+          use_webapp: ${{ inputs.use_webapp_param }}
+          deployerfolder: ${{ inputs.deployer }}
+          deployerconfig: ${{ inputs.deployer }}.tfvars
+          libraryfolder: ${{ inputs.library }}
+          libraryconfig: ${{ inputs.library }}.tfvars
+          log: logfile_$(Build.BuildId)
+          tf_url: https://releases.hashicorp.com/terraform/$(tf_version)/terraform_$(tf_version)_linux_amd64.zip
+          this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
+          connection_name: ${{ inputs.connection_name }}
+          deployer_environment: ${{ inputs.environment }}
 
   deploy_controlplane:
     name: Deploy the control plane
