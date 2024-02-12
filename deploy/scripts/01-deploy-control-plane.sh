@@ -15,7 +15,7 @@
       LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs) ;    echo Location ${LOCATION}
       deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 
-  start_group "$green--- Configure devops CLI extension ---$reset"
+  start_group "Configure devops CLI extension"
       # az config set extension.use_dynamic_install=yes_without_prompt
 
     #  az extension add --name azure-devops --output none
@@ -81,7 +81,7 @@
   end_group
   echo -e "$green--- Variables ---$reset"
       storage_account_parameter=""
-  start_group "$green--- Validations ---$reset"
+  start_group "Validations"
       if [ -z ${TF_VAR_ansible_core_version} ]; then
           export TF_VAR_ansible_core_version=2.15
       fi
@@ -99,12 +99,12 @@
       fi
       export TF_VAR_use_webapp=${use_webapp}
   end_group
-  start_group -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
+  start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
       cd $CONFIG_REPO_PATH
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
   end_group
-  start_group "$green--- File Validations ---$reset"
+  start_group "File Validations"
       if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
           echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$reset"
           exit_error "File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
@@ -129,7 +129,7 @@
       rm -f terraform_${tf_version}_linux_amd64.zip
       az extension add --name storage-blob-preview >/dev/null
   fi
-  start_group "$green--- Configure parameters ---$reset"
+  start_group "Configure parameters"
       echo -e "$green--- Convert config files to UX format ---$reset"
       dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
       dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
@@ -211,7 +211,7 @@
           library_random_id=$(cat ${deployer_environment_file_name} | grep library_random_id= | awk -F'=' '{print $2}' | xargs)
 
       fi
-  start_group "$green--- Update repo ---$reset"
+  start_group "Update repo"
       if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
           git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
           added=1
@@ -247,7 +247,7 @@
           echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
       fi
   end_group
-  start_group "$green--- Adding variables to the variable group:" ${variable_group} "---$reset"
+  start_group "Adding variables to the variable group: ${variable_group}"
       if [ 0 == $return_code ]; then
           az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_State_FileName.value")
           if [ -z ${az_var} ]; then
