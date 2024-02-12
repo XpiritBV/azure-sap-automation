@@ -1,17 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-  echo "##vso[build.updatebuildnumber]Deploying the control plane defined in $(deployerfolder) $(libraryfolder)"
+  echo "##vso[build.updatebuildnumber]Deploying the control plane defined in ${deployerfolder} ${libraryfolder}"
       green="\e[1;32m"
       reset="\e[0m"
       boldred="\e[1;31m"
 
       set -eu
 
-      file_deployer_tfstate_key=$(deployerfolder).tfstate
+      file_deployer_tfstate_key=${deployerfolder}.tfstate
 
-      ENVIRONMENT=$(echo $(deployerfolder) | awk -F'-' '{print $1}' | xargs) ; echo Environment ${ENVIRONMENT}
-      LOCATION=$(echo $(deployerfolder) | awk -F'-' '{print $2}' | xargs) ;    echo Location ${LOCATION}
-      deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
+      ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs) ; echo Environment ${ENVIRONMENT}
+      LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs) ;    echo Location ${LOCATION}
+      deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 
   echo -e "$green--- Checkout $(Build.SourceBranchName) ---$reset"
       cd $CONFIG_REPO_PATH
@@ -22,13 +22,13 @@
       az extension add --name azure-devops --output none
 
       az devops configure --defaults organization=$(System.CollectionUri) project='$(System.TeamProject)' --output none
-      export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='$(variable_group)'].id | [0]")
-      echo "$(variable_group) id: ${VARIABLE_GROUP_ID}"
+      export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group)}'].id | [0]")
+      echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 
       echo ${{ parameters.force_reset }}
       if [ ${{ parameters.force_reset }} == "True" ]; then
         echo "##vso[task.logissue type=warning]Forcing a re-install"
-        echo "running on $(this_agent)"
+        echo "running on ${this_agent}"
         sed -i 's/step=1/step=0/' $deployer_environment_file_name
         sed -i 's/step=2/step=0/' $deployer_environment_file_name
         sed -i 's/step=3/step=0/' $deployer_environment_file_name
@@ -54,19 +54,19 @@
         export TF_VAR_deployer_kv_user_arm_id=${key_vault_id}
         if [ -n "${key_vault_id}" ]; then
           this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
-          az keyvault network-rule add --name ${key_vault} --ip-address ${this_ip} --subscription $(Terraform_Remote_Storage_Subscription) --only-show-errors --output none
+          az keyvault network-rule add --name ${key_vault} --ip-address ${this_ip} --subscription ${Terraform_Remote_Storage_Subscription} --only-show-errors --output none
           ip_added=1
         fi
 
-        tfstate_resource_id=$(az resource list --name $(Terraform_Remote_Storage_Account_Name) --subscription $(Terraform_Remote_Storage_Subscription) --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
+        tfstate_resource_id=$(az resource list --name ${Terraform_Remote_Storage_Account_Name} --subscription ${Terraform_Remote_Storage_Subscription} --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
         if [ -n "${tfstate_resource_id}" ]; then
           this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
-          az storage account network-rule add --account-name $(Terraform_Remote_Storage_Account_Name) --resource-group $(Terraform_Remote_Storage_Resource_Group_Name)  --ip-address ${this_ip} --only-show-errors --output none
+          az storage account network-rule add --account-name ${Terraform_Remote_Storage_Account_Name} --resource-group ${Terraform_Remote_Storage_Resource_Group_Name}  --ip-address ${this_ip} --only-show-errors --output none
         fi
 
-        export REINSTALL_ACCOUNTNAME=$(Terraform_Remote_Storage_Account_Name)
-        export REINSTALL_SUBSCRIPTION=$(Terraform_Remote_Storage_Subscription)
-        export REINSTALL_RESOURCE_GROUP=$(Terraform_Remote_Storage_Resource_Group_Name)
+        export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
+        export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
+        export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
         step=0
       else
         if [ -f ${deployer_environment_file_name} ]; then
@@ -76,9 +76,9 @@
           fi
         fi
       fi
-      echo "Agent: " $(this_agent)
+      echo "Agent: " ${this_agent}
       if [ -z ${VARIABLE_GROUP_ID} ]; then
-          echo "##vso[task.logissue type=error]Variable group $(variable_group) could not be found."
+          echo "##vso[task.logissue type=error]Variable group ${variable_group} could not be found."
           exit 2
       fi
   echo -e "$green--- Variables ---$reset"
@@ -103,20 +103,20 @@
           echo "##vso[task.logissue type=error]Variable ARM_TENANT_ID was not defined."
           exit 2
       fi
-      export TF_VAR_use_webapp=$(use_webapp)
+      export TF_VAR_use_webapp=${use_webapp)
   echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
       cd $CONFIG_REPO_PATH
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
   echo -e "$green--- File Validations ---$reset"
-      if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) ]; then
-          echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) was not found ---$reset"
-          echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) was not found."
+      if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
+          echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$reset"
+          echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found."
           exit 2
       fi
-      if [ ! -f ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig) ]; then
-          echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig)  was not found ---$reset"
-          echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig) was not found."
+      if [ ! -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} ]; then
+          echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$reset"
+          echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found."
           exit 2
       fi
   # Check if running on deployer
@@ -125,20 +125,20 @@
       sudo apt-get -qq install dos2unix
       sudo apt -qq install zip
       echo -e "$green --- Install terraform ---$reset"
-      wget -q $(tf_url)
+      wget -q ${tf_url}
       return_code=$?
       if [ 0 != $return_code ]; then
-          echo "##vso[task.logissue type=error]Unable to download Terraform version $(tf_version)."
+          echo "##vso[task.logissue type=error]Unable to download Terraform version ${tf_version}."
           exit 2
       fi
-      unzip -qq terraform_$(tf_version)_linux_amd64.zip ; sudo mv terraform /bin/
-      rm -f terraform_$(tf_version)_linux_amd64.zip
+      unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
+      rm -f terraform_${tf_version}_linux_amd64.zip
       az extension add --name storage-blob-preview >/dev/null
   fi
   echo -e "$green--- Configure parameters ---$reset"
       echo -e "$green--- Convert config files to UX format ---$reset"
-      dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig)
-      dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig)
+      dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
+      dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
       echo -e "$green--- Configuring variables ---$reset"
       deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
   echo -e "$green--- az login ---$reset"
@@ -151,26 +151,26 @@
       fi
       az account set --subscription $ARM_SUBSCRIPTION_ID
       echo -e "$green--- Deploy the Control Plane ---$reset"
-      if [ -n $(PAT) ]; then
+      if [ -n ${PAT} ]; then
           echo 'Deployer Agent PAT is defined'
       fi
-      if [ -n $(POOL) ]; then
-          echo 'Deployer Agent Pool' $(POOL)
-          POOL_NAME=$(az pipelines pool list --organization $(System.CollectionUri) --query "[?name=='$(POOL)'].name | [0]")
+      if [ -n ${POOL} ]; then
+          echo 'Deployer Agent Pool' ${POOL}
+          POOL_NAME=$(az pipelines pool list --organization $(System.CollectionUri) --query "[?name=='${POOL}'].name | [0]")
           if [ ${#POOL_NAME} -eq 0 ]; then
-              echo "##vso[task.logissue type=warning]Agent Pool $(POOL) does not exist."
+              echo "##vso[task.logissue type=warning]Agent Pool ${POOL} does not exist."
               exit 2
           fi
           echo 'Deployer Agent Pool found' $POOL_NAME
-          export TF_VAR_agent_pool=$(POOL)
-          export TF_VAR_agent_pat=$(PAT)
+          export TF_VAR_agent_pool=${POOL}
+          export TF_VAR_agent_pat=${PAT}
       fi
-      if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/state.zip ]; then
+      if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
           pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
-          unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)
+          unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
       fi
 
-    if [ $(use_webapp) == "true" ]; then
+    if [ ${use_webapp) == "true" ]; then
         echo "Use WebApp is selected"
 
         if [ -z ${APP_REGISTRATION_APP_ID} ]; then
@@ -182,8 +182,8 @@
             echo "##vso[task.logissue type=error]Variable WEB_APP_CLIENT_SECRET was not defined."
             exit 2
         fi
-        export TF_VAR_app_registration_app_id=$(APP_REGISTRATION_APP_ID); echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
-        export TF_VAR_webapp_client_secret=$(WEB_APP_CLIENT_SECRET)
+        export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}; echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
+        export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
         export TF_VAR_use_webapp=true
 
     fi
@@ -192,8 +192,8 @@
       set +eu
 
       $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh                               \
-          --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
-          --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig)     \
+          --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
+          --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}     \
           --subscription $ARM_SUBSCRIPTION_ID --spn_id $ARM_CLIENT_ID                                \
           --spn_secret $ARM_CLIENT_SECRET --tenant_id $ARM_TENANT_ID                                 \
           --auto-approve --ado --only_deployer
@@ -223,15 +223,15 @@
           git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
           added=1
       fi
-      if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate ]; then
-        git add -f ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate
+      if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
+        git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
         added=1
       fi
-      if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/terraform.tfstate ]; then
+      if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
         sudo apt install zip
         pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
-        zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/state ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/terraform.tfstate
-        git add -f ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/state.zip
+        zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
+        git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
         added=1
       fi
       if [ 1 == $added ]; then
@@ -243,7 +243,7 @@
       if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
           echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
       fi
-  echo -e "$green--- Adding variables to the variable group:" $(variable_group) "---$reset"
+  echo -e "$green--- Adding variables to the variable group:" ${variable_group} "---$reset"
       if [ 0 == $return_code ]; then
           az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_State_FileName.value")
           if [ -z ${az_var} ]; then
