@@ -126,15 +126,20 @@
   if [ ! -f /etc/profile.d/deploy_server.sh ]; then
       echo -e "$green --- Install dos2unix ---$reset"
       sudo apt-get -qq install dos2unix
+
+      echo -e "$green --- Install zip ---$reset"
       sudo apt -qq install zip
+
       echo -e "$green --- Install terraform ---$reset"
-      wget -q ${tf_url}
-      return_code=$?
-      if [ 0 != $return_code ]; then
-          exit_error "Unable to download Terraform version ${tf_version}." 2
-      fi
-      unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
-      rm -f terraform_${tf_version}_linux_amd64.zip
+      # wget -q ${tf_url}
+      # return_code=$?
+      # if [ 0 != $return_code ]; then
+      #     exit_error "Unable to download Terraform version ${tf_version}." 2
+      # fi
+      # unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
+      # rm -f terraform_${tf_version}_linux_amd64.zip
+      sudo apt -qq install terraform=${tf_version}
+      
       az extension add --name storage-blob-preview >/dev/null
   fi
   start_group "Configure parameters"
