@@ -6,7 +6,7 @@
 
 name: Deploy Control Plane
 
-on: 
+on:
   # push:
   #   branches:
   #     - main
@@ -16,7 +16,7 @@ on:
         description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
         type: string
         default: MGMT-WEEU-DEP01-INFRASTRUCTURE
-      library: 
+      library:
         description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
         type: string
         default: MGMT-WEEU-SAP_LIBRARY
@@ -76,7 +76,7 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          
+
       - name: run 01-deploy-control-plane.sh script
         run: ./$CONFIG_REPO_PATH/deploy/scripts/01-deploy-control-plane.sh
         env:
@@ -85,6 +85,7 @@ jobs:
           deployerconfig: ${{ inputs.deployer }}.tfvars
           deployerfolder: ${{ inputs.deployer }}
           force_reset: ${{ inputs.force_reset }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
           log: logfile_$(Build.BuildId)

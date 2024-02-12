@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-  echo "##vso[build.updatebuildnumber]Deploying the control plane defined in ${deployerfolder} ${libraryfolder}"
+source shared_functions.sh
+
+  echo "Deploying the control plane defined in ${deployerfolder} ${libraryfolder}"
       green="\e[1;32m"
       reset="\e[0m"
       boldred="\e[1;31m"
@@ -27,7 +29,7 @@
 
       echo "Force reset: ${force_reset}"
       if [ ${force_reset} == "True" ]; then
-        echo "##vso[task.logissue type=warning]Forcing a re-install"
+        log_warning "Forcing a re-install"
         echo "running on ${this_agent}"
         sed -i 's/step=1/step=0/' $deployer_environment_file_name
         sed -i 's/step=2/step=0/' $deployer_environment_file_name
@@ -46,8 +48,7 @@
         return_code=$?
         if [ 0 != $return_code ]; then
             echo -e "$boldred--- Login failed ---$reset"
-            echo "##vso[task.logissue type=error]az login failed."
-            exit $return_code
+            exit_error "az login failed." $return_code
         fi
 
         key_vault_id=$(az resource list --name "${key_vault}"  --resource-type Microsoft.KeyVault/vaults --query "[].id | [0]" -o tsv)
@@ -78,8 +79,7 @@
       fi
       echo "Agent: " ${this_agent}
       if [ -z ${VARIABLE_GROUP_ID} ]; then
-          echo "##vso[task.logissue type=error]Variable group ${variable_group} could not be found."
-          exit 2
+          exit_error "Variable group ${variable_group} could not be found." 2
       fi
   echo -e "$green--- Variables ---$reset"
       storage_account_parameter=""
@@ -88,20 +88,16 @@
           export TF_VAR_ansible_core_version=2.15
       fi
       if [ -z ${ARM_SUBSCRIPTION_ID} ]; then
-          echo "##vso[task.logissue type=error]Variable ARM_SUBSCRIPTION_ID was not defined."
-          exit 2
+          exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
       fi
       if [ -z ${ARM_CLIENT_ID} ]; then
-          echo "##vso[task.logissue type=error]Variable ARM_CLIENT_ID was not defined."
-          exit 2
+          exit_error "Variable ARM_CLIENT_ID was not defined." 2
       fi
       if [ -z ${ARM_CLIENT_SECRET} ]; then
-          echo "##vso[task.logissue type=error]Variable ARM_CLIENT_SECRET was not defined."
-          exit 2
+          exit_error "Variable ARM_CLIENT_SECRET was not defined." 2
       fi
       if [ -z ${ARM_TENANT_ID} ]; then
-          echo "##vso[task.logissue type=error]Variable ARM_TENANT_ID was not defined."
-          exit 2
+          exit_error "Variable ARM_TENANT_ID was not defined." 2
       fi
       export TF_VAR_use_webapp=${use_webapp)
   echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
@@ -111,13 +107,11 @@
   echo -e "$green--- File Validations ---$reset"
       if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
           echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$reset"
-          echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found."
-          exit 2
+          exit_error "File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
       fi
       if [ ! -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} ]; then
           echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$reset"
-          echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found."
-          exit 2
+          exit_error "File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found." 2
       fi
   # Check if running on deployer
   if [ ! -f /etc/profile.d/deploy_server.sh ]; then
@@ -128,8 +122,7 @@
       wget -q ${tf_url}
       return_code=$?
       if [ 0 != $return_code ]; then
-          echo "##vso[task.logissue type=error]Unable to download Terraform version ${tf_version}."
-          exit 2
+          exit_error "Unable to download Terraform version ${tf_version}." 2
       fi
       unzip -qq terraform_${tf_version}_linux_amd64.zip ; sudo mv terraform /bin/
       rm -f terraform_${tf_version}_linux_amd64.zip
@@ -146,8 +139,7 @@
       return_code=$?
       if [ 0 != $return_code ]; then
           echo -e "$boldred--- Login failed ---$reset"
-          echo "##vso[task.logissue type=error]az login failed."
-          exit $return_code
+          exit_error "az login failed." $return_code
       fi
       az account set --subscription $ARM_SUBSCRIPTION_ID
       echo -e "$green--- Deploy the Control Plane ---$reset"
@@ -158,8 +150,7 @@
           echo 'Deployer Agent Pool' ${POOL}
           POOL_NAME=$(az pipelines pool list --organization $(System.CollectionUri) --query "[?name=='${POOL}'].name | [0]")
           if [ ${#POOL_NAME} -eq 0 ]; then
-              echo "##vso[task.logissue type=warning]Agent Pool ${POOL} does not exist."
-              exit 2
+              log_warning "Agent Pool ${POOL} does not exist." 2
           fi
           echo 'Deployer Agent Pool found' $POOL_NAME
           export TF_VAR_agent_pool=${POOL}
@@ -174,13 +165,11 @@
         echo "Use WebApp is selected"
 
         if [ -z ${APP_REGISTRATION_APP_ID} ]; then
-            echo "##vso[task.logissue type=error]Variable APP_REGISTRATION_APP_ID was not defined."
-            exit 2
+            exit_error "Variable APP_REGISTRATION_APP_ID was not defined." 2
         fi
 
         if [ -z ${WEB_APP_CLIENT_SECRET} ]; then
-            echo "##vso[task.logissue type=error]Variable WEB_APP_CLIENT_SECRET was not defined."
-            exit 2
+            exit_error "Variable WEB_APP_CLIENT_SECRET was not defined." 2
         fi
         export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}; echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
         export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
