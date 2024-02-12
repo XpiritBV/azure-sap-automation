@@ -156,6 +156,7 @@
       fi
       if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
           pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
+          # TODO: unzip with password is unsecure, use PGP Encrypt
           unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
       fi
 
@@ -217,6 +218,7 @@
       if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
         sudo apt install zip
         pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
+        # TODO: unzip with password is unsecure, use PGP Encrypt
         zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
         git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
         added=1
