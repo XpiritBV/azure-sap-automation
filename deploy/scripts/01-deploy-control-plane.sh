@@ -20,7 +20,7 @@
 
       az extension add --name azure-devops --output none
 
-      az devops configure --defaults organization=$(System.CollectionUri) project='$(System.TeamProject)' --output none
+      az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
       export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
       echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 
@@ -110,7 +110,7 @@
           echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$reset"
           exit_error "File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found." 2
       fi
-      
+
   # Check if running on deployer
   if [ ! -f /etc/profile.d/deploy_server.sh ]; then
       echo -e "$green --- Install dos2unix ---$reset"
@@ -146,7 +146,7 @@
       fi
       if [ -n ${POOL} ]; then
           echo 'Deployer Agent Pool' ${POOL}
-          POOL_NAME=$(az pipelines pool list --organization $(System.CollectionUri) --query "[?name=='${POOL}'].name | [0]")
+          POOL_NAME=$(az pipelines pool list --organization ${System.CollectionUri} --query "[?name=='${POOL}'].name | [0]")
           if [ ${#POOL_NAME} -eq 0 ]; then
               log_warning "Agent Pool ${POOL} does not exist." 2
           fi
@@ -222,10 +222,10 @@
         added=1
       fi
       if [ 1 == $added ]; then
-          git config --global user.email "$(Build.RequestedForEmail)"
-          git config --global user.name "$(Build.RequestedFor)"
-          git commit -m "Added updates from devops deployment $(Build.DefinitionName) [skip ci]"
-          git -c http.extraheader="AUTHORIZATION: bearer $(System.AccessToken)" push --set-upstream origin $(Build.SourceBranchName)
+          git config --global user.email "${Build.RequestedForEmail}"
+          git config --global user.name "${Build.RequestedFor}"
+          git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
+          git -c http.extraheader="AUTHORIZATION: bearer ${System.AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
       fi
       if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
           echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
