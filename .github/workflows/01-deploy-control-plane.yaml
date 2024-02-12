@@ -80,6 +80,7 @@ jobs:
           
       - name: run 01-deploy-control-plane.sh script
         run: ./deploy/scripts/01-deploy-control-plane.sh
+        working-directory: s/config
         env:
           run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
           variable_group: SDAF-${{ inputs.environment }}
