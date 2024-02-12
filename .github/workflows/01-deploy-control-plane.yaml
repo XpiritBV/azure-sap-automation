@@ -7,9 +7,9 @@
 name: Deploy Control Plane
 
 on:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - github-workflow # TODO: REMOVE OR CHANCE THIS
   workflow_dispatch:
     inputs:
       deployer:
