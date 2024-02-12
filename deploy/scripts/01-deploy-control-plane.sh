@@ -130,6 +130,8 @@
       echo -e "$green --- Install zip ---$reset"
       sudo apt -qq install zip
 
+      tf_url="https://releases.hashicorp.com/terraform/$(tf_version)/terraform_$(tf_version)_linux_amd64.zip"
+          
       echo -e "$green --- Install terraform ${tf_version} from ${tf_url} ---$reset"
       wget -q ${tf_url}
       return_code=$?
