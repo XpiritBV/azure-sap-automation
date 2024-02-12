@@ -48,6 +48,9 @@ on:
         type: boolean
         default: false
 
+env:
+  CONFIG_REPO_PATH: s/config
+
 permissions:
   id-token: write
   contents: read
@@ -66,7 +69,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
         with:
-          path: s/config
+          path: $CONFIG_REPO_PATH
           fetch-depth: 0
           # persistCredentials: true # rdv: ignored for now.
 
@@ -79,7 +82,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           
       - name: run 01-deploy-control-plane.sh script
-        run: ./s/config/deploy/scripts/01-deploy-control-plane.sh
+        run: ./$CONFIG_REPO_PATH/deploy/scripts/01-deploy-control-plane.sh
         env:
           run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
           variable_group: SDAF-${{ inputs.environment }}
