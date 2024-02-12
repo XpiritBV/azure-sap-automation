@@ -100,7 +100,7 @@
       export TF_VAR_use_webapp=${use_webapp}
   end_group
   start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
-      cd $CONFIG_REPO_PATH
+      # We are already in this folder? cd $CONFIG_REPO_PATH
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
   end_group
