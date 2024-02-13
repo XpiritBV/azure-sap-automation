@@ -41,12 +41,12 @@
           key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= -m1 | awk -F'=' '{print $2}' | xargs) ; echo 'Deployer Key Vault' ${key_vault}
         fi
 
-        az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
-        return_code=$?
-        if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---$reset"
-            exit_error "az login failed." $return_code
-        fi
+        # az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
+        # return_code=$?
+        # if [ 0 != $return_code ]; then
+        #     echo -e "$boldred--- Login failed ---$reset"
+        #     exit_error "az login failed." $return_code
+        # fi
 
         key_vault_id=$(az resource list --name "${key_vault}"  --resource-type Microsoft.KeyVault/vaults --query "[].id | [0]" -o tsv)
         export TF_VAR_deployer_kv_user_arm_id=${key_vault_id}
