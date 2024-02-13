@@ -31,58 +31,58 @@ end_group
 
 start_group "Force reset"
 echo "Force reset: ${force_reset}"
-if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
-    log_warning "Forcing a re-install"
-    echo "running on ${this_agent}"
-    sed -i 's/step=1/step=0/' $deployer_environment_file_name
-    sed -i 's/step=2/step=0/' $deployer_environment_file_name
-    sed -i 's/step=3/step=0/' $deployer_environment_file_name
+# # # if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
+# # #     log_warning "Forcing a re-install"
+# # #     echo "running on ${this_agent}"
+# # #     sed -i 's/step=1/step=0/' $deployer_environment_file_name
+# # #     sed -i 's/step=2/step=0/' $deployer_environment_file_name
+# # #     sed -i 's/step=3/step=0/' $deployer_environment_file_name
 
-    export FORCE_RESET=true
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_Key_Vault.value" | tr -d \")
-    if [ -n "${az_var}" ]; then
-        key_vault="${az_var}"
-        echo 'Deployer Key Vault' ${key_vault}
-    else
-        echo "Reading key vault from environment file"
-        key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= -m1 | awk -F'=' '{print $2}' | xargs)
-        echo 'Deployer Key Vault' ${key_vault}
-    fi
+# # #     export FORCE_RESET=true
+# # #     az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_Key_Vault.value" | tr -d \")
+# # #     if [ -n "${az_var}" ]; then
+# # #         key_vault="${az_var}"
+# # #         echo 'Deployer Key Vault' ${key_vault}
+# # #     else
+# # #         echo "Reading key vault from environment file"
+# # #         key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= -m1 | awk -F'=' '{print $2}' | xargs)
+# # #         echo 'Deployer Key Vault' ${key_vault}
+# # #     fi
 
-    # az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
-    # return_code=$?
-    # if [ 0 != $return_code ]; then
-    #     echo -e "$boldred--- Login failed ---$reset"
-    #     exit_error "az login failed." $return_code
-    # fi
+# # #     # az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
+# # #     # return_code=$?
+# # #     # if [ 0 != $return_code ]; then
+# # #     #     echo -e "$boldred--- Login failed ---$reset"
+# # #     #     exit_error "az login failed." $return_code
+# # #     # fi
 
-    key_vault_id=$(az resource list --name "${key_vault}" --resource-type Microsoft.KeyVault/vaults --query "[].id | [0]" -o tsv)
-    export TF_VAR_deployer_kv_user_arm_id=${key_vault_id}
-    if [ -n "${key_vault_id}" ]; then
-        this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
-        az keyvault network-rule add --name ${key_vault} --ip-address ${this_ip} --subscription ${Terraform_Remote_Storage_Subscription} --only-show-errors --output none
-        ip_added=1
-    fi
+# # #     key_vault_id=$(az resource list --name "${key_vault}" --resource-type Microsoft.KeyVault/vaults --query "[].id | [0]" -o tsv)
+# # #     export TF_VAR_deployer_kv_user_arm_id=${key_vault_id}
+# # #     if [ -n "${key_vault_id}" ]; then
+# # #         this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
+# # #         az keyvault network-rule add --name ${key_vault} --ip-address ${this_ip} --subscription ${Terraform_Remote_Storage_Subscription} --only-show-errors --output none
+# # #         ip_added=1
+# # #     fi
 
-    tfstate_resource_id=$(az resource list --name ${Terraform_Remote_Storage_Account_Name} --subscription ${Terraform_Remote_Storage_Subscription} --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
-    if [[ -v tfstate_resource_id ]]; then
-        this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
-        az storage account network-rule add --account-name ${Terraform_Remote_Storage_Account_Name} --resource-group ${Terraform_Remote_Storage_Resource_Group_Name} --ip-address ${this_ip} --only-show-errors --output none
-    fi
+# # #     tfstate_resource_id=$(az resource list --name ${Terraform_Remote_Storage_Account_Name} --subscription ${Terraform_Remote_Storage_Subscription} --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
+# # #     if [[ -v tfstate_resource_id ]]; then
+# # #         this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
+# # #         az storage account network-rule add --account-name ${Terraform_Remote_Storage_Account_Name} --resource-group ${Terraform_Remote_Storage_Resource_Group_Name} --ip-address ${this_ip} --only-show-errors --output none
+# # #     fi
 
-    export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
-    export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
-    export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
-    step=0
-else
-    if [ -f ${deployer_environment_file_name} ]; then
-        step=$(cat ${deployer_environment_file_name} | grep step= | awk -F'=' '{print $2}' | xargs)
-        echo 'Step' ${step}
-        if [ "0" != ${step} ]; then
-            exit 0
-        fi
-    fi
-fi
+# # #     export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
+# # #     export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
+# # #     export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
+# # #     step=0
+# # # else
+# # #     if [ -f ${deployer_environment_file_name} ]; then
+# # #         step=$(cat ${deployer_environment_file_name} | grep step= | awk -F'=' '{print $2}' | xargs)
+# # #         echo 'Step' ${step}
+# # #         if [ "0" != ${step} ]; then
+# # #             exit 0
+# # #         fi
+# # #     fi
+# # # fi
 # echo "Agent: " ${this_agent}
 # if [ -z ${VARIABLE_GROUP_ID} ]; then
 #     exit_error "Variable group ${variable_group} could not be found." 2
