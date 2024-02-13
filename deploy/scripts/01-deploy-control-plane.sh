@@ -131,19 +131,19 @@ end_group
 
 # Check if running on deployer
 if [ ! -f /etc/profile.d/deploy_server.sh ]; then
-    sudo apt update -qq
+    sudo apt-get update -qq
     echo -e "$green --- Install dos2unix ---$reset"
-    sudo apt -qq install dos2unix
+    sudo apt-get -qq install dos2unix
 
     echo -e "$green --- Install zip ---$reset"
-    sudo apt -qq install zip
+    sudo apt-get -qq install zip
 
     # Check if Terraform is installed
     if ! command -v terraform &>/dev/null; then
         echo -e "$green --- Install terraform ${tf_version} ---$reset"
         wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
         echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-        sudo apt update -qq && sudo apt -qq install terraform=${tf_version}-1
+        sudo apt-get update -qq && sudo apt-get -qq install terraform=${tf_version}-1
     fi
     terraform --version
 
@@ -249,7 +249,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfst
     added=1
 fi
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-    sudo apt install zip
+    sudo apt-get install zip
     pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
     # TODO: unzip with password is unsecure, use PGP Encrypt
     zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
