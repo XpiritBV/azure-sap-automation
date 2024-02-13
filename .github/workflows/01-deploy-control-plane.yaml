@@ -58,7 +58,7 @@ jobs:
       - name: Checkout the azure/sap-automation repo
         uses: actions/checkout@v4
         with:
-          path: ${{ env.SAP_AUTOMATION_REPO_PATH }}
+          path: s/sap-automation # TODO: ${{ env.SAP_AUTOMATION_REPO_PATH }}
           repository: azure/sap-automation
 
       - name: Checkout the code
@@ -95,6 +95,7 @@ jobs:
           libraryfolder: ${{ inputs.library }}
           log: logfile_$(Build.BuildId)
           run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
+          SAP_AUTOMATION_REPO_PATH: .
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
           use_webapp: ${{ inputs.use_webapp_param }}

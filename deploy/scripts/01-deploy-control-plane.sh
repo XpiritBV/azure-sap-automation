@@ -198,13 +198,12 @@ start_group "Deployment"
       export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}; echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
       export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
       export TF_VAR_use_webapp=true
-
   fi
 
     export TF_LOG_PATH=$CONFIG_REPO_PATH/.sap_deployment_automation/terraform.log
     set +eu # TODO: WHY Disabling it here ???
 
-    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh                               \
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh                               \
         --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
         --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}     \
         --subscription $ARM_SUBSCRIPTION_ID --spn_id $ARM_CLIENT_ID                                \
