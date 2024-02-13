@@ -163,6 +163,8 @@
       # fi
       #az account set --subscription $ARM_SUBSCRIPTION_ID
       echo -e "$green--- Deploy the Control Plane ---$reset"
+
+      set +eu
       if [ -n ${PAT} ]; then
           echo 'Deployer Agent PAT is defined'
       fi
@@ -176,6 +178,8 @@
           export TF_VAR_agent_pool=${POOL}
           export TF_VAR_agent_pat=${PAT}
       fi
+      set -eu
+
       if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
           pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
           # TODO: unzip with password is unsecure, use PGP Encrypt
