@@ -79,7 +79,7 @@ else
         echo "Found environment file: ${deployer_environment_file_name}"
         cat ${deployer_environment_file_name}
         step=$(cat ${deployer_environment_file_name} | grep step= | awk -F'=' '{print $2}' | xargs)
-        echo 'Step' ${step}
+        echo "Step: ${step}"
         if [ "0" != ${step} ]; then
             exit 0
         fi
