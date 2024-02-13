@@ -101,7 +101,7 @@
   end_group
   # TODO: Is this necessary on GitHub?
   start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
-      echo "Current Directory $(pwd)"      
+      echo "Current Directory $(pwd)"
       mkdir -p .sap_deployment_automation
       echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
   end_group
@@ -267,31 +267,10 @@
   end_group
   start_group "Adding variables to the variable group: ${variable_group}"
       if [ 0 == $return_code ]; then
-          az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_State_FileName.value")
-          if [ -z ${az_var} ]; then
-              az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name Deployer_State_FileName --value ${file_deployer_tfstate_key} --output none --only-show-errors
-          else
-              az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name Deployer_State_FileName --value ${file_deployer_tfstate_key} --output none --only-show-errors
-          fi
-          az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_Key_Vault.value")
-          if [ -z ${az_var} ]; then
-              az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name Deployer_Key_Vault --value ${file_key_vault} --output none --only-show-errors
-          else
-              az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name Deployer_Key_Vault --value ${file_key_vault} --output none --only-show-errors
-          fi
-          az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "ControlPlaneEnvironment.value")
-          if [ -z ${az_var} ]; then
-              az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name ControlPlaneEnvironment --value ${ENVIRONMENT} --output none --only-show-errors
-          else
-              az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name ControlPlaneEnvironment --value ${ENVIRONMENT} --output none --only-show-errors
-          fi
-
-          az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "ControlPlaneLocation.value")
-          if [ -z ${az_var} ]; then
-              az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name ControlPlaneLocation --value ${LOCATION} --output none --only-show-errors
-          else
-              az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name ControlPlaneLocation --value ${LOCATION} --output none --only-show-errors
-          fi
+        set_or_update_key_value "Deployer_State_FileName" "${file_deployer_tfstate_key}"
+        set_or_update_key_value "Deployer_Key_Vault" "${file_key_vault}"
+        set_or_update_key_value "ControlPlaneEnvironment" "${ENVIRONMENT}"
+        set_or_update_key_value "ControlPlaneLocation" "${LOCATION}"
       fi
   end_group
   exit $return_code

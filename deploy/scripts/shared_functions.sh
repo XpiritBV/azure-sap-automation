@@ -4,7 +4,7 @@ function exit_error() {
   MESSAGE=$1
   ERROR_CODE=$2
 
-  if [ -z ${GITHUB_CONTEXT+x} ]; then
+  if [[ -v ${GITHUB_CONTEXT} ]]; then
     echo "::error::${MESSAGE}"
   else
     echo "##vso[task.logissue type=error]${MESSAGE}"
@@ -15,7 +15,7 @@ function exit_error() {
 function log_warning() {
   MESSAGE=$1
 
-  if [ -z ${GITHUB_CONTEXT+x} ]; then
+  if [[ -v ${GITHUB_CONTEXT} ]]; then
     echo "::warning::${MESSAGE}"
   else
     echo "##vso[task.logissue type=warning]${MESSAGE}"
@@ -25,7 +25,7 @@ function log_warning() {
 function start_group() {
   MESSAGE=$1
 
-  if [ -z ${GITHUB_CONTEXT+x} ]; then
+  if [[ -v ${GITHUB_CONTEXT} ]]; then
     echo "::group::${MESSAGE}"
   else
     echo "##[group]${MESSAGE}"
@@ -33,9 +33,21 @@ function start_group() {
 }
 
 function end_group() {
-  if [ -z ${GITHUB_CONTEXT+x} ]; then
+  if [[ -v ${GITHUB_CONTEXT} ]]; then
     echo "::endgroup::"
   else
     echo "##[endgroup]"
+  fi
+}
+
+function set_or_update_key_value() {
+  $key=$1
+  $value=$2
+
+  var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${key}.value")
+  if [ -z ${var} ]; then
+      az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name "${key}" --value ${value} --output none --only-show-errors
+  else
+      az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name "${key}" --value ${value} --output none --only-show-errors
   fi
 }
