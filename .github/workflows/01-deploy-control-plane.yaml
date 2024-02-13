@@ -10,81 +10,87 @@ on:
   workflow_dispatch:
     inputs:
       deployer:
+        default: MGMT-WEEU-DEP01-INFRASTRUCTURE
         description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
         type: string
-        default: MGMT-WEEU-DEP01-INFRASTRUCTURE
       library:
+        default: MGMT-WEEU-SAP_LIBRARY
         description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
         type: string
-        default: MGMT-WEEU-SAP_LIBRARY
       environment:
+        default: MGMT
         description: Environment name, MGMT, DEV, QA, etc
         type: string
-        default: MGMT
       use_webapp_param:
+        default: true
         description: Deploy the configuration web application infrastructure
         type: boolean
-        default: true
       deploy_webapp_software:
+        default: true
         description: "Deploy the configuration web application software"
         type: boolean
-        default: true
       use_deployer:
+        default: false
         description: Run on self hosted agent
         type: boolean
-        default: false
       # TODO: sap_automation_repo_path:
       # TODO:   description: The local path on the agent where the sap_automation repo can be found
       # TODO:   type: string
       force_reset:
+        default: false
         description: Force a re-install - may require multiple re-runs
         type: boolean
-        default: false
 
 env:
   CONFIG_REPO_PATH: s/config
   SAP_AUTOMATION_REPO_PATH: s/sap-automation
 
 permissions:
-  id-token: write
   contents: write
+  id-token: write
 
 jobs:
   prepare_deployer:
+    environment: MGMT-WEEU-DEP01-INFRASTRUCTURE
     name: Prepare the self hosted agent(s)
     runs-on: ubuntu-latest
-    environment: MGMT-WEEU-DEP01-INFRASTRUCTURE
     steps:
       - name: Checkout the azure/sap-automation repo
         uses: actions/checkout@v4
         with:
-          repository: azure/sap-automation
           path: ${{ env.SAP_AUTOMATION_REPO_PATH }}
+          repository: azure/sap-automation
 
       - name: Checkout the code
         uses: actions/checkout@v4
         with:
-          path: s/config
           fetch-depth: 0
+          path: s/config
           # persistCredentials: true # rdv: ignored for now.
 
       - name: Azure Login
         uses: Azure/Login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: run 01-deploy-control-plane.sh script
         run: deploy/scripts/01-deploy-control-plane.sh
         working-directory: s/config # TODO: Get from SAP_AUTOMATION_REPO_PATH repo
         env:
-          connection_name: ${{ inputs.connection_name }}
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          CONFIG_REPO_PATH: ./WORKSPACES # TODO: Folder need to be retrieved from App Configurations (Deployment_Configuration_Path)
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
+          # TODO: connection_name: ${{ inputs.connection_name }}
           deployer_environment: ${{ inputs.environment }}
           deployerconfig: ${{ inputs.deployer }}.tfvars
           deployerfolder: ${{ inputs.deployer }}
           force_reset: ${{ inputs.force_reset }}
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
           log: logfile_$(Build.BuildId)
@@ -93,26 +99,20 @@ jobs:
           this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
           use_webapp: ${{ inputs.use_webapp_param }}
           variable_group: SDAF-${{ inputs.environment }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
-          CONFIG_REPO_PATH: ./WORKSPACES # TODO: Folder need to be retrieved from App Configurations (Deployment_Configuration_Path)
 
   deploy_controlplane:
     name: Deploy the control plane
-    runs-on: ubuntu-latest
     needs: prepare_deployer
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
 
   web_app_deployment:
-    name: Deploy SAP configuration Web App
-    runs-on: ubuntu-latest
-    needs: deploy_controlplane
     if: ${{ inputs.use_webapp_param }} && ${{ inputs.deploy_webapp_software }}
+    name: Deploy SAP configuration Web App
+    needs: deploy_controlplane
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
