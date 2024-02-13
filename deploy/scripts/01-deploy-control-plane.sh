@@ -8,15 +8,16 @@ green="\e[1;32m"
 reset="\e[0m"
 boldred="\e[1;31m"
 
-echo "Deploying the control plane defined in ${deployerfolder} ${libraryfolder}"
-
+start_group "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 
 ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
-echo Environment ${ENVIRONMENT}
+echo Environment: ${ENVIRONMENT}
 LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs)
-echo Location ${LOCATION}
+echo Location: ${LOCATION}
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
+echo "Deployer Environment File: ${deployer_environment_file_name}"
+end_group
 
 start_group "Configure devops CLI extension"
 # az config set extension.use_dynamic_install=yes_without_prompt
