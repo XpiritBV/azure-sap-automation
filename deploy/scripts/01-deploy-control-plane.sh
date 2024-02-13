@@ -19,13 +19,13 @@ echo Location ${LOCATION}
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 
 start_group "Configure devops CLI extension"
-az config set extension.use_dynamic_install=yes_without_prompt
+# az config set extension.use_dynamic_install=yes_without_prompt
 
-az extension add --name azure-devops --output none
+# az extension add --name azure-devops --output none
 
-az devops configure --defaults organization=${System_CollectionUri} project='${System_TeamProject}' --output none
-export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
-echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
+# az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
+# export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
+# echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 end_group
 
 start_group "Check if a force reset is required"
