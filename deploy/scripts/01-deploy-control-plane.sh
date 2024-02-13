@@ -58,7 +58,7 @@ start_group "Configure devops CLI extension"
       fi
 
       tfstate_resource_id=$(az resource list --name ${Terraform_Remote_Storage_Account_Name} --subscription ${Terraform_Remote_Storage_Subscription} --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
-      if [[ -v "${tfstate_resource_id}" ]]; then
+      if [[ -v tfstate_resource_id ]]; then
         this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
         az storage account network-rule add --account-name ${Terraform_Remote_Storage_Account_Name} --resource-group ${Terraform_Remote_Storage_Resource_Group_Name}  --ip-address ${this_ip} --only-show-errors --output none
       fi
@@ -165,11 +165,10 @@ start_group "Deployment"
     #az account set --subscription $ARM_SUBSCRIPTION_ID
     echo -e "$green--- Deploy the Control Plane ---$reset"
 
-    echo PAT: ${PAT}
-    if [[ -v ${PAT} ]]; then
+    if [[ -v PAT ]]; then
       echo 'Deployer Agent PAT is defined'
     fi
-    if [[ -v ${POOL} ]]; then
+    if [[ -v POOL ]]; then
       echo 'Deployer Agent Pool' ${POOL}
       POOL_NAME=$(az pipelines pool list --organization ${System_CollectionUri} --query "[?name=='${POOL}'].name | [0]")
       if [ ${#POOL_NAME} -eq 0 ]; then
@@ -180,7 +179,6 @@ start_group "Deployment"
       export TF_VAR_agent_pat=${PAT}
     fi
     
-
     if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
       pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
       # TODO: unzip with password is unsecure, use PGP Encrypt
@@ -190,11 +188,11 @@ start_group "Deployment"
   if [ ${use_webapp,,} == "true" ]; then # ,, = tolowercase
       echo "Use WebApp is selected"
 
-      if [[ -v ${APP_REGISTRATION_APP_ID} ]]; then
+      if [[ -v APP_REGISTRATION_APP_ID ]]; then
           exit_error "Variable APP_REGISTRATION_APP_ID was not defined." 2
       fi
 
-      if [[ -v ${WEB_APP_CLIENT_SECRET} ]]; then
+      if [[ -v WEB_APP_CLIENT_SECRET ]]; then
           exit_error "Variable WEB_APP_CLIENT_SECRET was not defined." 2
       fi
       export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}; echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
