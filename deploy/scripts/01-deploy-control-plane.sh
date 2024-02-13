@@ -141,7 +141,7 @@
       # Check if Azure CLI is installed
       if ! command -v az &> /dev/null; then
         echo -e "$green --- Install Azure CLI ---$reset"
-        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash # Needed on nektos/act
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
       fi
 
       az extension add --name storage-blob-preview >/dev/null
@@ -154,14 +154,14 @@
       deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
   end_group
   start_group "Deployment"
-      echo -e "$green--- az login ---$reset"
-      az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
-      return_code=$?
-      if [ 0 != $return_code ]; then
-          echo -e "$boldred--- Login failed ---$reset"
-          exit_error "az login failed." $return_code
-      fi
-      az account set --subscription $ARM_SUBSCRIPTION_ID
+      #echo -e "$green--- az login ---$reset"
+      #az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
+      # return_code=$?
+      # if [ 0 != $return_code ]; then
+      #     echo -e "$boldred--- Login failed ---$reset"
+      #     exit_error "az login failed." $return_code
+      # fi
+      #az account set --subscription $ARM_SUBSCRIPTION_ID
       echo -e "$green--- Deploy the Control Plane ---$reset"
       if [ -n ${PAT} ]; then
           echo 'Deployer Agent PAT is defined'
@@ -199,7 +199,7 @@
     fi
 
       export TF_LOG_PATH=$CONFIG_REPO_PATH/.sap_deployment_automation/terraform.log
-      set +eu
+      set +eu # TODO: WHY Disabling it here ???
 
       $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh                               \
           --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
@@ -210,7 +210,7 @@
       return_code=$?
       echo "Return code from deploy_controlplane $return_code."
 
-      set -eu
+      set -eu # TODO: WHY???
 
       echo -e "$green--- Adding deployment automation configuration to devops repository ---$reset"
       added=0
