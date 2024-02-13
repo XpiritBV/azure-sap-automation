@@ -165,7 +165,7 @@ start_group "Deployment"
     #az account set --subscription $ARM_SUBSCRIPTION_ID
     echo -e "$green--- Deploy the Control Plane ---$reset"
 
-    
+    echo PAT: ${PAT}
     if [[ -v ${PAT} ]]; then
       echo 'Deployer Agent PAT is defined'
     fi
