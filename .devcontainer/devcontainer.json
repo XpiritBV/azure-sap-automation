@@ -3,8 +3,8 @@
 	"image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm",
 	"features": {
 		"ghcr.io/devcontainers-contrib/features/ansible:2": {},
-    "ghcr.io/devcontainers/features/azure-cli:1": {},
+		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
-	"postCreateCommand": "./.devcontainer/post-create.sh",
+	"postCreateCommand": "./.devcontainer/post-create.sh"
 }

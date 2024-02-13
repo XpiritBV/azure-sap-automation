@@ -223,9 +223,10 @@ echo "Return code from deploy_controlplane $return_code."
 
 set -eu
 
-echo -e "$green--- Adding deployment automation configuration to devops repository ---$reset"
+start_group "Update repo"
+echo -e "$green--- Adding deployment automation configuration to git repository ---$reset"
 added=0
-cd $CONFIG_REPO_PATH
+CD $CONFIG_REPO_PATH
 git pull -q
 if [ -f ${deployer_environment_file_name} ]; then
     file_deployer_tfstate_key=$(cat ${deployer_environment_file_name} | grep deployer_tfstate_key | awk -F'=' '{print $2}' | xargs)
@@ -238,7 +239,6 @@ if [ -f ${deployer_environment_file_name} ]; then
     deployer_random_id=$(cat ${deployer_environment_file_name} | grep deployer_random_id= | awk -F'=' '{print $2}' | xargs)
     library_random_id=$(cat ${deployer_environment_file_name} | grep library_random_id= | awk -F'=' '{print $2}' | xargs)
 fi
-start_group "Update repo"
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
     added=1
@@ -256,7 +256,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     added=1
 fi
 if [ 1 == $added ]; then
-    if [ -z ${GITHUB_CONTEXT} ]; then
+    if [[ -z ${GITHUB_CONTEXT} ]]; then
         git config --global user.email "${Build.RequestedForEmail}"
         git config --global user.name "${Build.RequestedFor}"
         git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
