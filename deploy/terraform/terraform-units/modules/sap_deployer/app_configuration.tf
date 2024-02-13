@@ -22,8 +22,26 @@ resource "time_sleep" "wait_for_appconf_dataowner_assignment" {
   ]
 }
 
+locals {
+  pipeline_parameters                 = merge(var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {},
+                                            {
+                                              "Deployer_Key_Vault" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.key_vault.kv_exists ? data.azurerm_key_vault.kv_user[0].name : azurerm_key_vault.kv_user[0].name
+                                              }
+                                              "ControlPlaneEnvironment" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.deployer_parameter_environment
+                                              }
+                                              "ControlPlaneLocation" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.deployer_parameter_location
+                                              }                                              
+                                            })
+}
+
 resource "azurerm_app_configuration_key" "deployer_app_configuration_keys" {
-  for_each               = var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {}
+  for_each               = local.pipeline_parameters
   configuration_store_id = azurerm_app_configuration.app_config[0].id
   key                    = each.key
   label                  = each.value.label
