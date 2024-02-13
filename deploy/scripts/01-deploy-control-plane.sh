@@ -28,7 +28,7 @@ start_group "Configure devops CLI extension"
 # echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
 end_group
 
-start_group "Check if a force reset is required"
+start_group "Force reset"
 echo "Force reset: ${force_reset}"
 if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
     log_warning "Forcing a re-install"
