@@ -130,18 +130,17 @@
       sudo apt -qq install zip
 
       echo -e "$green --- Install terraform ${tf_version} ---$reset"
-      wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-      echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-      sudo apt update -qq && sudo apt -qq install terraform=${tf_version}-1
+      # wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+      # echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+      # sudo apt update -qq && sudo apt -qq install terraform=${tf_version}-1
       terraform --version
       
-      echo -e "$green --- Install Azure CLI ---$reset"
       # Check if Azure CLI is installed
       if ! command -v az &> /dev/null; then
-          echo "Azure CLI could not be found. Installing..."
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash # Needed on nektos/act
+        echo -e "$green --- Install Azure CLI ---$reset"
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash # Needed on nektos/act
       fi
-      
+
       az extension add --name storage-blob-preview >/dev/null
   fi
   start_group "Configure parameters"
