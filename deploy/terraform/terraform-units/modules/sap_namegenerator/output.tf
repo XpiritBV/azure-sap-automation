@@ -2,7 +2,7 @@ output "naming" {
   description                          = "values for naming convention"
   value                                = {
                                            appconfig_names = {
-                                             DEPLOYER = local.deployer_appconfig_name
+                                             LIBRARY = local.deployer_appconfig_name
                                            }
                                            
                                            availabilityset_names = {

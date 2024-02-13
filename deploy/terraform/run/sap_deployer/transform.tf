@@ -183,14 +183,7 @@ locals {
                                                                 ), "")
 
                                            deployer_diagnostics_account_arm_id  = var.deployer_diagnostics_account_arm_id
-                                           app_service_SKU                      = var.app_service_SKU_name
-
-                                           deployer_app_configuration_arm_id    = var.deployer_app_configuration_arm_id
-                                           pipeline_parameters                  = var.deployer_pipeline_parameters
-                                           deployer_parameter_group_name        = var.deployer_parameter_group_name
-                                           deployer_parameter_environment       = var.deployer_parameter_environment
-                                           deployer_parameter_location          = var.deployer_parameter_location                                           
-                                           deployer_parameter_tf_state_filename = var.deployer_parameter_tf_state_filename
+                                           app_service_SKU                      = var.app_service_SKU_name                                           
                                          }
 
   authentication                       = {
