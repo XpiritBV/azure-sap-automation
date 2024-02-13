@@ -201,18 +201,19 @@ start_group "Deployment"
   fi
 
     export TF_LOG_PATH=$CONFIG_REPO_PATH/.sap_deployment_automation/terraform.log
+    
     set +eu # TODO: WHY Disabling it here ???
 
-    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh                               \
-        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
-        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}     \
-        --subscription $ARM_SUBSCRIPTION_ID --spn_id $ARM_CLIENT_ID                                \
-        --spn_secret $ARM_CLIENT_SECRET --tenant_id $ARM_TENANT_ID                                 \
-        --auto-approve --ado --only_deployer
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh                            \
+      --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
+      --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}     \
+      --subscription $ARM_SUBSCRIPTION_ID --spn_id $ARM_CLIENT_ID                                \
+      --spn_secret $ARM_CLIENT_SECRET --tenant_id $ARM_TENANT_ID                                 \
+      --auto-approve --only_deployer # TODO: --ado 
     return_code=$?
     echo "Return code from deploy_controlplane $return_code."
 
-    set -eu # TODO: WHY???
+    set -eu
 
     echo -e "$green--- Adding deployment automation configuration to devops repository ---$reset"
     added=0
