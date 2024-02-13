@@ -25,6 +25,10 @@ resource "time_sleep" "wait_for_appconf_dataowner_assignment" {
 locals {
   pipeline_parameters                 = merge(var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {},
                                             {
+                                              "Deployer_State_FileName" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.deployer_parameter_tf_state_filename
+                                              }
                                               "Deployer_Key_Vault" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = var.key_vault.kv_exists ? data.azurerm_key_vault.kv_user[0].name : azurerm_key_vault.kv_user[0].name

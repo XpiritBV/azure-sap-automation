@@ -561,3 +561,9 @@ variable "deployer_parameter_location" {
   description = "Location parameter value for the app config"
   default = ""
 }  
+
+variable "deployer_parameter_tf_state_filename" {
+  type = string
+  description = "Terraform state file name after moving to remote state"
+  default = ""
+}
