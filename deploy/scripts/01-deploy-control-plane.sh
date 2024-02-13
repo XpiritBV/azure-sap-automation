@@ -129,10 +129,13 @@
       echo -e "$green --- Install zip ---$reset"
       sudo apt -qq install zip
 
-      echo -e "$green --- Install terraform ${tf_version} ---$reset"
-      # wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-      # echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-      # sudo apt update -qq && sudo apt -qq install terraform=${tf_version}-1
+      # Check if Terraform is installed
+      if ! command -v terraform &> /dev/null; then
+        echo -e "$green --- Install terraform ${tf_version} ---$reset"
+        wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+        sudo apt update -qq && sudo apt -qq install terraform=${tf_version}-1
+      fi
       terraform --version
       
       # Check if Azure CLI is installed

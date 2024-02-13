@@ -89,7 +89,7 @@ jobs:
           libraryfolder: ${{ inputs.library }}
           log: logfile_$(Build.BuildId)
           run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
-          tf_version: 1.6.2
+          tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
           use_webapp: ${{ inputs.use_webapp_param }}
           variable_group: SDAF-${{ inputs.environment }}
