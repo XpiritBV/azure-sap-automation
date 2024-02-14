@@ -236,6 +236,7 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                    ado_repo             = var.agent_ado_url
                                                    use_webapp           = var.use_webapp
                                                    ansible_core_version = var.ansible_core_version
+                                                   agent_type           = var.agent_type
                                                  }
                                                )
                                              )

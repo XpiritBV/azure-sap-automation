@@ -283,26 +283,26 @@ variable "deployer_pipeline_parameters"              {
                                                        }))
                                                        default = null
                                                      }
-variable "deployer_parameter_group_name" {
-  type = string
-  description = "Group name for the app config key based on environment"
-  default = ""
-}
+variable "deployer_parameter_group_name"            {
+                                                      type = string
+                                                      description = "Group name for the app config key based on environment"
+                                                      default = ""
+                                                    }
 
-variable "deployer_parameter_environment" {
-  type = string
-  description = "Environment parameter value for the app config"
-  default = ""
-}
+variable "deployer_parameter_environment"           {
+                                                      type = string
+                                                      description = "Environment parameter value for the app config"
+                                                      default = ""
+                                                    }
 
-variable "deployer_parameter_location" {
-  type = string
-  description = "Location parameter value for the app config"
-  default = ""
-} 
+variable "deployer_parameter_location"              {
+                                                      type = string
+                                                      description = "Location parameter value for the app config"
+                                                      default = ""
+                                                    } 
 
-variable "deployer_parameter_tf_state_filename" {
-  type = string
-  description = "Terraform state file name after moving to remote state"
-  default = ""
-} 
+variable "deployer_parameter_tf_state_filename"     {
+                                                      type = string
+                                                      description = "Terraform state file name after moving to remote state"
+                                                      default = ""
+                                                    } 
