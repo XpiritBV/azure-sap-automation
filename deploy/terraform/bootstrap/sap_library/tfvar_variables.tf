@@ -306,3 +306,8 @@ variable "deployer_parameter_tf_state_filename"     {
                                                       description = "Terraform state file name after moving to remote state"
                                                       default = ""
                                                     } 
+
+variable "ansible_core_version"                     {
+                                                      description = "If provided, the version of ansible core to be installed"
+                                                      default     = "2.15"
+                                                    }

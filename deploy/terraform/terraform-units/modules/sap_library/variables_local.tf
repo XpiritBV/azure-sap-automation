@@ -75,6 +75,10 @@ locals {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = try(var.deployer_tfstate.deployer_kv_user_name, "")
                                               }
+                                              "Deployer_Ansible_Version" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.deployer_parameter_ansible_version
+                                              }
                                               "ControlPlaneEnvironment" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = var.deployer.deployer_parameter_environment
@@ -82,7 +86,7 @@ locals {
                                               "ControlPlaneLocation" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = var.deployer.deployer_parameter_location
-                                              }  
+                                              } 
                                               "Terraform_Remote_Storage_Resource_Group_Name" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = local.resource_group_name

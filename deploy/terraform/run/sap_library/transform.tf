@@ -18,6 +18,7 @@ locals {
                                            deployer_parameter_environment       = var.deployer_parameter_environment
                                            deployer_parameter_location          = var.deployer_parameter_location                                           
                                            deployer_parameter_tf_state_filename = var.deployer_parameter_tf_state_filename
+                                           deployer_parameter_ansible_version   = var.ansible_core_version 
                                          }
   key_vault                            = {
                                            kv_spn_id = try(coalesce(local.spn_key_vault_arm_id, var.spn_keyvault_id, try(var.key_vault.kv_spn_id, "")), "")
