@@ -51,3 +51,22 @@ function set_or_update_key_value() {
       az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name "${key}" --value ${value} --output none --only-show-errors
   fi
 }
+
+function get_key_value() {
+  $key=$1
+
+  var=$(az appconfig kv show -n ${appconfig_name} --key ${key} --label ${variable_group} --query value)
+ 
+  echo app config key ${key}: ${var}
+  return $var
+}
+
+function validate_key_value(){
+  $key=$1
+  $value=$2
+
+  config_value=get_key_value($key)
+  if [ $config_value != $value ]; then
+    log_warning "The value of ${key} in app config is not the same as the value in the variable group"
+  fi
+}
