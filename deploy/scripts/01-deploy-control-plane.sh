@@ -2,7 +2,19 @@
 
 . deploy/scripts/shared_functions.sh
 . deploy/scripts/set-colors.sh
-start_group "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
+
+if [ -v TF_VAR_ansible_core_version ]; then
+    export TF_VAR_ansible_core_version=2.15
+fi
+
+export TF_VAR_use_webapp=${use_webapp}
+storage_account_parameter=""
+
+export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
+export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
+export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
+
+echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 
 ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
@@ -64,9 +76,6 @@ if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
         az storage account network-rule add --account-name ${Terraform_Remote_Storage_Account_Name} --resource-group ${Terraform_Remote_Storage_Resource_Group_Name} --ip-address ${this_ip} --only-show-errors --output none
     fi
 
-    export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
-    export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
-    export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
     step=0
 else
     if [ -f ${deployer_environment_file_name} ]; then
@@ -84,26 +93,7 @@ fi
 #     exit_error "Variable group ${variable_group} could not be found." 2
 # fi
 end_group
-echo -e "$green--- Variables ---$reset"
-storage_account_parameter=""
-start_group "Validations"
-if [ -z ${TF_VAR_ansible_core_version} ]; then
-    export TF_VAR_ansible_core_version=2.15
-fi
-if [ -z ${ARM_SUBSCRIPTION_ID} ]; then
-    exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
-fi
-if [ -z ${ARM_CLIENT_ID} ]; then
-    exit_error "Variable ARM_CLIENT_ID was not defined." 2
-fi
-if [ -z ${ARM_CLIENT_SECRET} ]; then
-    exit_error "Variable ARM_CLIENT_SECRET was not defined." 2
-fi
-if [ -z ${ARM_TENANT_ID} ]; then
-    exit_error "Variable ARM_TENANT_ID was not defined." 2
-fi
-export TF_VAR_use_webapp=${use_webapp}
-end_group
+
 # TODO: Is this necessary on GitHub?
 start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
 echo "Current Directory $(pwd)"
