@@ -25,14 +25,9 @@ deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${
 echo "Deployer Environment File: ${deployer_environment_file_name}"
 end_group
 
-start_group "Configure devops CLI extension"
-# az config set extension.use_dynamic_install=yes_without_prompt
-
-# az extension add --name azure-devops --output none
-
-# az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
-# export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
-# echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
+start_group "Setup platform dependencies"
+# Will return vars which we need to export afterwards
+eval "$(setup_dependencies | sed 's/^/export /')"
 end_group
 
 start_group "Force reset"

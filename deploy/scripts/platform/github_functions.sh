@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+function setup_dependencies() {
+    # Nothing here yet.
+}
+
 function exit_error() {
     MESSAGE=$1
     ERROR_CODE=$2

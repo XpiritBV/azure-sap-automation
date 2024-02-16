@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+function setup_dependencies() {
+    az config set extension.use_dynamic_install=yes_without_prompt
+
+    az extension add --name azure-devops --output none
+
+    az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
+    export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
+    vars=$(echo "VARIABLE_GROUP_ID=${VARIABLE_GROUP_ID}")
+    echo $vars
+}
+
 function exit_error() {
     MESSAGE=$1
     ERROR_CODE=$2
