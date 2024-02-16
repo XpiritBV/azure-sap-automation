@@ -3,26 +3,28 @@
 function __is_github() {
     if [[ -v GITHUB_CONTEXT ]]; then
         echo "true"
+    else
+        echo "false"
     fi
-
-    echo "false"
 }
 
 function __is_devops() {
     if [[ -v SYSTEM_TEAMPROJECT ]] && [[ -v AGENT_NAME ]] && [[ -v AGENT_MACHINE ]] && [[ -v AGENT_ID ]]; then
         echo "true"
+    else
+        echo "false"
     fi
-
-    echo "false"
 }
 
 function get_platform() {
-    if [[ "$(__is_github)" == "true" ]]; then
+    if [[ $(__is_github) == "true" ]]; then
         echo "github"
+        return
     fi
 
-    if [[ "$(__is_devops)" == "true" ]]; then
+    if [[ $(__is_devops) == "true" ]]; then
         echo "devops"
+        return
     fi
 
     echo "unknown"

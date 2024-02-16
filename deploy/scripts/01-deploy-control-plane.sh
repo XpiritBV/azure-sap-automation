@@ -25,6 +25,8 @@ deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${
 echo "Deployer Environment File: ${deployer_environment_file_name}"
 end_group
 
+set -euo pipefail
+
 start_group "Setup platform dependencies"
 # Will return vars which we need to export afterwards
 eval "$(setup_dependencies | sed 's/^/export /')"
@@ -32,7 +34,7 @@ end_group
 
 start_group "Force reset"
 echo "Force reset: ${force_reset}"
-if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
+if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     log_warning "Forcing a re-install"
     echo "running on ${this_agent}"
     set_config_key_with_value "step" "0"
@@ -172,7 +174,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
 fi
 
-if [ ${use_webapp,,} == "true" ]; then # ,, = tolowercase
+if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     echo "Use WebApp is selected"
 
     if [[ -v APP_REGISTRATION_APP_ID ]]; then
@@ -204,7 +206,7 @@ echo "Return code from deploy_controlplane $return_code."
 set -eu
 
 start_group "Update deployment configuration to repo"
-CD $CONFIG_REPO_PATH
+cd $CONFIG_REPO_PATH
 git pull -q
 
 if [ -f ${deployer_environment_file_name} ]; then

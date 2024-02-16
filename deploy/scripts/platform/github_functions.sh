@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 function setup_dependencies() {
+    return 0
     # Nothing here yet.
 }
 
@@ -29,10 +30,12 @@ function end_group() {
 }
 
 function __set_value_with_key() {
+    return 0
     # Nothing here yet.
 }
 
 function __get_value_with_key() {
+    return 0
     # Nothing here yet.
 }
 
@@ -59,3 +62,56 @@ function commit_changes() {
     git push
 }
 
+function __get_repository_id() {
+    repository=$(__get_value_from_context_with_key "github.repository")
+
+    repository_id=$(curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${APP_TOKEN}" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        https://api.github.com/repos/${repository} | jq '.id')
+
+    return $repository_id
+}
+
+function __get_environments() {
+    repository_id=$(__get_repository_id)
+
+    curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${APP_TOKEN}" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        https://api.github.com/repositories/${repository_id}/environments/${ENVIRONMENT}/variables
+}
+
+function __create_environment() {
+    return 0
+    # Nothing here yet.
+}
+
+function __get_value_with_key() {
+    $key=$1
+
+    repository_id=$(__get_repository_id)
+
+    value=$(curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${APP_TOKEN}" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        https://api.github.com/repositories/${repository_id}/environments/${ENVIRONMENT}/variables/${key})
+
+    return $value
+}
+
+function __create_variable_with_key() {
+    $key=$1
+    $value=$2
+
+    repository_id=$(__get_repository_id)
+
+    curl -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${APP_TOKEN}" \
+        -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repositories/${repository}/environments/${ENVIRONMENT}/variables \
+        -d "{\"name\":\"${key}\", \"value\":\"${value}\"}"
+}

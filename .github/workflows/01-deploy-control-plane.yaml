@@ -76,7 +76,7 @@ jobs:
       #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: run 01-deploy-control-plane.sh script
+      - name: 'Deploy control plane'
         run: deploy/scripts/01-deploy-control-plane.sh
         working-directory: s/config # TODO: Get from SAP_AUTOMATION_REPO_PATH repo
         env:
