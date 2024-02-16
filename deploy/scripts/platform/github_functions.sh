@@ -35,3 +35,27 @@ function __set_value_with_key() {
 function __get_value_with_key() {
     # Nothing here yet.
 }
+
+function __get_value_from_context_with_key() {
+    $key=$1
+
+    if [[ $key == "" ]]; then
+        exit_error "Cannot get a value by using an empty key"
+    fi
+
+    jq_filter="\"${key}\""
+
+    value=$(echo $GITHUB_CONTEXT | jq .'$ENV.jq_filter' )
+
+    echo $value
+}
+
+function commit_changes() {
+    workflow=$(__get_value_from_context_with_key "github.workflow")
+
+    git config --global user.email github-actions@github.com
+    git config --global user.name github-actions
+    git commit -m "Added updates from GitHub workflow ${workflow} [skip ci]"
+    git push
+}
+

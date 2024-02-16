@@ -235,18 +235,8 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
 fi
 
-if [ $(git status --porcelain) ]; then
-    if [[ -z ${GITHUB_CONTEXT} ]]; then
-        git config --global user.email "${Build.RequestedForEmail}"
-        git config --global user.name "${Build.RequestedFor}"
-        git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
-        git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
-    else
-        git config --global user.email github-actions@github.com
-        git config --global user.name github-actions
-        git commit -m "Added updates from GitHub workflow $GITHUB_WORKFLOW [skip ci]"
-        git push
-    fi
+if git diff --cached --quiet; then
+    commit_changes
 fi
 
 if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
