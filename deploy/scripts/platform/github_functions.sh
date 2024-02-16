@@ -23,3 +23,11 @@ function start_group() {
 function end_group() {
     echo "::endgroup::"
 }
+
+function __set_value_with_key() {
+    # Nothing here yet.
+}
+
+function __get_value_with_key() {
+    # Nothing here yet.
+}

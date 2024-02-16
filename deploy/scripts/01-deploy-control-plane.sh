@@ -257,12 +257,12 @@ if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.m
     echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
 fi
 end_group
-start_group "Adding variables to the variable group: ${variable_group}"
+start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
-    set_or_update_key_value "Deployer_State_FileName" "${file_deployer_tfstate_key}"
-    set_or_update_key_value "Deployer_Key_Vault" "${file_key_vault}"
-    set_or_update_key_value "ControlPlaneEnvironment" "${ENVIRONMENT}"
-    set_or_update_key_value "ControlPlaneLocation" "${LOCATION}"
+    set_value_with_key "Deployer_State_FileName" "${file_deployer_tfstate_key}"
+    set_value_with_key "Deployer_Key_Vault" "${file_key_vault}"
+    set_value_with_key "ControlPlaneEnvironment" "${ENVIRONMENT}"
+    set_value_with_key "ControlPlaneLocation" "${LOCATION}"
 fi
 end_group
 exit $return_code

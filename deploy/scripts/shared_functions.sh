@@ -48,31 +48,42 @@ function set_or_update_key_value() {
   $key=$1
   $value=$2
 
-  var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${key}.value")
-  if [ -z ${var} ]; then
-      az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name "${key}" --value ${value} --output none --only-show-errors
-  else
-      az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name "${key}" --value ${value} --output none --only-show-errors
-  fi
+  if [[ $key == "" ]]; then
+        exit_error "Cannot set value with an empty key" 1
+    fi
+
+    __set_value_with_key $key $value
 }
 
-function get_key_value() {
-  $key=$1
+function get_value_with_key() {
+    $key=$1
 
-  var=$(az appconfig kv show -n ${appconfig_name} --key ${key} --label ${variable_group} --query value)
+    if [[ $key == "" ]]; then
+        exit_error "Cannot get value with an empty key" 1
+    fi
 
-  echo app config key ${key}: ${var}
-  return $var
+    echo __get_value_with_key $key
 }
 
-function validate_key_value(){
-  $key=$1
-  $value=$2
+function set_value_with_key() {
+    $key=$1
+    $value=$2
 
-  config_value=get_key_value($key)
-  if [ $config_value != $value ]; then
-    log_warning "The value of ${key} in app config is not the same as the value in the variable group"
-  fi
+    if [[ $key == "" ]]; then
+        exit_error "Cannot set value with an empty key" 1
+    fi
+
+    __set_value_with_key $key $value
+}
+
+function validate_key_value() {
+    $key=$1
+    $value=$2
+
+    config_value=$(get_value_with_key $key)
+    if [ $config_value != $value ]; then
+        log_warning "The value of ${key} in app config is not the same as the value in the variable group"
+    fi
 }
 
 function config_value_with_key() {
