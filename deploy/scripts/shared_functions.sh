@@ -42,17 +42,22 @@ devops)
     exit 1
     ;;
 esac
+
+function __appconfig_get_value_with_key() {
+    key=$1
+
+    var=$(az appconfig kv show -n ${appconfig_name} --key ${key} --label ${variable_group} --query value)
+
+    echo $var
 }
 
-function set_or_update_key_value() {
-  $key=$1
-  $value=$2
+function __appconfig_set_value_with_key() {
+    key=$1
+    value=$2
 
-  if [[ $key == "" ]]; then
-        exit_error "Cannot set value with an empty key" 1
-    fi
+    var=$(az appconfig kv set -n ${appconfig_name} --key ${key} --label ${variable_group} --value $value)
 
-    __set_value_with_key $key $value
+    echo $var
 }
 
 function get_value_with_key() {
@@ -62,7 +67,13 @@ function get_value_with_key() {
         exit_error "Cannot get value with an empty key" 1
     fi
 
-    echo __get_value_with_key $key
+    if [[ -v appconfig_name ]]; then
+        value=$(__appconfig_get_value_with_key $key)
+    else
+        value=$(__get_value_with_key $key)
+    fi
+
+    echo $value
 }
 
 function set_value_with_key() {
@@ -73,7 +84,11 @@ function set_value_with_key() {
         exit_error "Cannot set value with an empty key" 1
     fi
 
-    __set_value_with_key $key $value
+    if [[ -v appconfig_name ]]; then
+        __appconfig_set_value_with_key
+    else
+        __set_value_with_key $key $value
+    fi
 }
 
 function validate_key_value() {
