@@ -1,43 +1,47 @@
 #!/usr/bin/env bash
 
-function exit_error() {
-  MESSAGE=$1
-  ERROR_CODE=$2
+function __is_github() {
+    if [[ -v GITHUB_CONTEXT ]]; then
+        echo "true"
+    fi
 
-  if [[ -v GITHUB_CONTEXT ]]; then
-    echo "::error::${MESSAGE}"
-  else
-    echo "##vso[task.logissue type=error]${MESSAGE}"
-  fi
-  exit $ERROR_CODE
+    echo "false"
 }
 
-function log_warning() {
-  MESSAGE=$1
+function __is_devops() {
+    if [[ -v SYSTEM_TEAMPROJECT ]] && [[ -v AGENT_NAME ]] && [[ -v AGENT_MACHINE ]] && [[ -v AGENT_ID ]]; then
+        echo "true"
+    fi
 
-  if [[ -v GITHUB_CONTEXT ]]; then
-    echo "::warning::${MESSAGE}"
-  else
-    echo "##vso[task.logissue type=warning]${MESSAGE}"
-  fi
+    echo "false"
 }
 
-function start_group() {
-  MESSAGE=$1
+function get_platform() {
+    if [[ "$(__is_github)" == "true" ]]; then
+        echo "github"
+    fi
 
-  if [[ -v GITHUB_CONTEXT ]]; then
-    echo "::group::${MESSAGE}"
-  else
-    echo "##[group]${MESSAGE}"
-  fi
+    if [[ "$(__is_devops)" == "true" ]]; then
+        echo "devops"
+    fi
+
+    echo "unknown"
 }
 
-function end_group() {
-  if [[ -v GITHUB_CONTEXT ]]; then
-    echo "::endgroup::"
-  else
-    echo "##[endgroup]"
-  fi
+case $(get_platform) in
+github)
+    . deploy/scripts/platform/github_functions.sh
+    ;;
+
+devops)
+    . deploy/scripts/platform/devops_functions.sh
+    ;;
+
+*)
+    echo -e "${boldred} -- unsupported platform -- ${reset}"
+    exit 1
+    ;;
+esac
 }
 
 function set_or_update_key_value() {
@@ -56,7 +60,7 @@ function get_key_value() {
   $key=$1
 
   var=$(az appconfig kv show -n ${appconfig_name} --key ${key} --label ${variable_group} --query value)
- 
+
   echo app config key ${key}: ${var}
   return $var
 }
