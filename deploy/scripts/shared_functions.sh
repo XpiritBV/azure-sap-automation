@@ -74,3 +74,28 @@ function validate_key_value(){
     log_warning "The value of ${key} in app config is not the same as the value in the variable group"
   fi
 }
+
+function config_value_with_key() {
+    $key=$1
+
+    if [[ $key == "" ]]; then
+        exit_error "The argument cannot be empty, please supply a key to get the value of" 1
+    fi
+
+    echo $(cat ${deployer_environment_file_name} | grep "${key}=" -m1 | awk -F'=' '{print $2}' | xargs)
+}
+
+function set_config_key_with_value() {
+    $key=$1
+    $value=$2
+
+    if [[ $key == "" ]]; then
+        exit_error "The argument cannot be empty, please supply a key to set the value of" 1
+    fi
+
+    if grep -q "^$key=" "$deployer_environment_file_name"; then
+        sed -i "s/^$key=.*/$key=$value/" "$deployer_environment_file_name"
+    else
+        echo "$key=$value" >>"$config_file"
+    fi
+}

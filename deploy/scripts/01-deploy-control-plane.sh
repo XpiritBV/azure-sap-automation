@@ -40,9 +40,7 @@ echo "Force reset: ${force_reset}"
 if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
     log_warning "Forcing a re-install"
     echo "running on ${this_agent}"
-    sed -i 's/step=1/step=0/' $deployer_environment_file_name
-    sed -i 's/step=2/step=0/' $deployer_environment_file_name
-    sed -i 's/step=3/step=0/' $deployer_environment_file_name
+    set_config_key_with_value "step" "0"
 
     export FORCE_RESET=true
     az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_Key_Vault.value" | tr -d \")
@@ -51,7 +49,7 @@ if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
         echo 'Deployer Key Vault' ${key_vault}
     else
         echo "Reading key vault from environment file"
-        key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= -m1 | awk -F'=' '{print $2}' | xargs)
+        key_vault=$(config_value_with_key "keyvault")
         echo 'Deployer Key Vault' ${key_vault}
     fi
 
@@ -81,7 +79,7 @@ else
     if [ -f ${deployer_environment_file_name} ]; then
         echo "Found environment file: ${deployer_environment_file_name}"
         cat ${deployer_environment_file_name}
-        step=$(cat ${deployer_environment_file_name} | grep step= | awk -F'=' '{print $2}' | xargs)
+        step=$(config_value_with_key "step")
         echo "Step: ${step}"
         if [ "0" != ${step} ]; then
             exit 0
@@ -216,15 +214,15 @@ added=0
 CD $CONFIG_REPO_PATH
 git pull -q
 if [ -f ${deployer_environment_file_name} ]; then
-    file_deployer_tfstate_key=$(cat ${deployer_environment_file_name} | grep deployer_tfstate_key | awk -F'=' '{print $2}' | xargs)
+    file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
     if [ -z "$file_deployer_tfstate_key" ]; then
         file_deployer_tfstate_key=$DEPLOYER_TFSTATE_KEY
     fi
     echo 'Deployer State File' $file_deployer_tfstate_key
-    file_key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= | awk -F'=' '{print $2}' | xargs)
+    file_key_vault=$(config_value_with_key "keyvault")
     echo 'Deployer Key Vault' ${file_key_vault}
-    deployer_random_id=$(cat ${deployer_environment_file_name} | grep deployer_random_id= | awk -F'=' '{print $2}' | xargs)
-    library_random_id=$(cat ${deployer_environment_file_name} | grep library_random_id= | awk -F'=' '{print $2}' | xargs)
+    deployer_random_id=$(config_value_with_key "deployer_random_id")
+    library_random_id=$(config_value_with_key "library_random_id")
 fi
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
