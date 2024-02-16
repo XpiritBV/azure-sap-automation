@@ -203,11 +203,10 @@ echo "Return code from deploy_controlplane $return_code."
 
 set -eu
 
-start_group "Update repo"
-echo -e "$green--- Adding deployment automation configuration to git repository ---$reset"
-added=0
+start_group "Update deployment configuration to repo"
 CD $CONFIG_REPO_PATH
 git pull -q
+
 if [ -f ${deployer_environment_file_name} ]; then
     file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
     if [ -z "$file_deployer_tfstate_key" ]; then
@@ -219,23 +218,24 @@ if [ -f ${deployer_environment_file_name} ]; then
     deployer_random_id=$(config_value_with_key "deployer_random_id")
     library_random_id=$(config_value_with_key "library_random_id")
 fi
+
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
-    added=1
 fi
+
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
     git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
-    added=1
 fi
+
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     sudo apt-get install zip
     pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
     # TODO: unzip with password is unsecure, use PGP Encrypt
     zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
     git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
-    added=1
 fi
-if [ 1 == $added ]; then
+
+if [ $(git status --porcelain) ]; then
     if [[ -z ${GITHUB_CONTEXT} ]]; then
         git config --global user.email "${Build.RequestedForEmail}"
         git config --global user.name "${Build.RequestedFor}"
@@ -248,10 +248,12 @@ if [ 1 == $added ]; then
         git push
     fi
 fi
+
 if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
 fi
 end_group
+
 start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
     set_value_with_key "Deployer_State_FileName" "${file_deployer_tfstate_key}"
