@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 . deploy/scripts/shared_functions.sh
-
-green="\e[1;32m"
-reset="\e[0m"
-boldred="\e[1;31m"
-
+. deploy/scripts/set-colors.sh
 start_group "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 
