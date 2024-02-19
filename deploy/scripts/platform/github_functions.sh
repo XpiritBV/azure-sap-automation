@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
 function setup_dependencies() {
-    return 0
-    # Nothing here yet.
+    org_url="$(__get_value_from_context_with_key "github.server_url")/$(__get_value_from_context_with_key "github.organization")"
+
+    vars=$(echo "TF_VAR_APP_TOKEN=${APP_TOKEN}")
+    $vars+=$(echo "TF_VAR_RUNNER_GROUP=${RUNNER_GROUP}")
+    $vars+=$(echo "TF_VAR_ORG_URL=${org_url}")
+
+    echo $vars
 }
 
 function exit_error() {
