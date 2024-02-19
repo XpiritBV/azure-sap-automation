@@ -74,12 +74,12 @@ jobs:
           # persistCredentials: true # rdv: ignored for now.
 
       # Required permissions: org level runner registration permissions
-      # - name: Get app token
-      #   id: get_workflow_token
-      #   uses: peter-murray/workflow-application-token-action@v3
-      #   with:
-      #     application_id: ${{ secrets.APPLICATION_ID }}
-      #     application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
+      - name: Get app token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v3
+        with:
+          application_id: ${{ secrets.APPLICATION_ID }}
+          application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
 
       # - name: Azure Login
       #   uses: Azure/Login@v1
@@ -113,7 +113,7 @@ jobs:
           this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
           use_webapp: ${{ inputs.use_webapp_param }}
           variable_group: SDAF-${{ inputs.environment }}
-          APP_TOKEN: "token" # ${{ steps.get_workflow_token.outputs.token }}
+          APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
 
   deploy_controlplane:
     name: Deploy the control plane
