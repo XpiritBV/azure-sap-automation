@@ -89,7 +89,7 @@ jobs:
       #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: 'Deploy control plane'
-        run: /scripts/01-deploy-control-plane.sh
+        run: /deploy/scripts/01-deploy-control-plane.sh
         working-directory: ${{ env.SAP_AUTOMATION_REPO_PATH }}
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
