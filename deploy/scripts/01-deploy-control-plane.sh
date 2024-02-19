@@ -2,6 +2,40 @@
 
 . deploy/scripts/shared_functions.sh
 . deploy/scripts/set-colors.sh
+. deploy/scripts/validate_vars_and_set_defaults.sh
+
+start_group "Checking required vars and setting up defaults"
+
+REQUIRED_VARS=(
+    "CONFIG_REPO_PATH"
+    "Terraform_Remote_Storage_Account_Name"
+    "Terraform_Remote_Storage_Subscription"
+    "Terraform_Remote_Storage_Resource_Group_Name"
+    "deployerfolder"
+    "libraryfolder"
+    "SAP_AUTOMATION_REPO_PATH"
+    "ARM_SUBSCRIPTION_ID"
+    "ARM_CLIENT_ID"
+    "ARM_CLIENT_SECRET"
+    "ARM_TENANT_ID"
+)
+
+case get_platform in
+    github)
+        $REQUIRED_VARS+="APP_TOKEN"
+        $REQUIRED_VARS+="RUNNER_GROUP"
+    ;;
+
+    devops)
+        $REQUIRED_VARS+="this_agent"
+        $REQUIRED_VARS+="PAT"
+        $REQUIRED_VARS+="POOL"
+        $REQUIRED_VARS+="VARIABLE_GROUP_ID"
+    ;;
+
+    *)
+    ;;
+esac
 
 if [ -v TF_VAR_ansible_core_version ]; then
     export TF_VAR_ansible_core_version=2.15
@@ -40,9 +74,9 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     set_config_key_with_value "step" "0"
 
     export FORCE_RESET=true
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_Key_Vault.value" | tr -d \")
-    if [ -n "${az_var}" ]; then
-        key_vault="${az_var}"
+    var=$(get_value_with_key | tr -d \")
+    if [ -n "${var}" ]; then
+        key_vault="${var}"
         echo 'Deployer Key Vault' ${key_vault}
     else
         echo "Reading key vault from environment file"
