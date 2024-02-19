@@ -98,7 +98,7 @@ jobs:
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp_param }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          CONFIG_REPO_PATH: /cfg/azure-sap-automation
+          CONFIG_REPO_PATH: ${{ github.workspace }}
 
   deploy_controlplane:
     name: Deploy the control plane
