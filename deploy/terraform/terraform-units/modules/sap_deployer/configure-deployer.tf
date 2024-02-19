@@ -32,7 +32,10 @@ resource "null_resource" "prepare-deployer" {
                                              ado_repo             = var.agent_ado_url,
                                              use_webapp           = var.use_webapp
                                              ansible_core_version = var.ansible_core_version
-                                             agent_type           = var.agent_type
+                                             platform             = var.platform
+                                             app_token            = var.app_token
+                                             runner_group         = var.runner_group
+                                             org_url              = var.org_url
                                              }
                                            )
 
@@ -72,7 +75,10 @@ resource "local_file" "configure_deployer" {
                                            ado_repo             = var.agent_ado_url,
                                            use_webapp           = var.use_webapp
                                            ansible_core_version = var.ansible_core_version
-                                           agent_type           = var.agent_type
+                                           platform             = var.platform
+                                           app_token            = var.app_token
+                                           runner_group         = var.runner_group
+                                           org_url              = var.org_url
                                            }
                                          )
   filename                             = format("%s/configure_deployer.sh", path.cwd)

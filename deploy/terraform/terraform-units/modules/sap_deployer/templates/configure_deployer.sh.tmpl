@@ -62,7 +62,10 @@ tenant_id="${tenant_id}"
 local_user="${local_user}"
 use_webapp="${use_webapp}"
 ansible_version="${ansible_core_version}"
-agent_type="${agent_type}"
+platform="${platform}"
+app_token="${app_token}"
+runner_group="${runner_group}"
+org_url="${org_url}"
 
 TOKEN="${pat}"
 DEVURL="${ado_repo}"
@@ -531,12 +534,12 @@ else
 
     # If the deployer will be an ADO agent install the devops cli
     # turn tracing off when you are here
-    if [[$agent_type == "ado"]]; then
+    if [[$platform == "devops"]]; then
       set +o xtrace
       if [[ -n "$${TOKEN}" ]];
       then
           az extension add -n azure-devops > /dev/null
-      fi    
+      fi
     fi
 
     set -o xtrace
@@ -735,13 +738,13 @@ else
     else
       sudo mkdir -p "$${agent_home}"; cd "$${agent_home}"
 
-      if [[$agent_type == "ado"]]; then
-        sudo wget -nv https://aka.ms/AAftpys -O agent.tar.gz        
-      elif [[$agent_type == "github"]]; then
-        sudo wget -nv https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz -O agent.tar.gz 
+      if [[$platform == "devops"]]; then
+        sudo wget -nv https://aka.ms/AAftpys -O agent.tar.gz
+      elif [[$platform == "github"]]; then
+        sudo wget -nv https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz -O agent.tar.gz
       fi
       sudo tar zxvf agent.tar.gz >/dev/null 2>&1
-      
+
 
       sudo touch "$${agent_home}/agent_installed"
 
@@ -764,7 +767,7 @@ else
       echo "Agent already configured"
     else
       set +o xtrace
-      if [[ -n "$${TOKEN}" ]]; then
+      if [[ (-n "$${TOKEN}" && $platform == "devops" ) || (-n "$${app_token}" && $platform == "github" )]]; then
         sudo chmod -R 744 "$${agent_home}"
         set -o xtrace
         cd "$${agent_home}"
@@ -774,13 +777,13 @@ else
           sudo rm "$${agent_home}/config_fixed_params.sh"
         fi
 
-        if [[$agent_type == "ado"]]; then
+        if [[$platform == "devops"]]; then
           (echo "$${agent_home}/config.sh"  --unattended --url "$${DEVURL}" --auth pat --token "$${TOKEN}" --pool "$${POOL}" --agent "$${AGENTNAME}" --replace --acceptTeeEula | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
           sudo chmod +x "$${agent_home}/config_fixed_params.sh"
 
           sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh"  | sudo tee -a "$${agent_home}/log.txt"
-        elif [[$agent_type == "github"]]; then
-          (echo "$${agent_home}/config.sh"  --url "$${DEVURL}" --token "$${TOKEN}" | sudo tee -a "$${agent_home}/run.sh") > /dev/null 2>&1
+        elif [[$platform == "github"]]; then
+          (echo "$${agent_home}/config.sh"  --url "$${org_url}" --token "$${app_token}" --runnergroup "$${runner_group}" | sudo tee -a "$${agent_home}/run.sh") > /dev/null 2>&1
           sudo chmod +x "$${agent_home}/run.sh"
 
           sudo runuser -l "$${local_user}" -c "$${agent_home}/run.sh"  | sudo tee -a "$${agent_home}/log.txt"
@@ -794,7 +797,7 @@ else
 
         if [ -f "$${agent_home}/config_fixed_params.sh" ]; then
           sudo rm "$${agent_home}/config_fixed_params.sh"
-        fi       
+        fi
 
         sudo touch "$${agent_home}/agent_configured"
 

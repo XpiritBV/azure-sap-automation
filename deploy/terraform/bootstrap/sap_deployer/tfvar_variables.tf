@@ -509,8 +509,20 @@ variable "Agent_IP"                                  {
                                                        default     = ""
                                                      }
 
-variable "agent_type"                                { 
-                                                       description = "Type of agent to be used" 
+variable "PLATFORM"                                {
+                                                       description = "Type of agent to be used"
                                                        type       = string
-                                                       default = "ado"
-                                                     }                                                     
+                                                       default = "devops"
+                                                     }
+variable "APP_TOKEN"                                {
+                                                       description = "If provided, contains token to access github"
+                                                       default = ""
+                                                    }
+variable "RUNNER_GROUP"                             {
+                                                      description = "If provided, contains the Personal Access Token to be used"
+                                                      default = ""
+                                                    }
+variable "ORG_URL"                                  {
+                                                      description = "If provided, contains the Url to the repository/organization"
+                                                      default = ""
+                                                    }

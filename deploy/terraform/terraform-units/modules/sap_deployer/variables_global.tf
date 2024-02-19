@@ -107,10 +107,10 @@ variable "deployer_vm_count"           {
                                          default     = 1
                                        }
 variable "arm_client_id"               { description = "ARM client id" }
-variable "agent_type"                  { 
-                                         description = "Type of agent to be used" 
+variable "platform"                    {
+                                         description = "Type of agent to be used"
                                          type       = string
-                                         default = "ado"
+                                         default = "devops"
                                        }
 
 
@@ -137,3 +137,21 @@ variable "app_service"                 {
                                             error_message = "If using the Web App both the 'app_registration_app_id' and 'webapp_client_secret' variables must be defined."
                                           }
                                        }
+#########################################################################################
+#                                                                                       #
+#  Github actions definitions                                                                      #
+#                                                                                       #
+#########################################################################################
+variable "app_token"                  {
+                                       description = "If provided, contains token to access github"
+                                       default = ""
+                                      }
+variable "runner_group"               {
+                                       description = "If provided, contains the Personal Access Token to be used"
+                                       default = ""
+                                      }
+variable "org_url"                    {
+                                       description = "If provided, contains the Url to the repository/organization"
+                                       default = ""
+                                      }
+
