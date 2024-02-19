@@ -60,7 +60,6 @@ jobs:
           # persistCredentials: true # rdv: ignored for now.
 
       - run: |
-          rmdir /cfg
           ln -s -t /cfg ${{ github.workspace }}
           ls /cfg
           ls ${{ github.workspace }}
