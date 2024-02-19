@@ -60,7 +60,7 @@ jobs:
             WORKSPACES
 
       - run: |
-          ln -s -t /cfg ${{ github.workspace }}
+          ln -s -t /cfg /__w/azure-sap-automation/azure-sap-automation
           ls -R /cfg
 
       # Required permissions: org level runner registration permissions
