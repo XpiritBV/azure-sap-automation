@@ -88,8 +88,12 @@ jobs:
       #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
+      - name: Validate config
+        working-directory: ${{ env.SAP_AUTOMATION_REPO_PATH }}
+        run: deploy/validate-config.sh
+
       - name: 'Deploy control plane'
-        run: /deploy/scripts/01-deploy-control-plane.sh
+        run: deploy/scripts/01-deploy-control-plane.sh
         working-directory: ${{ env.SAP_AUTOMATION_REPO_PATH }}
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
