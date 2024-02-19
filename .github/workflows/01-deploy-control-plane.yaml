@@ -61,6 +61,7 @@ jobs:
       - run: |
           ln -s -t /cfg ${{ github.workspace }}
           ls -R /cfg
+          ls -R ${{ github.workspace }}
 
       # Required permissions: org level runner registration permissions
       - name: Get app token
