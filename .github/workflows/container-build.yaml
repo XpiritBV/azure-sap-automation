@@ -1,5 +1,4 @@
 name: Build image
-run-name: Build image by @${{ github.actor }}
 
 on:
   push:
@@ -43,7 +42,7 @@ jobs:
         # list of Docker images to use as base name for tags
         images: |
           ${{ env.IMAGE_NAME}}
-          ghcr.io/${{ env.IMAGE_NAME}}
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
         # generate Docker tags based on the following events/attributes
         tags: |
           type=schedule
