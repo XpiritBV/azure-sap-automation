@@ -60,7 +60,7 @@ jobs:
             WORKSPACES
 
       - run: |
-          ln -s -t /cfg ${{ steps.checkout.outputs.path }}
+          ln -s -t /cfg ${{ github.workspace }}
           ls -R /cfg
 
       # Required permissions: org level runner registration permissions
