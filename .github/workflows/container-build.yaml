@@ -11,9 +11,6 @@ on:
       - "main"
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
 
 env:
   REGISTRY: ghcr.io
@@ -22,6 +19,9 @@ env:
 jobs:
   update:
     runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
 
     steps:
     - name: Checkout
@@ -41,7 +41,6 @@ jobs:
       with:
         # list of Docker images to use as base name for tags
         images: |
-          ${{ env.IMAGE_NAME}}
           ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
         # generate Docker tags based on the following events/attributes
         tags: |
