@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Requires:
 # - a stack XML file (*.xml)

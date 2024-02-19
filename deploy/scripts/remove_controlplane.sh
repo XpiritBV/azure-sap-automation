@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #error codes include those from /usr/include/sysexits.h
 

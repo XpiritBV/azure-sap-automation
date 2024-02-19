@@ -1,14 +1,54 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 . deploy/scripts/shared_functions.sh
+. deploy/scripts/set-colors.sh
+. deploy/scripts/validate_vars_and_set_defaults.sh
 
-green="\e[1;32m"
-reset="\e[0m"
-boldred="\e[1;31m"
+start_group "Checking required vars and setting up defaults"
 
-start_group "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
+REQUIRED_VARS=(
+    "CONFIG_REPO_PATH"
+    "Terraform_Remote_Storage_Account_Name"
+    "Terraform_Remote_Storage_Subscription"
+    "Terraform_Remote_Storage_Resource_Group_Name"
+    "deployerfolder"
+    "libraryfolder"
+    "SAP_AUTOMATION_REPO_PATH"
+    "ARM_SUBSCRIPTION_ID"
+    "ARM_CLIENT_ID"
+    "ARM_CLIENT_SECRET"
+    "ARM_TENANT_ID"
+)
+
+case get_platform in
+    github)
+        $REQUIRED_VARS+="APP_TOKEN"
+        $REQUIRED_VARS+="RUNNER_GROUP"
+    ;;
+
+    devops)
+        $REQUIRED_VARS+="this_agent"
+        $REQUIRED_VARS+="PAT"
+        $REQUIRED_VARS+="POOL"
+        $REQUIRED_VARS+="VARIABLE_GROUP_ID"
+    ;;
+
+    *)
+    ;;
+esac
+
+if [ -v TF_VAR_ansible_core_version ]; then
+    export TF_VAR_ansible_core_version=2.15
+fi
+
+export TF_VAR_use_webapp=${use_webapp}
+storage_account_parameter=""
+
+export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
+export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
+export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
+
+echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 
 ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
@@ -19,33 +59,28 @@ deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${
 echo "Deployer Environment File: ${deployer_environment_file_name}"
 end_group
 
-start_group "Configure devops CLI extension"
-# az config set extension.use_dynamic_install=yes_without_prompt
+set -euo pipefail
 
-# az extension add --name azure-devops --output none
-
-# az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
-# export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
-# echo "${variable_group} id: ${VARIABLE_GROUP_ID}"
+start_group "Setup platform dependencies"
+# Will return vars which we need to export afterwards
+eval "$(setup_dependencies | sed 's/^/export /')"
 end_group
 
 start_group "Force reset"
 echo "Force reset: ${force_reset}"
-if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
+if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     log_warning "Forcing a re-install"
     echo "running on ${this_agent}"
-    sed -i 's/step=1/step=0/' $deployer_environment_file_name
-    sed -i 's/step=2/step=0/' $deployer_environment_file_name
-    sed -i 's/step=3/step=0/' $deployer_environment_file_name
+    set_config_key_with_value "step" "0"
 
     export FORCE_RESET=true
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Deployer_Key_Vault.value" | tr -d \")
-    if [ -n "${az_var}" ]; then
-        key_vault="${az_var}"
+    var=$(get_value_with_key | tr -d \")
+    if [ -n "${var}" ]; then
+        key_vault="${var}"
         echo 'Deployer Key Vault' ${key_vault}
     else
         echo "Reading key vault from environment file"
-        key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= -m1 | awk -F'=' '{print $2}' | xargs)
+        key_vault=$(config_value_with_key "keyvault")
         echo 'Deployer Key Vault' ${key_vault}
     fi
 
@@ -70,15 +105,12 @@ if [ ${force_reset,,} == "true" ]; then # ,, = tolowercase
         az storage account network-rule add --account-name ${Terraform_Remote_Storage_Account_Name} --resource-group ${Terraform_Remote_Storage_Resource_Group_Name} --ip-address ${this_ip} --only-show-errors --output none
     fi
 
-    export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
-    export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
-    export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
     step=0
 else
     if [ -f ${deployer_environment_file_name} ]; then
         echo "Found environment file: ${deployer_environment_file_name}"
         cat ${deployer_environment_file_name}
-        step=$(cat ${deployer_environment_file_name} | grep step= | awk -F'=' '{print $2}' | xargs)
+        step=$(config_value_with_key "step")
         echo "Step: ${step}"
         if [ "0" != ${step} ]; then
             exit 0
@@ -90,26 +122,7 @@ fi
 #     exit_error "Variable group ${variable_group} could not be found." 2
 # fi
 end_group
-echo -e "$green--- Variables ---$reset"
-storage_account_parameter=""
-start_group "Validations"
-if [ -z ${TF_VAR_ansible_core_version} ]; then
-    export TF_VAR_ansible_core_version=2.15
-fi
-if [ -z ${ARM_SUBSCRIPTION_ID} ]; then
-    exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
-fi
-if [ -z ${ARM_CLIENT_ID} ]; then
-    exit_error "Variable ARM_CLIENT_ID was not defined." 2
-fi
-if [ -z ${ARM_CLIENT_SECRET} ]; then
-    exit_error "Variable ARM_CLIENT_SECRET was not defined." 2
-fi
-if [ -z ${ARM_TENANT_ID} ]; then
-    exit_error "Variable ARM_TENANT_ID was not defined." 2
-fi
-export TF_VAR_use_webapp=${use_webapp}
-end_group
+
 # TODO: Is this necessary on GitHub?
 start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
 echo "Current Directory $(pwd)"
@@ -195,7 +208,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
 fi
 
-if [ ${use_webapp,,} == "true" ]; then # ,, = tolowercase
+if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     echo "Use WebApp is selected"
 
     if [[ -v APP_REGISTRATION_APP_ID ]]; then
@@ -226,61 +239,53 @@ echo "Return code from deploy_controlplane $return_code."
 
 set -eu
 
-start_group "Update repo"
-echo -e "$green--- Adding deployment automation configuration to git repository ---$reset"
-added=0
-CD $CONFIG_REPO_PATH
+start_group "Update deployment configuration to repo"
+cd $CONFIG_REPO_PATH
 git pull -q
+
 if [ -f ${deployer_environment_file_name} ]; then
-    file_deployer_tfstate_key=$(cat ${deployer_environment_file_name} | grep deployer_tfstate_key | awk -F'=' '{print $2}' | xargs)
+    file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
     if [ -z "$file_deployer_tfstate_key" ]; then
         file_deployer_tfstate_key=$DEPLOYER_TFSTATE_KEY
     fi
     echo 'Deployer State File' $file_deployer_tfstate_key
-    file_key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= | awk -F'=' '{print $2}' | xargs)
+    file_key_vault=$(config_value_with_key "keyvault")
     echo 'Deployer Key Vault' ${file_key_vault}
-    deployer_random_id=$(cat ${deployer_environment_file_name} | grep deployer_random_id= | awk -F'=' '{print $2}' | xargs)
-    library_random_id=$(cat ${deployer_environment_file_name} | grep library_random_id= | awk -F'=' '{print $2}' | xargs)
+    deployer_random_id=$(config_value_with_key "deployer_random_id")
+    library_random_id=$(config_value_with_key "library_random_id")
 fi
+
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
-    added=1
 fi
+
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
     git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
-    added=1
 fi
+
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     sudo apt-get install zip
     pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
     # TODO: unzip with password is unsecure, use PGP Encrypt
     zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
     git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
-    added=1
 fi
-if [ 1 == $added ]; then
-    if [[ -z ${GITHUB_CONTEXT} ]]; then
-        git config --global user.email "${Build.RequestedForEmail}"
-        git config --global user.name "${Build.RequestedFor}"
-        git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
-        git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
-    else
-        git config --global user.email github-actions@github.com
-        git config --global user.name github-actions
-        git commit -m "Added updates from GitHub workflow $GITHUB_WORKFLOW [skip ci]"
-        git push
-    fi
+
+if git diff --cached --quiet; then
+    commit_changes
 fi
+
 if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
 fi
 end_group
-start_group "Adding variables to the variable group: ${variable_group}"
+
+start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
-    set_or_update_key_value "Deployer_State_FileName" "${file_deployer_tfstate_key}"
-    set_or_update_key_value "Deployer_Key_Vault" "${file_key_vault}"
-    set_or_update_key_value "ControlPlaneEnvironment" "${ENVIRONMENT}"
-    set_or_update_key_value "ControlPlaneLocation" "${LOCATION}"
+    set_value_with_key "Deployer_State_FileName" "${file_deployer_tfstate_key}"
+    set_value_with_key "Deployer_Key_Vault" "${file_key_vault}"
+    set_value_with_key "ControlPlaneEnvironment" "${ENVIRONMENT}"
+    set_value_with_key "ControlPlaneLocation" "${LOCATION}"
 fi
 end_group
 exit $return_code

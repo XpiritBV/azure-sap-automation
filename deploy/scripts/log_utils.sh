@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # we only want to source the file once
 if [[ $__isLibSourced ]]; then
     return
