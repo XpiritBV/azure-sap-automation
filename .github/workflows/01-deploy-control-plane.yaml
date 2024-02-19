@@ -43,7 +43,7 @@ on:
         type: boolean
 
 env:
-  CONFIG_REPO_PATH: /cfg
+  #CONFIG_REPO_PATH: ./cfg
   SAP_AUTOMATION_REPO_PATH: /source
 
 permissions:
@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: /cfg
+          path: ./cfg
           sparse-checkout: |
             WORKSPACES
           # persistCredentials: true # rdv: ignored for now.
@@ -96,7 +96,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          CONFIG_REPO_PATH: ./cfg/WORKSPACES # TODO: Folder need to be retrieved from App Configurations (Deployment_Configuration_Path)
+          #CONFIG_REPO_PATH: ./cfg/WORKSPACES # TODO: Folder need to be retrieved from App Configurations (Deployment_Configuration_Path)
           GITHUB_CONTEXT: ${{ toJSON(github) }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
           # TODO: connection_name: ${{ inputs.connection_name }}
