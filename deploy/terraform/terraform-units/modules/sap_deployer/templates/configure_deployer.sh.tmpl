@@ -771,13 +771,15 @@ else
         sudo chmod -R 744 "$${agent_home}"
         set -o xtrace
         cd "$${agent_home}"
-        ./env.sh
+
 
         if [ -f "$${agent_home}/config_fixed_params.sh" ]; then
           sudo rm "$${agent_home}/config_fixed_params.sh"
         fi
 
         if [ $platform == "devops" ]; then
+          ./env.sh
+
           (echo "$${agent_home}/config.sh"  --unattended --url "$${DEVURL}" --auth pat --token "$${TOKEN}" --pool "$${POOL}" --agent "$${AGENTNAME}" --replace --acceptTeeEula | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
           sudo chmod +x "$${agent_home}/config_fixed_params.sh"
 
