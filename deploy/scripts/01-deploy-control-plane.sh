@@ -38,6 +38,11 @@ function check_deploy_inputs() {
         ;;
     esac
 
+    if [[ ${use_webapp,,} == "true" ]]; then
+        $REQUIRED_VARS+="APP_REGISTRATION_APP_ID"
+        $REQUIRED_VARS+="WEB_APP_CLIENT_SECRET"
+    fi
+
     success=true
     for var in "${REQUIRED_VARS[@]}"; do
         if [[ ! -v $var ]]; then
@@ -154,45 +159,17 @@ echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automat
 end_group
 start_group "File Validations"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
-    # echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$reset"
     exit_error "File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
 else
     echo "Deployer Config File found:" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 fi
 if [ ! -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} ]; then
-    # echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$reset"
     exit_error "File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found." 2
 else
     echo "Library Config File found:" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
 fi
 end_group
 
-# Check if running on deployer
-# if [ ! -f /etc/profile.d/deploy_server.sh ]; then
-    #sudo apt-get update -qq
-    #echo -e "$green --- Install dos2unix ---$reset"
-    #sudo apt-get -qq install dos2unix
-
-    #echo -e "$green --- Install zip ---$reset"
-    #sudo apt-get -qq install zip
-
-    # Check if Terraform is installed
-    # if ! command -v terraform &>/dev/null; then
-    #     echo -e "$green --- Install terraform ${tf_version} ---$reset"
-    #     wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-    #     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-    #     sudo apt-get update -qq && sudo apt-get -qq install terraform=${tf_version}-1
-    # fi
-    # terraform --version
-
-    # # Check if Azure CLI is installed
-    # if ! command -v az &>/dev/null; then
-    #     echo -e "$green --- Install Azure CLI ---$reset"
-    #     curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    # fi
-
-    # az extension add --name storage-blob-preview >/dev/null
-# fi
 start_group "Configure parameters"
 echo -e "$green--- Convert config files to UX format ---$reset"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
@@ -234,13 +211,6 @@ fi
 if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     echo "Use WebApp is selected"
 
-    if [[ -v APP_REGISTRATION_APP_ID ]]; then
-        exit_error "Variable APP_REGISTRATION_APP_ID was not defined." 2
-    fi
-
-    if [[ -v WEB_APP_CLIENT_SECRET ]]; then
-        exit_error "Variable WEB_APP_CLIENT_SECRET was not defined." 2
-    fi
     export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}
     echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
     export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
@@ -249,7 +219,7 @@ fi
 
 export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 
-# TODO: set +eu # TODO: WHY Disabling it here ???
+set +eu
 
 ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
     --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
@@ -287,7 +257,6 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfst
 fi
 
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-    # sudo apt-get install zip
     pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
     # TODO: unzip with password is unsecure, use PGP Encrypt
     zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
