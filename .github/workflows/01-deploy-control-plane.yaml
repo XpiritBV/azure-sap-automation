@@ -43,8 +43,8 @@ on:
         type: boolean
 
 env:
-  CONFIG_REPO_PATH: s/config
-  SAP_AUTOMATION_REPO_PATH: s/sap-automation
+  CONFIG_REPO_PATH: /cfg
+  SAP_AUTOMATION_REPO_PATH: /source
 
 permissions:
   contents: write
@@ -55,12 +55,14 @@ jobs:
     environment: MGMT-WEEU-DEP01-INFRASTRUCTURE
     name: Prepare the self hosted agent(s)
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
-      - name: Checkout the azure/sap-automation repo
-        uses: actions/checkout@v4
-        with:
-          path: s/sap-automation # TODO: ${{ env.SAP_AUTOMATION_REPO_PATH }}
-          repository: azure/sap-automation
+      # - name: Checkout the azure/sap-automation repo
+      #   uses: actions/checkout@v4
+      #   with:
+      #     path: s/sap-automation # TODO: ${{ env.SAP_AUTOMATION_REPO_PATH }}
+      #     repository: azure/sap-automation
 
       - name: Checkout the code
         uses: actions/checkout@v4
