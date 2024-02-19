@@ -1,6 +1,12 @@
 
 name: Ansible Lint
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "deploy/ansible/**"
+  pull_request:
+    paths:
+      - "deploy/ansible/**"
 jobs:
   build:
     runs-on: ubuntu-latest

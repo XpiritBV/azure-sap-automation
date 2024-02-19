@@ -34,17 +34,10 @@ on:
         default: false
         description: Run on self hosted agent
         type: boolean
-      # TODO: sap_automation_repo_path:
-      # TODO:   description: The local path on the agent where the sap_automation repo can be found
-      # TODO:   type: string
       force_reset:
         default: false
         description: Force a re-install - may require multiple re-runs
         type: boolean
-
-# env:
-#   CONFIG_REPO_PATH: cfg
-#   SAP_AUTOMATION_REPO_PATH: /source
 
 permissions:
   contents: write
@@ -58,12 +51,6 @@ jobs:
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
-      # - name: Checkout the azure/sap-automation repo
-      #   uses: actions/checkout@v4
-      #   with:
-      #     path: s/sap-automation # TODO: ${{ env.SAP_AUTOMATION_REPO_PATH }}
-      #     repository: azure/sap-automation
-
       - name: Checkout the code
         uses: actions/checkout@v4
         with:
