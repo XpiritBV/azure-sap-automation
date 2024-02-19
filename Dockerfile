@@ -11,9 +11,6 @@ RUN tdnf install -y \
 
 COPY . /source
 
-RUN mkdir -p /cfg
-
 ENV SAP_AUTOMATION_REPO_PATH=/source
-ENV CONFIG_REPO_PATH=/cfg
 
 WORKDIR /source
