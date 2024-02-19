@@ -3,9 +3,9 @@
 function setup_dependencies() {
     org_url="$(__get_value_from_context_with_key "github.server_url")/$(__get_value_from_context_with_key "github.organization")"
 
-    vars=$(echo "TF_VAR_APP_TOKEN=${APP_TOKEN}")
-    $vars+=$(echo "TF_VAR_RUNNER_GROUP=${RUNNER_GROUP}")
-    $vars+=$(echo "TF_VAR_ORG_URL=${org_url}")
+    vars=$(echo "TF_VAR_APP_TOKEN=${APP_TOKEN}\n")
+    $vars+=$(echo "TF_VAR_RUNNER_GROUP=${RUNNER_GROUP}\n")
+    $vars+=$(echo "TF_VAR_ORG_URL=${org_url}\n")
 
     echo $vars
 }

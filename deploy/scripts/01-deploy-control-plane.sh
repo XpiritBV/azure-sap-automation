@@ -3,8 +3,6 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/shared_functions.sh
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set-colors.sh
 
-start_group "Checking required vars and setting up defaults"
-
 function check_deploy_inputs() {
 
     REQUIRED_VARS=(
@@ -54,7 +52,7 @@ function check_deploy_inputs() {
     echo $success
 }
 
-start_group "Check required inputs are set"
+start_group "Check all required inputs are set"
     if [ "$(check_deploy_inputs)" == "true" ]; then
         echo "All required variables are set"
     else
@@ -73,6 +71,7 @@ export TF_VAR_PLATFORM=$(get_platform)
 export TF_VAR_use_webapp=${use_webapp}
 storage_account_parameter=""
 
+start_group "Setup deployer and library folders"
 echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 

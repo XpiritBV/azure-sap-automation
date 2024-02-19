@@ -99,6 +99,7 @@ jobs:
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp_param }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
+          RUNNER_GROUP: "Default"
           CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
 
   deploy_controlplane:
