@@ -783,9 +783,10 @@ else
 
           sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh"  | sudo tee -a "$${agent_home}/log.txt"
         elif [ $platform == "github" ]; then
-          (echo "$${agent_home}/config.sh"  --url "$${org_url}" --token "$${app_token}" --runnergroup "$${runner_group}" | sudo tee -a "$${agent_home}/run.sh") > /dev/null 2>&1
-          sudo chmod +x "$${agent_home}/run.sh"
+          (echo "$${agent_home}/config.sh"  --url "$${org_url}" --token "$${app_token}" --runnergroup "$${runner_group}" | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
+          sudo chmod +x "$${agent_home}/config_fixed_params.sh"
 
+          sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh"  | sudo tee -a "$${agent_home}/log.txt"
           sudo runuser -l "$${local_user}" -c "$${agent_home}/run.sh"  | sudo tee -a "$${agent_home}/log.txt"
         fi
         # automatic start configuration after VM reboot
