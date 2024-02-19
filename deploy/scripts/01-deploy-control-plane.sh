@@ -9,9 +9,9 @@ function check_deploy_inputs() {
 
     REQUIRED_VARS=(
         "CONFIG_REPO_PATH"
-        "Terraform_Remote_Storage_Account_Name"
-        "Terraform_Remote_Storage_Subscription"
-        "Terraform_Remote_Storage_Resource_Group_Name"
+        # "Terraform_Remote_Storage_Account_Name"
+        # "Terraform_Remote_Storage_Subscription"
+        # "Terraform_Remote_Storage_Resource_Group_Name"
         "deployerfolder"
         "libraryfolder"
         "SAP_AUTOMATION_REPO_PATH"
