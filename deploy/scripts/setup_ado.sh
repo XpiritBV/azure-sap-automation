@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # https://github.com/Microsoft/azure-pipelines-agent/releases
 
 # ensure the agent will not be installed as root

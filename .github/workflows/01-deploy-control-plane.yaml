@@ -1,0 +1,129 @@
+# /*---------------------------------------------------------------------------8
+# |                                                                            |
+# |               This pipeline deploys the control plane in GitHub Actions    |
+# |                                                                            |
+# +------------------------------------4--------------------------------------*/
+
+name: Deploy Control Plane
+run-name: Deploy Control Plane to ${{ inputs.deploy_target }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployer:
+        default: MGMT-WEEU-DEP01-INFRASTRUCTURE
+        description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
+        type: string
+      library:
+        default: MGMT-WEEU-SAP_LIBRARY
+        description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
+        type: string
+      environment:
+        default: MGMT
+        description: Environment name, MGMT, DEV, QA, etc
+        type: string
+      use_webapp_param:
+        default: true
+        description: Deploy the configuration web application infrastructure
+        type: boolean
+      deploy_webapp_software:
+        default: true
+        description: "Deploy the configuration web application software"
+        type: boolean
+      use_deployer:
+        default: false
+        description: Run on self hosted agent
+        type: boolean
+      # TODO: sap_automation_repo_path:
+      # TODO:   description: The local path on the agent where the sap_automation repo can be found
+      # TODO:   type: string
+      force_reset:
+        default: false
+        description: Force a re-install - may require multiple re-runs
+        type: boolean
+
+env:
+  CONFIG_REPO_PATH: s/config
+  SAP_AUTOMATION_REPO_PATH: s/sap-automation
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  prepare_deployer:
+    environment: MGMT-WEEU-DEP01-INFRASTRUCTURE
+    name: Prepare the self hosted agent(s)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the azure/sap-automation repo
+        uses: actions/checkout@v4
+        with:
+          path: s/sap-automation # TODO: ${{ env.SAP_AUTOMATION_REPO_PATH }}
+          repository: azure/sap-automation
+
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: s/config
+          # persistCredentials: true # rdv: ignored for now.
+
+      # Required permissions: org level runner registration permissions
+      # - name: Get app token
+      #   id: get_workflow_token
+      #   uses: peter-murray/workflow-application-token-action@v3
+      #   with:
+      #     application_id: ${{ secrets.APPLICATION_ID }}
+      #     application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
+
+      # - name: Azure Login
+      #   uses: Azure/Login@v1
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: 'Deploy control plane'
+        run: deploy/scripts/01-deploy-control-plane.sh
+        working-directory: s/config # TODO: Get from SAP_AUTOMATION_REPO_PATH repo
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          CONFIG_REPO_PATH: ./WORKSPACES # TODO: Folder need to be retrieved from App Configurations (Deployment_Configuration_Path)
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
+          # TODO: connection_name: ${{ inputs.connection_name }}
+          deployer_environment: ${{ inputs.environment }}
+          deployerconfig: ${{ inputs.deployer }}.tfvars
+          deployerfolder: ${{ inputs.deployer }}
+          force_reset: ${{ inputs.force_reset }}
+          libraryconfig: ${{ inputs.library }}.tfvars
+          libraryfolder: ${{ inputs.library }}
+          log: logfile_$(Build.BuildId)
+          run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
+          SAP_AUTOMATION_REPO_PATH: .
+          tf_version: 1.6.2 # Latest version is already installed in the hosted agent
+          this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
+          use_webapp: ${{ inputs.use_webapp_param }}
+          variable_group: SDAF-${{ inputs.environment }}
+          APP_TOKEN: "token" # ${{ steps.get_workflow_token.outputs.token }}
+
+  deploy_controlplane:
+    name: Deploy the control plane
+    needs: prepare_deployer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+  web_app_deployment:
+    if: ${{ inputs.use_webapp_param }} && ${{ inputs.deploy_webapp_software }}
+    name: Deploy SAP configuration Web App
+    needs: deploy_controlplane
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
