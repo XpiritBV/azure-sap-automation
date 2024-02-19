@@ -63,7 +63,7 @@ do
         -f | --force)                              force=1                          ; shift ;;
         -o | --only_deployer)                      only_deployer=1                  ; shift ;;
         -r | --recover)                            recover=1                        ; shift ;;
-        -i | --auto-approve)                       approve="--auto-approve"         ; shift ;;
+        -i | --auto-approve)                       approveparam="--auto-approve"   ; shift ;;
         -h | --help)                               control_plane_showhelp
         exit 3                           ; shift ;;
         --) shift; break ;;
@@ -77,10 +77,6 @@ root_dirname=$(pwd)
 
 if [ ! -f /etc/profile.d/deploy_server.sh ] ; then
     export TF_VAR_Agent_IP=$this_ip
-fi
-
-if [ -n "$approve" ]; then
-    approveparam=" --auto-approve"
 fi
 
 if [ ! -f "$deployer_parameter_file" ]; then
@@ -193,20 +189,15 @@ if [ -n "${subscription}" ]; then
     export ARM_SUBSCRIPTION_ID="${subscription}"
     kv_found=$(az keyvault list --subscription "${subscription}" --query [].name | grep  "${keyvault}")
 
-    if [ -z "${kv_found}" ] ; then
+    if [! -z "${kv_found}" ] ; then #when keyvault already exists in the subscription, its not a new deployment
         echo "#########################################################################################"
         echo "#                                                                                       #"
      echo -e "#                            $boldred  Detected a failed deployment $resetformatting                            #"
         echo "#                                                                                       #"
         echo "#########################################################################################"
-        step=0
     fi
 
 
-fi
-
-if [ 3 == $step ]; then
-    spn_secret="none"
 fi
 
 if [ -n "$keyvault" ]; then
