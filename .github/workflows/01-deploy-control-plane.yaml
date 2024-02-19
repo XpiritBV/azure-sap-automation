@@ -43,7 +43,7 @@ on:
         type: boolean
 
 env:
-  CONFIG_REPO_PATH: /cfg
+  CONFIG_REPO_PATH: cfg
   SAP_AUTOMATION_REPO_PATH: /source
 
 permissions:
@@ -88,19 +88,13 @@ jobs:
       #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: Validate config
-        working-directory: ${{ env.SAP_AUTOMATION_REPO_PATH }}
-        run: deploy/validate-config.sh
-
       - name: 'Deploy control plane'
-        run: deploy/scripts/01-deploy-control-plane.sh
-        working-directory: ${{ env.SAP_AUTOMATION_REPO_PATH }}
+        run: /source/deploy/scripts/01-deploy-control-plane.sh
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          #CONFIG_REPO_PATH: ./cfg/WORKSPACES # TODO: Folder need to be retrieved from App Configurations (Deployment_Configuration_Path)
           GITHUB_CONTEXT: ${{ toJSON(github) }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
           # TODO: connection_name: ${{ inputs.connection_name }}
@@ -111,12 +105,8 @@ jobs:
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
           log: logfile_$(Build.BuildId)
-          run_on: $[replace(replace('True',eq(${{ inputs.use_deployer }}, 'True'), variables['POOL']),'True',variables['Agent'])]
-          SAP_AUTOMATION_REPO_PATH: .
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
-          this_agent: $[upper(coalesce(variables['POOL'], variables['Agent']))]
           use_webapp: ${{ inputs.use_webapp_param }}
-          variable_group: SDAF-${{ inputs.environment }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
 
   deploy_controlplane:
