@@ -73,7 +73,8 @@ jobs:
           # persistCredentials: true # rdv: ignored for now.
 
       - run: |
-          ln -s /cfg ${{ github.workspace }}
+          rmdir /cfg
+          ln -s ${{ github.workspace }} /cfg
 
       # Required permissions: org level runner registration permissions
       - name: Get app token
