@@ -5,7 +5,7 @@
 # +------------------------------------4--------------------------------------*/
 
 name: Deploy Control Plane
-run-name: Deploy  Control Plane to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: Deploy Control Plane to ${{ inputs.deploy_target }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
