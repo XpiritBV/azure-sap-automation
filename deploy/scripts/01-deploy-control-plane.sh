@@ -81,8 +81,6 @@ deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${
 echo "Deployer Environment File: ${deployer_environment_file_name}"
 end_group
 
-set -euo pipefail
-
 start_group "Setup platform dependencies"
 # Will return vars which we need to export afterwards
 eval "$(setup_dependencies | sed 's/^/export /')"
