@@ -43,8 +43,8 @@ on:
         type: boolean
 
 env:
-  #CONFIG_REPO_PATH: ./cfg
-  SAP_AUTOMATION_REPO_PATH: /source
+  CONFIG_REPO_PATH: ./cfg
+  SAP_AUTOMATION_REPO_PATH: ./source
 
 permissions:
   contents: write
@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: ./cfg
+          path: ${{ env.CONFIG_REPO_PATH }}
           sparse-checkout: |
             WORKSPACES
           # persistCredentials: true # rdv: ignored for now.
@@ -89,8 +89,8 @@ jobs:
       #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: 'Deploy control plane'
-        run: ${{ env.SAP_AUTOMATION_REPO_PATH}}/scripts/01-deploy-control-plane.sh
-        working-directory: s/config # TODO: Get from SAP_AUTOMATION_REPO_PATH repo
+        run: /scripts/01-deploy-control-plane.sh
+        working-directory: ${{ env.SAP_AUTOMATION_REPO_PATH }}
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
