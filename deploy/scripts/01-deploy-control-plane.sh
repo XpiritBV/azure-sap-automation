@@ -68,10 +68,6 @@ export TF_VAR_PLATFORM=$(get_platform)
 export TF_VAR_use_webapp=${use_webapp}
 storage_account_parameter=""
 
-export REINSTALL_ACCOUNTNAME=${Terraform_Remote_Storage_Account_Name}
-export REINSTALL_SUBSCRIPTION=${Terraform_Remote_Storage_Subscription}
-export REINSTALL_RESOURCE_GROUP=${Terraform_Remote_Storage_Resource_Group_Name}
-
 echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 
@@ -94,6 +90,11 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     log_warning "Forcing a re-install"
     echo "running on ${this_agent}"
     set_config_key_with_value "step" "0"
+
+    // TODO: Terraform should be platform agnostic and use the set methods for the environment: `set_value_with_key`
+    export REINSTALL_ACCOUNTNAME=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
+    export REINSTALL_SUBSCRIPTION=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
+    export REINSTALL_RESOURCE_GROUP=$(get_value_with_key "Terraform_Remote_Storage_Resource_Group_Name")
 
     export FORCE_RESET=true
     var=$(get_value_with_key | tr -d \")

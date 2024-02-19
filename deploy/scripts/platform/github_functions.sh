@@ -108,12 +108,13 @@ function __get_value_with_key() {
     return $value
 }
 
-function __create_variable_with_key() {
+function __set_value_with_key() {
     $key=$1
     $value=$2
 
     repository_id=$(__get_repository_id)
 
+    # TODO: Might need a PATCH or PUT
     curl -X POST \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
