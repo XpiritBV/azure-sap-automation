@@ -508,3 +508,9 @@ variable "Agent_IP"                                  {
                                                        description = "IP address of the agent"
                                                        default     = ""
                                                      }
+
+variable "agent_type"                                { 
+                                                       description = "Type of agent to be used" 
+                                                       type       = string
+                                                       default = "ado"
+                                                     }                                                     

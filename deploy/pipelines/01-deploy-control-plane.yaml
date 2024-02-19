@@ -262,7 +262,11 @@ stages:
                               export TF_VAR_use_webapp=true
 
                           fi
-
+                            export TF_VAR_deployer_parameter_group_name=$(variable_group)
+                            export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
+                            export TF_VAR_deployer_parameter_location=${LOCATION}
+                            export TF_VAR_deployer_parameter_tf_state_filename=$(basename "${deployerconfig}")
+                            
                             export TF_LOG_PATH=$CONFIG_REPO_PATH/.sap_deployment_automation/terraform.log
                             set +eu
 
@@ -677,6 +681,11 @@ stages:
                           fi
 
                           export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
+                          
+                          export TF_VAR_deployer_parameter_group_name=$(variable_group)
+                          export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
+                          export TF_VAR_deployer_parameter_location=${LOCATION}
+                          export TF_VAR_deployer_tf_state_filename=$(basename "${deployerconfig}")
 
                           sudo chmod +x $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh
 

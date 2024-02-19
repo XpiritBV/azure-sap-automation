@@ -106,3 +106,9 @@ output "sa_connection_string"                    {
                                                      try(azurerm_storage_account.storage_tfstate[0].primary_connection_string, "")
                                                    )
                                                  }
+
+output "deployer_app_config_name"                {
+                                                   description = "Deployer app configuration name"
+                                                   value = length(var.deployer.deployer_app_configuration_arm_id) > 0 ? (
+                                                     split("/", var.deployer.deployer_app_configuration_arm_id)[8]) : (azurerm_app_configuration.app_config[0].name)
+                                                 }

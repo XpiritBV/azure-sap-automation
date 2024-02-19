@@ -18,6 +18,7 @@ module "sap_deployer" {
   Agent_IP                                     = var.Agent_IP
   agent_pat                                    = var.agent_pat
   agent_pool                                   = var.agent_pool
+  agent_type                                   = var.agent_type
   ansible_core_version                         = var.ansible_core_version
   app_registration_app_id                      = var.app_registration_app_id
   app_service                                  = local.app_service
@@ -52,7 +53,7 @@ module "sap_deployer" {
   use_private_endpoint                         = var.use_private_endpoint
   use_service_endpoint                         = var.use_service_endpoint
   use_webapp                                   = var.use_webapp
-  webapp_client_secret                         = var.webapp_client_secret
+  webapp_client_secret                         = var.webapp_client_secret  
 }
 
 module "sap_namegenerator" {

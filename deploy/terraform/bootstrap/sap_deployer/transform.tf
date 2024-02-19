@@ -126,7 +126,7 @@ locals {
                                                 prefix = var.webapp_subnet_address_prefix
                                               }
                                             }
-                                          }
+                                          }    
                                         }
   deployer                             = {
                                            size = try(
@@ -182,10 +182,9 @@ locals {
                                                                   try(var.deployers[0].private_ip_address, "")
                                                                 ), "")
 
-                                           deployer_diagnostics_account_arm_id = var.deployer_diagnostics_account_arm_id
-                                           app_service_SKU                     = var.app_service_SKU_name
-
-                                         }
+                                           deployer_diagnostics_account_arm_id  = var.deployer_diagnostics_account_arm_id
+                                           app_service_SKU                      = var.app_service_SKU_name                                           
+                                           }
 
   authentication                       = {
                                             username            = var.deployer_authentication_username

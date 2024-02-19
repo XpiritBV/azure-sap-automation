@@ -213,33 +213,34 @@ resource "azurerm_virtual_machine_extension" "configure" {
     time_sleep.wait_for_VM
   ]
 
-  name                 = "configure_deployer"
-  virtual_machine_id   = azurerm_linux_virtual_machine.deployer[count.index].id
-  publisher            = "Microsoft.Azure.Extensions"
-  type                 = "CustomScript"
-  type_handler_version = "2.1"
-  protected_settings = jsonencode(
-    {
-      "script" = base64encode(
-        templatefile(
-          format(
-          "%s/templates/configure_deployer.sh.tmpl", path.module),
-          {
-            tfversion            = var.tf_version,
-            rg_name              = local.resourcegroup_name,
-            client_id            = azurerm_user_assigned_identity.deployer.client_id,
-            subscription_id      = data.azurerm_subscription.primary.subscription_id,
-            tenant_id            = data.azurerm_subscription.primary.tenant_id,
-            local_user           = local.username
-            pool                 = var.agent_pool
-            pat                  = var.agent_pat
-            ado_repo             = var.agent_ado_url
-            use_webapp           = var.use_webapp
-            ansible_core_version = var.ansible_core_version
-          }
-        )
-      )
-    }
-  )
+  name                                 = "configure_deployer"
+  virtual_machine_id                   = azurerm_linux_virtual_machine.deployer[count.index].id
+  publisher                            = "Microsoft.Azure.Extensions"
+  type                                 = "CustomScript"
+  type_handler_version                 = "2.1"
+  protected_settings                   = jsonencode(
+                                           {
+                                             "script" = base64encode(
+                                               templatefile(
+                                                 format(
+                                                 "%s/templates/configure_deployer.sh.tmpl", path.module),
+                                                 {
+                                                   tfversion            = var.tf_version,
+                                                   rg_name              = local.resourcegroup_name,
+                                                   client_id            = azurerm_user_assigned_identity.deployer.client_id,
+                                                   subscription_id      = data.azurerm_subscription.primary.subscription_id,
+                                                   tenant_id            = data.azurerm_subscription.primary.tenant_id,
+                                                   local_user           = local.username
+                                                   pool                 = var.agent_pool
+                                                   pat                  = var.agent_pat
+                                                   ado_repo             = var.agent_ado_url
+                                                   use_webapp           = var.use_webapp
+                                                   ansible_core_version = var.ansible_core_version
+                                                   agent_type           = var.agent_type
+                                                 }
+                                               )
+                                             )
+                                           }
+                                         )
 
 }

@@ -522,4 +522,10 @@ variable "tfstate_resource_id"                       {
                                                                     error_message = "The Azure Resource ID for the storage account containing the Terraform state files must be provided and be in correct format."
                                                                   }
 
-                                                     }
+                                                     }    
+
+variable "agent_type"                                { 
+                                                       description = "Type of agent to be used" 
+                                                       type       = string
+                                                       default = "ado"
+                                                     }                                                
