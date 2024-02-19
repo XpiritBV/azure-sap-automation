@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-. $(pwd}/shared_functions.sh
-. $(pwd}/set-colors.sh
+. $(pwd)/shared_functions.sh
+. $(pwd)/set-colors.sh
 
 start_group "Checking required vars and setting up defaults"
 
