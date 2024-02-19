@@ -168,31 +168,31 @@ fi
 end_group
 
 # Check if running on deployer
-if [ ! -f /etc/profile.d/deploy_server.sh ]; then
-    sudo apt-get update -qq
-    echo -e "$green --- Install dos2unix ---$reset"
-    sudo apt-get -qq install dos2unix
+# if [ ! -f /etc/profile.d/deploy_server.sh ]; then
+    #sudo apt-get update -qq
+    #echo -e "$green --- Install dos2unix ---$reset"
+    #sudo apt-get -qq install dos2unix
 
-    echo -e "$green --- Install zip ---$reset"
-    sudo apt-get -qq install zip
+    #echo -e "$green --- Install zip ---$reset"
+    #sudo apt-get -qq install zip
 
     # Check if Terraform is installed
-    if ! command -v terraform &>/dev/null; then
-        echo -e "$green --- Install terraform ${tf_version} ---$reset"
-        wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-        sudo apt-get update -qq && sudo apt-get -qq install terraform=${tf_version}-1
-    fi
-    terraform --version
+    # if ! command -v terraform &>/dev/null; then
+    #     echo -e "$green --- Install terraform ${tf_version} ---$reset"
+    #     wget -O- -q https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    #     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+    #     sudo apt-get update -qq && sudo apt-get -qq install terraform=${tf_version}-1
+    # fi
+    # terraform --version
 
-    # Check if Azure CLI is installed
-    if ! command -v az &>/dev/null; then
-        echo -e "$green --- Install Azure CLI ---$reset"
-        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    fi
+    # # Check if Azure CLI is installed
+    # if ! command -v az &>/dev/null; then
+    #     echo -e "$green --- Install Azure CLI ---$reset"
+    #     curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    # fi
 
-    az extension add --name storage-blob-preview >/dev/null
-fi
+    # az extension add --name storage-blob-preview >/dev/null
+# fi
 start_group "Configure parameters"
 echo -e "$green--- Convert config files to UX format ---$reset"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
@@ -287,7 +287,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfst
 fi
 
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-    sudo apt-get install zip
+    # sudo apt-get install zip
     pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
     # TODO: unzip with password is unsecure, use PGP Encrypt
     zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
@@ -299,6 +299,7 @@ if git diff --cached --quiet; then
 fi
 
 if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
+    # TODO: @cloudcosmonaut - Can you make this GitHub ready?
     echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
 fi
 end_group

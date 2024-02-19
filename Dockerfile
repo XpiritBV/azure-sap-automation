@@ -7,7 +7,10 @@ RUN tdnf install -y \
   gawk \
   git \
   powershell \
-  terraform
+  terraform \
+  zip \
+  unzip \
+  dos2unix
 
 COPY . /source
 
