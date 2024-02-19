@@ -60,7 +60,7 @@ jobs:
 
       # - run: |
       #     ln -s $GITHUB_WORKSPACE /cfg
-      #     ls -R /cfg
+      #     ls -laR /cfg
       #     ls -R $GITHUB_WORKSPACE
 
       # Required permissions: org level runner registration permissions
@@ -99,7 +99,7 @@ jobs:
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp_param }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          CONFIG_REPO_PATH: $GITHUB_WORKSPACE
+          CONFIG_REPO_PATH: ${{ github.workspace }}
 
   deploy_controlplane:
     name: Deploy the control plane
