@@ -59,9 +59,9 @@ jobs:
             WORKSPACES
 
       - run: |
-          ln -s -t /cfg ${{ github.workspace }}
+          ln -s -t /cfg $GITHUB_WORKSPACE
           ls -R /cfg
-          ls -R ${{ github.workspace }}
+          ls -R $GITHUB_WORKSPACE
 
       # Required permissions: org level runner registration permissions
       - name: Get app token
