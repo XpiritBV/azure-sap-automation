@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-. deploy/scripts/shared_functions.sh
-. deploy/scripts/set-colors.sh
+. ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/shared_functions.sh
+. ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set-colors.sh
 
 start_group "Checking required vars and setting up defaults"
 
