@@ -46,7 +46,7 @@ function check_deploy_inputs() {
         fi
     done
 
-    echo $should_fail
+    echo !$should_fail
 }
 
 start_group "Check required inputs are set"
