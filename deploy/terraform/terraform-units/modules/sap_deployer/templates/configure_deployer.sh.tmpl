@@ -534,7 +534,7 @@ else
 
     # If the deployer will be an ADO agent install the devops cli
     # turn tracing off when you are here
-    if [[$platform == "devops"]]; then
+    if [ $platform == "devops" ]; then
       set +o xtrace
       if [[ -n "$${TOKEN}" ]];
       then
@@ -738,9 +738,9 @@ else
     else
       sudo mkdir -p "$${agent_home}"; cd "$${agent_home}"
 
-      if [[$platform == "devops"]]; then
+      if [ $platform == "devops" ]; then
         sudo wget -nv https://aka.ms/AAftpys -O agent.tar.gz
-      elif [[$platform == "github"]]; then
+      elif [ $platform == "github" ]; then
         sudo wget -nv https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz -O agent.tar.gz
       fi
       sudo tar zxvf agent.tar.gz >/dev/null 2>&1
@@ -777,12 +777,12 @@ else
           sudo rm "$${agent_home}/config_fixed_params.sh"
         fi
 
-        if [[$platform == "devops"]]; then
+        if [ $platform == "devops" ]; then
           (echo "$${agent_home}/config.sh"  --unattended --url "$${DEVURL}" --auth pat --token "$${TOKEN}" --pool "$${POOL}" --agent "$${AGENTNAME}" --replace --acceptTeeEula | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
           sudo chmod +x "$${agent_home}/config_fixed_params.sh"
 
           sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh"  | sudo tee -a "$${agent_home}/log.txt"
-        elif [[$platform == "github"]]; then
+        elif [ $platform == "github" ]; then
           (echo "$${agent_home}/config.sh"  --url "$${org_url}" --token "$${app_token}" --runnergroup "$${runner_group}" | sudo tee -a "$${agent_home}/run.sh") > /dev/null 2>&1
           sudo chmod +x "$${agent_home}/run.sh"
 
