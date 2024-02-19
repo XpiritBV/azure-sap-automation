@@ -43,8 +43,8 @@ on:
         type: boolean
 
 env:
-  CONFIG_REPO_PATH: ./cfg
-  SAP_AUTOMATION_REPO_PATH: ./source
+  CONFIG_REPO_PATH: /cfg
+  SAP_AUTOMATION_REPO_PATH: /source
 
 permissions:
   contents: write

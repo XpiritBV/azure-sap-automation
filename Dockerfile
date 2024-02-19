@@ -8,7 +8,7 @@ RUN tdnf install -y \
   powershell \
   terraform
 
-ADD . ./source
+COPY . /source
 
 RUN mkdir -p /cfg
 
