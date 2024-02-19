@@ -4,6 +4,7 @@ RUN tdnf install -y \
   ansible \
   azure-cli \
   ca-certificates \
+  gawk \
   git \
   powershell \
   terraform
