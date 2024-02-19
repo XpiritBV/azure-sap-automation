@@ -52,17 +52,16 @@ jobs:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
+        id: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           sparse-checkout: |
             WORKSPACES
-          # persistCredentials: true # rdv: ignored for now.
 
       - run: |
-          ln -s -t /cfg ${{ github.workspace }}
-          ls /cfg
-          ls ${{ github.workspace }}
+          ln -s -t /cfg ${{ steps.checkout.outputs.path }}
+          ls -R /cfg
 
       # Required permissions: org level runner registration permissions
       - name: Get app token
