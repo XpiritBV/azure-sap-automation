@@ -61,7 +61,7 @@ jobs:
 
       - run: |
           rmdir /cfg
-          ln -s ${{ github.workspace }} /cfg
+          ln -s -t /cfg ${{ github.workspace }}
           ls /cfg
           ls ${{ github.workspace }}
 
