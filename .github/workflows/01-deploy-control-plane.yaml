@@ -63,6 +63,7 @@ jobs:
           rmdir /cfg
           ln -s ${{ github.workspace }} /cfg
           ls /cfg
+          ls ${{ github.workspace }}
 
       # Required permissions: org level runner registration permissions
       - name: Get app token
