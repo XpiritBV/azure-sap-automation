@@ -2,40 +2,62 @@
 
 . deploy/scripts/shared_functions.sh
 . deploy/scripts/set-colors.sh
-. deploy/scripts/validate_vars_and_set_defaults.sh
 
 start_group "Checking required vars and setting up defaults"
 
-REQUIRED_VARS=(
-    "CONFIG_REPO_PATH"
-    "Terraform_Remote_Storage_Account_Name"
-    "Terraform_Remote_Storage_Subscription"
-    "Terraform_Remote_Storage_Resource_Group_Name"
-    "deployerfolder"
-    "libraryfolder"
-    "SAP_AUTOMATION_REPO_PATH"
-    "ARM_SUBSCRIPTION_ID"
-    "ARM_CLIENT_ID"
-    "ARM_CLIENT_SECRET"
-    "ARM_TENANT_ID"
-)
+function check_deploy_inputs() {
 
-case get_platform in
-    github)
-        $REQUIRED_VARS+="APP_TOKEN"
-        $REQUIRED_VARS+="RUNNER_GROUP"
-    ;;
+    REQUIRED_VARS=(
+        "CONFIG_REPO_PATH"
+        "Terraform_Remote_Storage_Account_Name"
+        "Terraform_Remote_Storage_Subscription"
+        "Terraform_Remote_Storage_Resource_Group_Name"
+        "deployerfolder"
+        "libraryfolder"
+        "SAP_AUTOMATION_REPO_PATH"
+        "ARM_SUBSCRIPTION_ID"
+        "ARM_CLIENT_ID"
+        "ARM_CLIENT_SECRET"
+        "ARM_TENANT_ID"
+    )
 
-    devops)
-        $REQUIRED_VARS+="this_agent"
-        $REQUIRED_VARS+="PAT"
-        $REQUIRED_VARS+="POOL"
-        $REQUIRED_VARS+="VARIABLE_GROUP_ID"
-    ;;
+    case get_platform in
+        github)
+            $REQUIRED_VARS+="APP_TOKEN"
+            $REQUIRED_VARS+="RUNNER_GROUP"
+        ;;
 
-    *)
-    ;;
-esac
+        devops)
+            $REQUIRED_VARS+="this_agent"
+            $REQUIRED_VARS+="PAT"
+            $REQUIRED_VARS+="POOL"
+            $REQUIRED_VARS+="VARIABLE_GROUP_ID"
+        ;;
+
+        *)
+        ;;
+    esac
+
+    should_fail=false
+    for var in "${REQUIRED_VARS[@]}"; do
+        if [[ ! -v $var ]]; then
+            echo "The required var ${var} is not set"
+            should_fail=true
+        fi
+    done
+
+    return $should_fail
+}
+
+start_group "Check required inputs are set"
+    if check_deploy_inputs; then
+        echo "All required variables are set"
+    else
+        exit_error "Missing required variables" $?
+    fi
+end_group
+
+set -euo pipefail
 
 if [ -v TF_VAR_ansible_core_version ]; then
     export TF_VAR_ansible_core_version=2.15
