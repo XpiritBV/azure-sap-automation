@@ -50,7 +50,7 @@ function check_deploy_inputs() {
 }
 
 start_group "Check required inputs are set"
-    if check_deploy_inputs; then
+    if [ "$(check_deploy_inputs)" == "true" ]; then
         echo "All required variables are set"
     else
         exit_error "Missing required variables" $?
