@@ -70,7 +70,7 @@ function commit_changes() {
 function __get_repository_id() {
     repository=$(__get_value_from_context_with_key "github.repository")
 
-    repository_id=$(curl -L \
+    repository_id=$(curl -SsfL \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -82,7 +82,7 @@ function __get_repository_id() {
 function __get_environments() {
     repository_id=$(__get_repository_id)
 
-    curl -L \
+    curl -SsfL \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -99,7 +99,7 @@ function __get_value_with_key() {
 
     repository_id=$(__get_repository_id)
 
-    value=$(curl -L \
+    value=$(curl -SsfL \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
