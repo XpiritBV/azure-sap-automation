@@ -38,15 +38,15 @@ function check_deploy_inputs() {
         ;;
     esac
 
-    should_fail=false
+    success=true
     for var in "${REQUIRED_VARS[@]}"; do
         if [[ ! -v $var ]]; then
             echo "The required var ${var} is not set"
-            should_fail=true
+            success=false
         fi
     done
 
-    echo !$should_fail
+    echo $success
 }
 
 start_group "Check required inputs are set"
