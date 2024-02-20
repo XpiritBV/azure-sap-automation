@@ -213,7 +213,7 @@ if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     export TF_VAR_use_webapp=true
 fi
 
-
+ls -la ${CONFIG_REPO_PATH}/
 touch ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 
@@ -228,7 +228,7 @@ ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
 return_code=$?
 echo "Return code from deploy_controlplane $return_code."
 
-set -eu
+set -euo pipefail
 
 start_group "Update deployment configuration to repo"
 cd $CONFIG_REPO_PATH
