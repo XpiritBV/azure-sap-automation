@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 function setup_dependencies() {
+    git config --global --add safe.directory ${GITHUB_WORKSPACE}
     org_url="$(__get_value_from_context_with_key "github.server_url")/$(__get_value_from_context_with_key "github.organization")"
 
     vars=$(echo "TF_VAR_APP_TOKEN=${APP_TOKEN}\n")
