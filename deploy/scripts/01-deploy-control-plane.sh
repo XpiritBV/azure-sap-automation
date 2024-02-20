@@ -213,6 +213,7 @@ if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     export TF_VAR_use_webapp=true
 fi
 
+touch ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 
 set +eu
