@@ -144,11 +144,6 @@ else
         fi
     fi
 fi
-# echo "Agent: " ${this_agent}
-# if [ -z ${VARIABLE_GROUP_ID} ]; then
-#     exit_error "Variable group ${variable_group} could not be found." 2
-# fi
-end_group
 
 # TODO: Is this necessary on GitHub?
 start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"

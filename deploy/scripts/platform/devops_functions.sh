@@ -7,6 +7,11 @@ function setup_dependencies() {
 
     az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
     export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
+
+    if [ $VARIABLE_GROUP_ID == "" ]; then
+        exit_error "Cannot find a variable group with the name ${variable_group}" 1
+    fi
+
     vars=$(echo "VARIABLE_GROUP_ID=${VARIABLE_GROUP_ID}")
     echo $vars
 }
