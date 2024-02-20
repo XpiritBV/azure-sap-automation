@@ -88,9 +88,10 @@ start_group "Setup platform dependencies"
 eval "$(setup_dependencies | sed 's/^/export /')"
 end_group
 
-start_group "Force reset"
-echo "Force reset: ${force_reset}"
 if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
+    start_group "Force reset"
+    echo "Force reset: ${force_reset}"
+
     log_warning "Forcing a re-install"
     echo "running on ${this_agent}"
     set_config_key_with_value "step" "0"
@@ -133,6 +134,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     fi
 
     step=0
+    end_group
 else
     if [ -f ${deployer_environment_file_name} ]; then
         echo "Found environment file: ${deployer_environment_file_name}"
