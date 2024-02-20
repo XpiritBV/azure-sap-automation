@@ -34,7 +34,7 @@ function end_group() {
 }
 
 function __get_value_from_context_with_key() {
-    $key=$1
+    key=$1
 
     if [[ $key == "" ]]; then
         exit_error "Cannot get a value by using an empty key"
