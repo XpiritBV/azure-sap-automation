@@ -34,16 +34,6 @@ function end_group() {
     echo "::endgroup::"
 }
 
-function __set_value_with_key() {
-    return 0
-    # Nothing here yet.
-}
-
-function __get_value_with_key() {
-    return 0
-    # Nothing here yet.
-}
-
 function __get_value_from_context_with_key() {
     $key=$1
 
