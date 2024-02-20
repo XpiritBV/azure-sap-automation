@@ -150,8 +150,8 @@ fi
 # TODO: Is this necessary on GitHub?
 start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
 echo "Current Directory $(pwd)"
-mkdir -p .sap_deployment_automation
-echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
+mkdir -p ${CONFIG_REPO_PATH}/.sap_deployment_automation
+echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH > ${CONFIG_REPO_PATH}/.sap_deployment_automation/config
 end_group
 start_group "File Validations"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
@@ -212,6 +212,7 @@ if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
     export TF_VAR_use_webapp=true
 fi
+
 
 touch ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
