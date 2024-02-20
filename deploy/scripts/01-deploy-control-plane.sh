@@ -101,7 +101,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     export REINSTALL_RESOURCE_GROUP=$(get_value_with_key "Terraform_Remote_Storage_Resource_Group_Name")
 
     export FORCE_RESET=true
-    var=$(get_value_with_key | tr -d \")
+    var=$(get_value_with_key "Deployer_Key_Vault.value"| tr -d \")
     if [ -n "${var}" ]; then
         key_vault="${var}"
         echo 'Deployer Key Vault' ${key_vault}
