@@ -42,7 +42,7 @@ function __get_value_from_context_with_key() {
 
     jq_filter="\"${key}\""
 
-    value=$(echo $GITHUB_CONTEXT | jq .'$ENV.jq_filter' )
+    value=$(echo $GITHUB_CONTEXT | jq .["\$ENV.jq_filter"] )
 
     echo $value
 }
