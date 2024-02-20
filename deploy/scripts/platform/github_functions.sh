@@ -40,9 +40,7 @@ function __get_value_from_context_with_key() {
         exit_error "Cannot get a value by using an empty key"
     fi
 
-    jq_filter="\"${key}\""
-
-    value=$(echo $GITHUB_CONTEXT | jq .["\$ENV.jq_filter"] )
+    value=$(echo $GITHUB_CONTEXT | jq ".\"$key\"" )
 
     echo $value
 }
