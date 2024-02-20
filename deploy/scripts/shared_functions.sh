@@ -63,7 +63,7 @@ function __appconfig_set_value_with_key() {
 }
 
 function get_value_with_key() {
-    $key=$1
+    key=$1
 
     if [[ $key == "" ]]; then
         exit_error "Cannot get value with an empty key" 1
@@ -79,8 +79,8 @@ function get_value_with_key() {
 }
 
 function set_value_with_key() {
-    $key=$1
-    $value=$2
+    key=$1
+    value=$2
 
     if [[ $key == "" ]]; then
         exit_error "Cannot set value with an empty key" 1
@@ -94,8 +94,8 @@ function set_value_with_key() {
 }
 
 function validate_key_value() {
-    $key=$1
-    $value=$2
+    key=$1
+    value=$2
 
     config_value=$(get_value_with_key $key)
     if [ $config_value != $value ]; then
@@ -104,7 +104,7 @@ function validate_key_value() {
 }
 
 function config_value_with_key() {
-    $key=$1
+    key=$1
 
     if [[ $key == "" ]]; then
         exit_error "The argument cannot be empty, please supply a key to get the value of" 1
@@ -114,8 +114,8 @@ function config_value_with_key() {
 }
 
 function set_config_key_with_value() {
-    $key=$1
-    $value=$2
+    key=$1
+    value=$2
 
     if [[ $key == "" ]]; then
         exit_error "The argument cannot be empty, please supply a key to set the value of" 1
