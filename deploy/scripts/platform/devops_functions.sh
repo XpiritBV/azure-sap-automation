@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 function setup_dependencies() {
-    az config set extension.use_dynamic_install=yes_without_prompt
+    az config set extension.use_dynamic_install=yes_without_prompt > /dev/null 2>&1
 
-    az extension add --name azure-devops --output none
+    az extension add --name azure-devops --output none > /dev/null 2>&1
 
-    az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none
-    export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
+    az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none > /dev/null 2>&1
+    export VARIABLE_GROUP_ID=$(az pipelines variable-group list --q uery "[?name=='${variable_group}'].id | [0]")
 
     if [ $VARIABLE_GROUP_ID == "" ]; then
         exit_error "Cannot find a variable group with the name ${variable_group}" 1
