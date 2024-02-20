@@ -237,7 +237,7 @@ git pull -q
 if [ -f ${deployer_environment_file_name} ]; then
     file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
     if [ -z "$file_deployer_tfstate_key" ]; then
-        file_deployer_tfstate_key=$DEPLOYER_TFSTATE_KEY
+        file_deployer_tfstate_key=${deployerfolder}.terrafom.tfstate
     fi
     echo 'Deployer State File' $file_deployer_tfstate_key
     file_key_vault=$(config_value_with_key "keyvault")
