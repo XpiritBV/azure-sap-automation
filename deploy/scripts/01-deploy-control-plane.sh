@@ -43,7 +43,7 @@ function check_deploy_inputs() {
 
     success=true
     for var in "${REQUIRED_VARS[@]}"; do
-        if [[ ! -v $var ]]; then
+        if [[ ! -v var ]]; then
             echo "The required var ${var} is not set"
             success=false
         fi
