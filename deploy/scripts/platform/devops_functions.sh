@@ -12,8 +12,7 @@ function setup_dependencies() {
         exit_error "Cannot find a variable group with the name ${variable_group}" 1
     fi
 
-    vars=$(echo "VARIABLE_GROUP_ID=${VARIABLE_GROUP_ID}")
-    echo $vars
+    echo "VARIABLE_GROUP_ID=${VARIABLE_GROUP_ID}"
 }
 
 function exit_error() {
