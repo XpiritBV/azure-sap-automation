@@ -7,6 +7,7 @@ RUN tdnf install -y \
   dos2unix \
   gawk \
   git \
+  jq \
   powershell \
   terraform \
   unzip \
