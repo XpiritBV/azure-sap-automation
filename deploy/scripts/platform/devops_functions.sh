@@ -16,7 +16,7 @@ function setup_dependencies() {
 }
 
 function exit_error() {
-    MESSAGE=$1
+    MESSAGE="$(caller | awk '{print $2":"$1}')$1"
     ERROR_CODE=$2
 
     echo "##vso[task.logissue type=error]${MESSAGE}"
