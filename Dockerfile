@@ -4,13 +4,14 @@ RUN tdnf install -y \
   ansible \
   azure-cli \
   ca-certificates \
+  dos2unix \
   gawk \
   git \
   powershell \
   terraform \
-  zip \
   unzip \
-  dos2unix
+  util-linux \
+  zip
 
 COPY . /source
 
