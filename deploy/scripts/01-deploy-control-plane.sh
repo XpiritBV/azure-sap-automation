@@ -228,16 +228,19 @@ set -euo pipefail
 
 start_group "Update deployment configuration to repo"
 cd $CONFIG_REPO_PATH
+ls -lsR .
 git pull -q
 
 if [ -f ${deployer_environment_file_name} ]; then
     file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
     if [ -z "$file_deployer_tfstate_key" ]; then
-        file_deployer_tfstate_key=${deployerfolder}.terrafom.tfstate
+        file_deployer_tfstate_key=${deployerfolder}/.terrafom.tfstate
     fi
     echo "Deployer State File: $file_deployer_tfstate_key"
+
     file_key_vault=$(config_value_with_key "keyvault")
     echo "Deployer Key Vault: ${file_key_vault}"
+
     deployer_random_id=$(config_value_with_key "deployer_random_id")
     library_random_id=$(config_value_with_key "library_random_id")
 fi
@@ -246,24 +249,24 @@ if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 fi
 
-if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
-    git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
+if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
+    git add -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
 fi
 
-if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
+if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
     # TODO: unzip with password is unsecure, use PGP Encrypt
-    zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
-    git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
+    zip -j -P "${pass}" DEPLOYER/${deployerfolder}/state DEPLOYER/${deployerfolder}/terraform.tfstate
+    git add -f DEPLOYER/${deployerfolder}/state.zip
 fi
 
 if git diff --cached --quiet; then
     commit_changes
 fi
 
-if [ -f $CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
+if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     # TODO: @cloudcosmonaut - Can you make this GitHub ready?
-    echo "##vso[task.uploadsummary]$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
+    echo "##vso[task.uploadsummary].sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
 fi
 end_group
 
