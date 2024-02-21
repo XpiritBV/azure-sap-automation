@@ -46,7 +46,7 @@ permissions:
 jobs:
   prepare_deployer:
     environment: MGMT-WEEU-DEP01-INFRASTRUCTURE
-    name: Prepare the self hosted agent(s)
+    name: Prepare the self hosted runners(s)
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
