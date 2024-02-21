@@ -83,11 +83,6 @@ end_group
 start_group "Setup platform dependencies"
 # Will return vars which we need to export afterwards
 eval "$(setup_dependencies | sed 's/^/export /')"
-echo $GITHUB_CONTEXT
-value=$(echo $GITHUB_CONTEXT | jq ".\"repository\"" )
-echo $value
-echo "TF_VAR_ORG_URL: ${TF_VAR_ORG_URL}"
-
 end_group
 
 if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
