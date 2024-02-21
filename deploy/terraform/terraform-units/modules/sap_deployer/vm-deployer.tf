@@ -79,11 +79,16 @@ resource "azurerm_network_interface" "deployer" {
   }
 }
 
+resource "azurerm_resource_provider_registration" "provider_microsft_managed_identity" {
+  name = "Microsoft.ManagedIdentity"
+}
+
 // User defined identity for all Deployers, assign contributor to the current subscription
 resource "azurerm_user_assigned_identity" "deployer" {
   name                = format("%s%s%s", var.naming.resource_prefixes.msi, local.prefix, var.naming.resource_suffixes.msi)
   resource_group_name = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].name : azurerm_resource_group.deployer[0].name
   location            = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].location : azurerm_resource_group.deployer[0].location
+  depends_on          = [ azurerm_resource_provider_registration.provider_microsft_managed_identity ]
 }
 
 # // Add role to be able to deploy resources

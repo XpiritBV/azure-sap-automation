@@ -7,6 +7,11 @@ data "azurerm_client_config" "deployer" {
 resource "time_offset" "secret_expiry_date" {
   offset_months = 12
 }
+
+resource "azurerm_resource_provider_registration" "provider_microsft_keyvault" {
+  name = "Microsoft.KeyVault"
+}
+
 // Create user KV with access policy
 resource "azurerm_key_vault" "kv_user" {
   count                                = (var.key_vault.kv_exists) ? 0 : 1
@@ -58,7 +63,7 @@ resource "azurerm_key_vault" "kv_user" {
   lifecycle                        {
                                      ignore_changes = [network_acls]
                                    }
-
+  depends_on                           = [ azurerm_resource_provider_registration.provider_microsft_keyvault ]
 }
 
 
