@@ -149,7 +149,7 @@ fi
 
 # TODO: Is this necessary on GitHub?
 start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
-echo "Current Directory $(pwd)"
+echo "Current Directory: $(pwd)"
 mkdir -p ${CONFIG_REPO_PATH}/.sap_deployment_automation
 echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH > ${CONFIG_REPO_PATH}/.sap_deployment_automation/config
 end_group
@@ -157,12 +157,12 @@ start_group "File Validations"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
     exit_error "File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
 else
-    echo "Deployer Config File found:" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
+    echo "Deployer Config File found: ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}"
 fi
 if [ ! -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} ]; then
     exit_error "File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found." 2
 else
-    echo "Library Config File found:" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
+    echo "Library Config File found: ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}"
 fi
 end_group
 
@@ -193,7 +193,7 @@ if [[ -v POOL ]]; then
     if [ ${#POOL_NAME} -eq 0 ]; then
         log_warning "Agent Pool ${POOL} does not exist." 2
     fi
-    echo 'Deployer Agent Pool found' $POOL_NAME
+    echo "Deployer Agent Pool found: $POOL_NAME"
     export TF_VAR_agent_pool=${POOL}
     export TF_VAR_agent_pat=${PAT}
 fi
@@ -208,7 +208,7 @@ if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     echo "Use WebApp is selected"
 
     export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}
-    echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
+    echo "App Registration App ID: ${TF_VAR_app_registration_app_id}"
     export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
     export TF_VAR_use_webapp=true
 fi
@@ -239,9 +239,9 @@ if [ -f ${deployer_environment_file_name} ]; then
     if [ -z "$file_deployer_tfstate_key" ]; then
         file_deployer_tfstate_key=${deployerfolder}.terrafom.tfstate
     fi
-    echo 'Deployer State File' $file_deployer_tfstate_key
+    echo "Deployer State File: $file_deployer_tfstate_key"
     file_key_vault=$(config_value_with_key "keyvault")
-    echo 'Deployer Key Vault' ${file_key_vault}
+    echo "Deployer Key Vault: ${file_key_vault}"
     deployer_random_id=$(config_value_with_key "deployer_random_id")
     library_random_id=$(config_value_with_key "library_random_id")
 fi
