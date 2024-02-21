@@ -71,12 +71,12 @@ jobs:
           application_id: ${{ secrets.APPLICATION_ID }}
           application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
 
-      # - name: Azure Login
-      #   uses: Azure/Login@v1
-      #   with:
-      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      - name: Azure Login
+        uses: Azure/Login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: 'Deploy control plane'
         run: deploy/scripts/01-deploy-control-plane.sh
