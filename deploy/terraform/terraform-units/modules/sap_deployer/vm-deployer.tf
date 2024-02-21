@@ -79,9 +79,9 @@ resource "azurerm_network_interface" "deployer" {
   }
 }
 
-resource "azurerm_resource_provider_registration" "provider_microsft_managed_identity" {
-  name = "Microsoft.ManagedIdentity"
-}
+# resource "azurerm_resource_provider_registration" "provider_microsft_managed_identity" {
+#   name = "Microsoft.ManagedIdentity"
+# }
 
 // User defined identity for all Deployers, assign contributor to the current subscription
 resource "azurerm_user_assigned_identity" "deployer" {
