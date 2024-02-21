@@ -79,19 +79,14 @@ resource "azurerm_network_interface" "deployer" {
   }
 }
 
-# resource "azurerm_resource_provider_registration" "provider_microsft_managed_identity" {
-#   name = "Microsoft.ManagedIdentity"
-# }
-
 // User defined identity for all Deployers, assign contributor to the current subscription
 resource "azurerm_user_assigned_identity" "deployer" {
   name                = format("%s%s%s", var.naming.resource_prefixes.msi, local.prefix, var.naming.resource_suffixes.msi)
   resource_group_name = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].name : azurerm_resource_group.deployer[0].name
   location            = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].location : azurerm_resource_group.deployer[0].location
-  depends_on          = [ azurerm_resource_provider_registration.provider_microsft_managed_identity ]
 }
 
-# // Add role to be able to deploy resources
+// Add role to be able to deploy resources
 resource "azurerm_role_assignment" "sub_contributor" {
   provider             = azurerm.main
   count                = var.assign_subscription_permissions ? 1 : 0
@@ -198,7 +193,7 @@ resource "azurerm_linux_virtual_machine" "deployer" {
                   ]
 }
 
-# // Add role to be able to deploy resources
+// Add role to be able to deploy resources
 resource "azurerm_role_assignment" "subscription_contributor_system_identity" {
   count                = var.assign_subscription_permissions && var.deployer.add_system_assigned_identity ? var.deployer_vm_count : 0
   provider             = azurerm.main
@@ -207,7 +202,7 @@ resource "azurerm_role_assignment" "subscription_contributor_system_identity" {
   principal_id         = azurerm_linux_virtual_machine.deployer[count.index].identity[0].principal_id
 }
 
-#Private endpoint tend to take a while to be created, so we need to wait for it to be ready before we can use it
+// Private endpoint tend to take a while to be created, so we need to wait for it to be ready before we can use it
 resource "time_sleep" "wait_for_VM" {
   create_duration = "60s"
 
