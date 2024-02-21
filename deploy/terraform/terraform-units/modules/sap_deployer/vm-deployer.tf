@@ -193,7 +193,8 @@ resource "azurerm_linux_virtual_machine" "deployer" {
 
   tags = local.tags
   depends_on    = [
-                    length(var.deployer.deployer_diagnostics_account_arm_id) > 0 ? data.azurerm_storage_account.deployer : azurerm_storage_account.deployer
+                    data.azurerm_storage_account.deployer,
+                    azurerm_storage_account.deployer
                   ]
 }
 
