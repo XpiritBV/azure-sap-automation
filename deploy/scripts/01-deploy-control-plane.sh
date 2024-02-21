@@ -39,7 +39,6 @@ function check_deploy_inputs() {
 
     success=0
     for var in "${REQUIRED_VARS[@]}"; do
-        echo "Checking if variable is set and not empty: ${var}"
         if [[ -z "${!var}" ]]; then
             success=1
             echo "Missing required variable: ${var}"
@@ -211,7 +210,6 @@ if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     export TF_VAR_use_webapp=true
 fi
 
-ls -la ${CONFIG_REPO_PATH}/
 touch ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 
