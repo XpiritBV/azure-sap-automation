@@ -17,44 +17,45 @@ function check_deploy_inputs() {
     )
 
     case get_platform in
-        github)
-            $REQUIRED_VARS+="APP_TOKEN"
-            $REQUIRED_VARS+="RUNNER_GROUP"
+    github)
+        REQUIRED_VARS+=("APP_TOKEN")
+        REQUIRED_VARS+=("RUNNER_GROUP")
         ;;
 
-        devops)
-            $REQUIRED_VARS+="this_agent"
-            $REQUIRED_VARS+="PAT"
-            $REQUIRED_VARS+="POOL"
-            $REQUIRED_VARS+="VARIABLE_GROUP_ID"
+    devops)
+        REQUIRED_VARS+=("this_agent")
+        REQUIRED_VARS+=("PAT")
+        REQUIRED_VARS+=("POOL")
+        REQUIRED_VARS+=("VARIABLE_GROUP_ID")
         ;;
 
-        *)
-        ;;
+    *) ;;
     esac
 
     if [[ ${use_webapp,,} == "true" ]]; then
-        $REQUIRED_VARS+="APP_REGISTRATION_APP_ID"
-        $REQUIRED_VARS+="WEB_APP_CLIENT_SECRET"
+        REQUIRED_VARS+=("APP_REGISTRATION_APP_ID")
+        REQUIRED_VARS+=("WEB_APP_CLIENT_SECRET")
     fi
 
-    success=true
+    success=0
     for var in "${REQUIRED_VARS[@]}"; do
-        if [[ ! -v var ]]; then
-            echo "The required var ${var} is not set"
-            success=false
+        echo "Checking if variable is set and not empty: ${var}"
+        if [[ -z "${!var}" ]]; then
+            success=1
+            echo "Missing required variable: ${var}"
         fi
     done
 
-    echo $success
+    return $success
 }
 
 start_group "Check all required inputs are set"
-    if [ "$(check_deploy_inputs)" == "true" ]; then
-        echo "All required variables are set"
-    else
-        exit_error "Missing required variables" $?
-    fi
+check_deploy_inputs
+if [ $? == 0 ]; then
+    echo "All required variables are set"
+else
+    exit_error "Missing required variables" 1
+fi
 end_group
 
 set -euo pipefail
@@ -93,13 +94,13 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     echo "running on ${this_agent}"
     set_config_key_with_value "step" "0"
 
-    // TODO: Terraform should be platform agnostic and use the set methods for the environment: `set_value_with_key`
+    // TODO: Terraform should be platform agnostic and use the set methods for the environment: $(set_value_with_key)
     export REINSTALL_ACCOUNTNAME=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
     export REINSTALL_SUBSCRIPTION=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
     export REINSTALL_RESOURCE_GROUP=$(get_value_with_key "Terraform_Remote_Storage_Resource_Group_Name")
 
     export FORCE_RESET=true
-    var=$(get_value_with_key "Deployer_Key_Vault.value"| tr -d \")
+    var=$(get_value_with_key "Deployer_Key_Vault.value" | tr -d \")
     if [ -n "${var}" ]; then
         key_vault="${var}"
         echo 'Deployer Key Vault' ${key_vault}
@@ -148,7 +149,7 @@ fi
 start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
 echo "Current Directory: $(pwd)"
 mkdir -p ${CONFIG_REPO_PATH}/.sap_deployment_automation
-echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH > ${CONFIG_REPO_PATH}/.sap_deployment_automation/config
+echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >${CONFIG_REPO_PATH}/.sap_deployment_automation/config
 end_group
 start_group "File Validations"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
