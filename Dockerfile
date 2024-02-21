@@ -8,6 +8,8 @@ RUN tdnf install -y \
   gawk \
   git \
   jq \
+  openssl-devel \
+  openssl-libs \
   powershell \
   terraform \
   unzip \
