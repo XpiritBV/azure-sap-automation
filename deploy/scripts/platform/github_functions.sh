@@ -46,7 +46,7 @@ function __get_value_from_context_with_key() {
 }
 
 function commit_changes() {
-    workflow=$(__get_value_from_context_with_key "github.workflow")
+    workflow=$(__get_value_from_context_with_key "workflow")
 
     git config --global user.email github-actions@github.com
     git config --global user.name github-actions
@@ -55,7 +55,7 @@ function commit_changes() {
 }
 
 function __get_repository_id() {
-    repository=$(__get_value_from_context_with_key "github.repository")
+    repository=$(__get_value_from_context_with_key "repository")
 
     repository_id=$(curl -SsfL \
         -H "Accept: application/vnd.github+json" \
