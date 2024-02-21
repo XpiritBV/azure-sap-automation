@@ -76,7 +76,7 @@ jobs:
 
       - name: 'Deploy control plane'
         run: deploy/scripts/01-deploy-control-plane.sh
-        working-directory: /source
+        # TODO: working-directory: /source
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
