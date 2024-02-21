@@ -64,3 +64,9 @@ function commit_changes() {
     git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
     git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
 }
+
+function upload_summary() {
+    summary=$1
+
+    echo "##vso[task.uploadsummary]${summary}"
+}

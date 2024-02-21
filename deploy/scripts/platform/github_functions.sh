@@ -108,3 +108,8 @@ function __set_value_with_key() {
         -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repositories/${repository}/environments/${ENVIRONMENT}/variables \
         -d "{\"name\":\"${key}\", \"value\":\"${value}\"}"
 }
+
+function upload_summary() {
+    summary=$1
+    echo $summary >> $GITHUB_STEP_SUMMARY
+}

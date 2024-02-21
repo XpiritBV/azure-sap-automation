@@ -268,8 +268,7 @@ if git diff --cached --quiet; then
 fi
 
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
-    # TODO: @cloudcosmonaut - Can you make this GitHub ready?
-    echo "##vso[task.uploadsummary].sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
+    upload_summary .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
 fi
 end_group
 

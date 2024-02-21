@@ -59,11 +59,6 @@ jobs:
         #   sparse-checkout: |
         #     WORKSPACES
 
-      # - run: |
-      #     ln -s $GITHUB_WORKSPACE /cfg
-      #     ls -laR /cfg
-      #     ls -R $GITHUB_WORKSPACE
-
       # Required permissions: org level runner registration permissions
       - name: Get app token
         id: get_workflow_token
