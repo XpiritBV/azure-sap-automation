@@ -228,7 +228,6 @@ set -euo pipefail
 
 start_group "Update deployment configuration to repo"
 cd $CONFIG_REPO_PATH
-ls -laR .
 git pull -q
 
 if [ -f ${deployer_environment_file_name} ]; then
@@ -250,19 +249,16 @@ if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
 fi
 
 if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
-    echo "Adding DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate to Git..."
     git add -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
 fi
 
 if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-    echo "Adding DEPLOYER/${deployerfolder}/terraform.tfstate to Git..."
     pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
     # TODO: unzip with password is unsecure, use PGP Encrypt
     zip -j -P "${pass}" DEPLOYER/${deployerfolder}/state DEPLOYER/${deployerfolder}/terraform.tfstate
     git add -f DEPLOYER/${deployerfolder}/state.zip
 fi
 
-git status
 if git diff --cached --quiet; then
     commit_changes
 fi
