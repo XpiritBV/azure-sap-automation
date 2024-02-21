@@ -181,6 +181,7 @@ resource "azurerm_linux_virtual_machine" "deployer" {
       azurerm_storage_account.deployer[0].primary_blob_endpoint
     )
   }
+
   connection {
     type        = "ssh"
     host        = azurerm_public_ip.deployer[count.index].ip_address
@@ -191,6 +192,9 @@ resource "azurerm_linux_virtual_machine" "deployer" {
   }
 
   tags = local.tags
+  depends_on    = [
+                    length(var.deployer.deployer_diagnostics_account_arm_id) > 0 ? data.azurerm_storage_account.deployer[0] : azurerm_storage_account.deployer[0]
+                  ]
 }
 
 # // Add role to be able to deploy resources
