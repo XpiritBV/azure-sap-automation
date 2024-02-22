@@ -139,7 +139,7 @@ variable "app_service"                 {
                                        }
 #########################################################################################
 #                                                                                       #
-#  Github actions definitions                                                                      #
+#  Github actions definitions                                                           #
 #                                                                                       #
 #########################################################################################
 variable "app_token"                  {
@@ -150,8 +150,15 @@ variable "runner_group"               {
                                        description = "If provided, contains the Personal Access Token to be used"
                                        default = ""
                                       }
-variable "org_url"                    {
-                                       description = "If provided, contains the Url to the repository/organization"
+variable "server_url"                 {
+                                       description = "If provided, contains the Server Url of the GitHub instance"
+                                       default = "https://github.com"
+                                      }
+variable "api_url"                    {
+                                       description = "If provided, contains the API Url of the GitHub instance"
+                                       default = "https://api.github.com"
+                                      }
+variable "repository"                 {
+                                       description = "If provided, contains the Reference to tue repositry (e.g. owner/repository)"
                                        default = ""
                                       }
-

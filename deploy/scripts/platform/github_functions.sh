@@ -2,11 +2,16 @@
 
 function setup_dependencies() {
     git config --global --add safe.directory ${GITHUB_WORKSPACE}
-    org_url="$(__get_value_from_context_with_key "server_url")/$(__get_value_from_context_with_key "repository")"
+    server_url="$(__get_value_from_context_with_key "server_url")"
+    api_url="$(__get_value_from_context_with_key "api_url")"
+    repository="$(__get_value_from_context_with_key "repository")"
+
+    echo "TF_VAR_SERVER_URL=${server_url}"
+    echo "TF_VAR_API_URL=${api_url}"
+    echo "TF_VAR_REPOSITORY=${repository}"
 
     echo "TF_VAR_APP_TOKEN=${APP_TOKEN}"
     echo "TF_VAR_RUNNER_GROUP=${RUNNER_GROUP}"
-    echo "TF_VAR_ORG_URL=${org_url}"
 }
 
 function exit_error() {
@@ -117,4 +122,16 @@ function __set_value_with_key() {
 function upload_summary() {
     summary=$1
     echo $summary >> $GITHUB_STEP_SUMMARY
+}
+
+function get_runner_registration_token() {
+    api_url=$(__get_value_from_context_with_key "api_url")
+    repository=$(__get_value_from_context_with_key "repository")
+
+    curl -SsfL \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer ${APP_TOKEN}" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        "${api_url}/repos/${repository}/actions/runners/registration-token"
 }

@@ -244,7 +244,9 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                    platform             = var.platform
                                                    app_token            = var.app_token
                                                    runner_group         = var.runner_group
-                                                   org_url              = var.org_url
+                                                   repository           = var.repository
+                                                   server_url           = var.server_url
+                                                   api_url              = var.api_url
                                                  }
                                                )
                                              )

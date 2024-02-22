@@ -56,7 +56,9 @@ module "sap_deployer" {
   webapp_client_secret                         = var.webapp_client_secret
   app_token                                    = var.APP_TOKEN
   runner_group                                 = var.RUNNER_GROUP
-  org_url                                      = var.ORG_URL
+  repository                                   = var.REPOSITORY
+  server_url                                   = var.SERVER_URL
+  api_url                                      = var.API_URL
 }
 
 module "sap_namegenerator" {

@@ -35,8 +35,10 @@ resource "null_resource" "prepare-deployer" {
                                              platform             = var.platform
                                              app_token            = var.app_token
                                              runner_group         = var.runner_group
-                                             org_url              = var.org_url
-                                             }
+                                             repository           = var.repository
+                                             server_url           = var.server_url
+                                             api_url              = var.api_url
+                                            }
                                            )
 
                                            destination = "/tmp/configure_deployer.sh"
@@ -78,7 +80,9 @@ resource "local_file" "configure_deployer" {
                                            platform             = var.platform
                                            app_token            = var.app_token
                                            runner_group         = var.runner_group
-                                           org_url              = var.org_url
+                                           repository           = var.repository
+                                           server_url           = var.server_url
+                                           api_url              = var.api_url
                                            }
                                          )
   filename                             = format("%s/configure_deployer.sh", path.cwd)

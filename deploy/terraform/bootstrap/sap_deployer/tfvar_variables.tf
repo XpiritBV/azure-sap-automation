@@ -522,7 +522,15 @@ variable "RUNNER_GROUP"                             {
                                                       description = "If provided, contains the Personal Access Token to be used"
                                                       default = ""
                                                     }
-variable "ORG_URL"                                  {
-                                                      description = "If provided, contains the Url to the repository/organization"
+variable "SERVER_URL"                               {
+                                                      description = "If provided, contains the Server Url of the GitHub instance"
+                                                      default = "https://github.com"
+                                                    }
+variable "API_URL"                                  {
+                                                      description = "If provided, contains the API Url of the GitHub instance"
+                                                      default = "https://api.github.com"
+                                                    }
+variable "REPOSITORY"                               {
+                                                      description = "If provided, contains the Reference to tue repositry (e.g. owner/repository)"
                                                       default = ""
                                                     }
