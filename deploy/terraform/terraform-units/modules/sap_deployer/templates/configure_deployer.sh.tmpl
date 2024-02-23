@@ -146,6 +146,10 @@ pkg_mgr_init()
         pkg_mgr="yum"
         pkg_type="rpm"
         ;;
+      (mariner)
+        pkg_mgr="tdnf"
+        pkg_type="rpm"
+        ;;
       (*)
         error "Unsupported distibution: '$${distro_name}'"
         exit 1
@@ -175,6 +179,9 @@ pkg_mgr_refresh()
         set -o errexit
         ;;
       yum)
+        sudo "$${pkg_mgr}" update --quiet
+        ;;
+      tdnf)
         sudo "$${pkg_mgr}" update --quiet
         ;;
     esac
@@ -207,6 +214,9 @@ pkg_mgr_upgrade()
       yum)
         sudo "$${pkg_mgr}" upgrade --quiet -y
         ;;
+      tdnf)
+        sudo "${pkg_mgr}" updateinfo --quiet
+        ;;
     esac
 
     pkg_mgr_upgraded=true
@@ -230,6 +240,9 @@ pkg_mgr_install() {
       ;;
     yum)
       sudo "$${pkg_mgr}" --nogpgcheck --quiet install --assumeyes "$${@}"
+      ;;
+    tdnf)
+      sudo "$${pkg_mgr}" install --quiet --assumeyes "$${@}"
       ;;
     *)
       echo "Unsupported package manager: $${pkg_mgr}"
@@ -296,6 +309,9 @@ else
     (rhel*)
         echo "$${distro_name_version} is supported."
         ;;
+    (mariner*)
+        echo "$${distro_name_version} is supported."
+        ;;
     (*)
         error "Unsupported distro: $${distro_name_version} not currently supported."
         exit 1
@@ -341,6 +357,20 @@ else
       ;;
     (rhel)
       echo "we are inside RHEL"
+      ansible_version="2.11"
+      ansible_major="$${ansible_version%%.*}"
+      ansible_minor=$(echo "$${ansible_version}." | cut -d . -f 2)
+      # Ansible installation directories
+      ansible_base="/opt/ansible"
+      ansible_bin="$${ansible_base}/bin"
+      ansible_venv="$${ansible_base}/venv/$${ansible_version}"
+      ansible_venv_bin="$${ansible_venv}/bin"
+      ansible_collections="$${ansible_base}/collections"
+      ansible_pip3="$${ansible_venv_bin}/pip3"
+      sudo python3 -m pip install virtualenv;
+      ;;
+    (mariner)
+      echo "we are inside Mariner"
       ansible_version="2.11"
       ansible_major="$${ansible_version%%.*}"
       ansible_minor=$(echo "$${ansible_version}." | cut -d . -f 2)
@@ -406,6 +436,17 @@ else
             python3-pip
         )
         ;;
+    (mariner)
+        cli_pkgs+=(
+          azure-cli
+        )
+        required_pkgs+=(
+          python3
+          python3-pip
+          python3-virtualenv
+          sshpass
+        )
+        ;;
     esac
     # Include distro version specific packages into required packages list
     case "$(get_distro_name_version)" in
@@ -459,8 +500,9 @@ else
         "$${tf_dir}" \
         "$${tf_bin}"
     wget -nv -O "/tmp/$${tf_zip}" "https://releases.hashicorp.com/terraform/$${tfversion}/$${tf_zip}"
-    sudo unzip -o "/tmp/$${tf_zip}" -d "$${tf_dir}"
-    sudo ln -vfs "../$(basename "$${tf_dir}")/terraform" "$${tf_bin}/terraform"
+    unzip -o /tmp/"${tf_zip}" -d /tmp
+    sudo install -Dm755 /tmp/terraform "${tf_dir}/terraform"
+    rm /tmp/${tf_zip}
 
     # Uninstall Azure CLI - For some platforms
     case "$(get_distro_name)" in
@@ -520,6 +562,9 @@ else
         sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm
         sudo dnf install -y azure-cli
         ;;
+    (mariner)
+        sudo tdnf install azure-cli -y
+        ;;
     esac
 
     set +o errexit
@@ -553,7 +598,7 @@ else
 
 
     case "$(get_distro_name)" in
-    (rhel)
+    (rhel|mariner)
         if [[ ! -e "$${ansible_venv_bin}/activate" ]]; then
             sudo rm -rf "$${ansible_venv}"
             sudo python3 -m venv "$${ansible_venv}"
@@ -830,11 +875,14 @@ else
               sudo chmod +x "/home/$${local_user}/dotnet-install.sh"
               sudo /home/$${local_user}/dotnet-install.sh --install-dir "$${DOTNET_ROOT}" --channel 7.0
               ;;
-          (rhel*)
+          (rhel*|mariner)
               sudo wget https://dot.net/v1/dotnet-install.sh -O "/home/$${local_user}/dotnet-install.sh"
               sudo chmod +x "/home/$${local_user}/dotnet-install.sh"
               sudo /home/$${local_user}/dotnet-install.sh --install-dir "$${DOTNET_ROOT}" --channel 7.0
             ;;
+          (mariner)
+            sudo tdnf install dotnet-sdk-7.0 -y
+          ;;
         esac
       else
         echo export "PATH=$${ansible_bin}:$${tf_bin}:"'$${PATH}'::"$${DOTNET_ROOT}":'$${AZADHOME}/Azure_SAP_Automated_Deployment/sap-automation/deploy/scripts' | sudo tee -a /etc/profile.d/deploy_server.sh
