@@ -7,10 +7,11 @@ RUN tdnf install -y \
   azure-cli \
   ca-certificates \
   curl \
-  dotnet-sdk-7.0 \
   dos2unix \
+  dotnet-sdk-7.0 \
   gawk \
   git \
+  glibc-i18n \
   gnupg \
   jq \
   openssl-devel \
@@ -20,6 +21,7 @@ RUN tdnf install -y \
   python3-pip \
   python3-virtualenv \
   sshpass \
+  sudo \
   unzip \
   util-linux \
   zip
@@ -30,8 +32,19 @@ RUN curl -fsSo terraform.zip \
   unzip terraform.zip && \
   install -Dm755 terraform /usr/bin/terraform
 
-RUN export LC_ALL="en_US.UTF-8"
-RUN export LANG="en_US.UTF-8"
+RUN locale-gen.sh
+RUN echo "export LC_ALL=en_US.UTF-8" >> /root/.bashrc && \
+    echo "export LANG=en_US.UTF-8" >> /root/.bashrc
+
+RUN pip3 install --upgrade \
+    ansible-core \
+    argcomplete \
+    jmespath \
+    netaddr  \
+    pip \
+    pywinrm \
+    setuptools \
+    wheel
 
 COPY . /source
 
