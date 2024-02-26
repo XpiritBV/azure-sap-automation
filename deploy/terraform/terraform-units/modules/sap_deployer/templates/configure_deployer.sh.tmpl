@@ -215,7 +215,7 @@ pkg_mgr_upgrade()
         sudo "$${pkg_mgr}" upgrade --quiet -y
         ;;
       tdnf)
-        sudo "${pkg_mgr}" updateinfo --quiet
+        sudo "$${pkg_mgr}" updateinfo --quiet
         ;;
     esac
 
@@ -282,9 +282,8 @@ tf_zip="terraform_$${tfversion}_linux_amd64.zip"
 
 export AZADHOME="/home/$${local_user}"
 
-
 #
-#Don't re-run the following if the script is already installed
+# Don't re-run the following if the script is already installed
 #
 
 if [ -f /etc/profile.d/deploy_server.sh ] ; then
