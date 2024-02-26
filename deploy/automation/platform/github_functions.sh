@@ -64,11 +64,11 @@ function __get_repository_id() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository=$(__get_value_from_context_with_key "repository")
 
-    repository_id=$(curl -SsfL \
+    repository_id=$(curl -Ssf \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repos/${repository}" | jq '.id')
+        -L "${api_url}/repos/${repository}" | jq '.id')
 
     return $repository_id
 }
@@ -77,11 +77,11 @@ function __get_environments() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    curl -SsfL \
+    curl -Ssf \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables"
+        -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables"
 }
 
 function __create_environment() {
@@ -95,11 +95,11 @@ function __get_value_with_key() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    value=$(curl -SsfL \
+    value=$(curl -Ssf \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}")
+        -L"${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}")
 
     return $value
 }
@@ -129,10 +129,10 @@ function get_runner_registration_token() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository=$(__get_value_from_context_with_key "repository")
 
-    curl -SsfL \
+    curl -Ssf \
         -X POST \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repos/${repository}/actions/runners/registration-token"
+        -L "${api_url}/repos/${repository}/actions/runners/registration-token"
 }
