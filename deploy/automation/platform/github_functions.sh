@@ -68,7 +68,7 @@ function __get_repository_id() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repos/${repository} | jq '.id'")
+        "${api_url}/repos/${repository}" | jq '.id')
 
     return $repository_id
 }
@@ -81,7 +81,7 @@ function __get_environments() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repositories/${repository_id}/environments/${ENVIRONMENT}/variables"
+        "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables"
 }
 
 function __create_environment() {
@@ -95,13 +95,11 @@ function __get_value_with_key() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    echo "${api_url}/repositories/${repository_id}/environments/${ENVIRONMENT}/variables/${key}"
-
     value=$(curl -SsfL \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repositories/${repository_id}/environments/${ENVIRONMENT}/variables/${key}")
+        "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}")
 
     return $value
 }
@@ -118,7 +116,7 @@ function __set_value_with_key() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repositories/${repository_id}/environments/${ENVIRONMENT}/variables" \
+        "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables" \
         -d "{\"name\":\"${key}\", \"value\":\"${value}\"}"
 }
 
