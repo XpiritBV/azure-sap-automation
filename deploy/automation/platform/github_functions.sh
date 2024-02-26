@@ -52,11 +52,12 @@ function __get_value_from_context_with_key() {
 }
 
 function commit_changes() {
+    message=$1
     workflow=$(__get_value_from_context_with_key "workflow")
 
     git config --global user.email github-actions@github.com
     git config --global user.name github-actions
-    git commit -m "Added updates from GitHub workflow: ${workflow} [skip ci]"
+    git commit -m "${message} - Workflow: ${workflow} [skip ci]"
     git push
 }
 

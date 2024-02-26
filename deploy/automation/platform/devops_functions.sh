@@ -59,9 +59,11 @@ function __get_value_with_key() {
 }
 
 function commit_changes() {
+    message=$1
+
     git config --global user.email "${Build.RequestedForEmail}"
     git config --global user.name "${Build.RequestedFor}"
-    git commit -m "Added updates from devops deployment ${Build.DefinitionName} [skip ci]"
+    git commit -m "${message} - DevOps Build: ${Build.DefinitionName} [skip ci]"
     git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
 }
 

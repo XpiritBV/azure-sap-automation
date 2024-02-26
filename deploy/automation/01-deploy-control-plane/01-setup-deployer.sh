@@ -269,7 +269,7 @@ git diff --cached --quiet
 git_diff_return_code=$?
 set -e
 if [ 1 == $git_diff_return_code ]; then
-    commit_changes
+    commit_changes "Added updates for deployment."
 fi
 
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
