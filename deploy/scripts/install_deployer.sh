@@ -263,9 +263,9 @@ if [[ -n "${TF_PARALLELLISM}" ]]; then
 fi
 if [ -n "${approve}" ]
 then
-  terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
+  terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a apply_output.json
 else
-  terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars
+  terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars
 fi
 return_value=$?
 
@@ -348,39 +348,38 @@ then
         errors_occurred=$(jq 'select(."@level" == "error") | length' apply_output.json)
         if [ -f apply_output.json ]
         then
-
-          if [[ -n $errors_occurred ]]
-          then
-            echo ""
-            echo "#########################################################################################"
-            echo "#                                                                                       #"
-            echo -e "#                          $boldreduscore!Errors during the apply phase!$resetformatting                              #"
-
-            return_value=2
-            all_errors=$(jq 'select(."@level" == "error") | {summary: .diagnostic.summary, detail: .diagnostic.detail}' apply_output.json)
-            if [[ -n ${all_errors} ]]
+            if [[ -n $errors_occurred ]]
             then
-                readarray -t errors_strings < <(echo ${all_errors} | jq -c '.' )
-                for errors_string in "${errors_strings[@]}"; do
-                    string_to_report=$(jq -c -r '.detail '  <<< "$errors_string" )
-                    if [[ -z ${string_to_report} ]]
-                    then
-                        string_to_report=$(jq -c -r '.summary '  <<< "$errors_string" )
-                    fi
+                echo ""
+                echo "#########################################################################################"
+                echo "#                                                                                       #"
+                echo -e "#                          $boldreduscore!Errors during the apply phase!$resetformatting                              #"
 
-                    echo -e "#                          $boldreduscore  $string_to_report $resetformatting"
-                    echo "##vso[task.logissue type=error]${string_to_report}"
+                return_value=2
+                all_errors=$(jq 'select(."@level" == "error") | {summary: .diagnostic.summary, detail: .diagnostic.detail}' apply_output.json)
+                if [[ -n ${all_errors} ]]
+                then
+                    readarray -t errors_strings < <(echo ${all_errors} | jq -c '.' )
+                    for errors_string in "${errors_strings[@]}"; do
+                        string_to_report=$(jq -c -r '.detail '  <<< "$errors_string" )
+                        if [[ -z ${string_to_report} ]]
+                        then
+                            string_to_report=$(jq -c -r '.summary '  <<< "$errors_string" )
+                        fi
 
-                done
+                        echo -e "#                          $boldreduscore  $string_to_report $resetformatting"
+                        echo "##vso[task.logissue type=error]${string_to_report}"
 
+                    done
+
+                fi
+                echo "#                                                                                       #"
+                echo "#########################################################################################"
+                echo ""
+
+                exit $return_value
             fi
-            echo "#                                                                                       #"
-            echo "#########################################################################################"
-            echo ""
-
-        exit $return_value
-    fi
-
+        fi
     fi
 
     if [ -f apply_output.json ]
