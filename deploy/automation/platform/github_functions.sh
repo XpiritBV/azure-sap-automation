@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 function setup_dependencies() {
-    git config --global --add safe.directory $(__get_value_from_context_with_key "workspace")
     server_url="$(__get_value_from_context_with_key "server_url")"
     api_url="$(__get_value_from_context_with_key "api_url")"
     repository="$(__get_value_from_context_with_key "repository")"
