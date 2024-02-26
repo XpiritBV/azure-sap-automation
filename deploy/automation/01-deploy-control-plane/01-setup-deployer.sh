@@ -3,6 +3,8 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/shared_functions.sh
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
+cat /tmp/github_context.json
+
 function check_deploy_inputs() {
 
     REQUIRED_VARS=(
