@@ -259,9 +259,10 @@ if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     git add -f DEPLOYER/${deployerfolder}/state.zip
 fi
 
-git diff --cached
+set +e
 git diff --cached --quiet
 git_diff_return_code=$?
+set -e
 if [ 1 == $git_diff_return_code ]; then
     commit_changes
 fi
