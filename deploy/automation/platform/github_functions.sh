@@ -68,7 +68,7 @@ function __get_repository_id() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repos/${repository} | jq '.id')"
+        "${api_url}/repos/${repository} | jq '.id'")
 
     return $repository_id
 }
