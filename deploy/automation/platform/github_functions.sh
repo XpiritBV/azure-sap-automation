@@ -46,7 +46,7 @@ function __get_value_from_context_with_key() {
         exit_error "Cannot get a value by using an empty key"
     fi
 
-    value=$(jq ".\"$key\"" -f /tmp/github_context.json )
+    value=$(jq ".$key" -f /tmp/github_context.json )
 
     echo $value
 }
