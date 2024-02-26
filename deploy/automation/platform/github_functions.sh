@@ -46,7 +46,7 @@ function __get_value_from_context_with_key() {
         exit_error "Cannot get a value by using an empty key"
     fi
 
-    value=$(jq ".${key}" /tmp/github_context.json )
+    value=$(jq ".${key}" /tmp/github_context.json)
 
     echo $value
 }
@@ -99,7 +99,7 @@ function __get_value_with_key() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repositories/${repository_id}/environments/${ENVIRONMENT}/variables/${key})"
+        "${api_url}/repositories/${repository_id}/environments/${ENVIRONMENT}/variables/${key}")
 
     return $value
 }
