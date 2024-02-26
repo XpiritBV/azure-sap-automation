@@ -69,6 +69,7 @@ fi
 
 #
 # Dotnet Version settings
+#
 
 if [ -z "${DOTNET_VERSION}" ]; then
   DOTNET_VERSION="7.0"

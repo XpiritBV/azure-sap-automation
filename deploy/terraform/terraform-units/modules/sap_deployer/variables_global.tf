@@ -139,11 +139,11 @@ variable "app_service"                 {
                                        }
 #########################################################################################
 #                                                                                       #
-#  Github actions definitions                                                           #
+#  GitHub Actions definitions                                                           #
 #                                                                                       #
 #########################################################################################
 variable "app_token"                  {
-                                       description = "If provided, contains token to access github"
+                                       description = "If provided, contains token to access GitHub"
                                        default = ""
                                       }
 variable "runner_group"               {
