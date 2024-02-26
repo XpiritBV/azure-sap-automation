@@ -261,8 +261,8 @@ fi
 
 git diff --cached
 git diff --cached --quiet
-GIT_DIFF_RETURN_CODE=$?
-if [ 1 == $GIT_DIFF_RETURN_CODE ]; then
+git_diff_return_code=$?
+if [ 1 == $git_diff_return_code ]; then
     commit_changes
 fi
 
