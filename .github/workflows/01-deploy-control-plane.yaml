@@ -76,7 +76,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: 'Deploy control plane'
-        run: deploy/scripts/01-deploy-control-plane.sh
+        run: deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
         # TODO: working-directory: /source
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

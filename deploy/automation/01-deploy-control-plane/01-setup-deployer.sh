@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-. ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/shared_functions.sh
-. ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set-colors.sh
+. ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/shared_functions.sh
+. ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
 function check_deploy_inputs() {
 
