@@ -90,7 +90,7 @@ function __create_environment() {
 }
 
 function __get_value_with_key() {
-    $key=$1
+    key=$1
 
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
@@ -105,8 +105,8 @@ function __get_value_with_key() {
 }
 
 function __set_value_with_key() {
-    $key=$1
-    $value=$2
+    key=$1
+    value=$2
 
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)

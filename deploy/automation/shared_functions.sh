@@ -87,7 +87,7 @@ function set_value_with_key() {
     fi
 
     if [[ -v appconfig_name ]]; then
-        __appconfig_set_value_with_key
+        __appconfig_set_value_with_key $key $value
     else
         __set_value_with_key $key $value
     fi

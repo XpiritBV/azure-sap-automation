@@ -39,7 +39,7 @@ function end_group() {
 }
 
 function __set_value_with_key() {
-    $key=$1
+    key=$1
 
     value=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${key}.value")
 
@@ -51,7 +51,7 @@ function __set_value_with_key() {
 }
 
 function __get_value_with_key() {
-    $key=$1
+    key=$1
 
     value=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${key}.value")
 
