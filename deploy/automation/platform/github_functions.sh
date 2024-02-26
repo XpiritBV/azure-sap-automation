@@ -96,11 +96,11 @@ function __get_value_with_key() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    value=$(curl -Ssf \
+    value=$(curl -Ss \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}" | jq -r '.value')
+        -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}" | jq -r '.value // empty')
 
     echo $value
 }
@@ -112,13 +112,23 @@ function __set_value_with_key() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    # TODO: Might need a PATCH or PUT
-    curl -X POST \
-        -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${APP_TOKEN}" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables" \
-        -d "{\"name\":\"${key}\", \"value\":\"${value}\"}"
+    if [[ -z $(__get_value_with_key ${key}) ]]; then
+        curl -Ss -o /dev/null \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${APP_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables" \
+            -d "{\"name\":\"${key}\", \"value\":\"${value}\"}"
+    else
+        curl -Ss -o /dev/null \
+            -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${APP_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}" \
+            -d "{\"name\":\"${key}\", \"value\":\"${value}\"}"
+    fi
 }
 
 function upload_summary() {
