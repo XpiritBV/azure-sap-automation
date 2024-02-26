@@ -119,6 +119,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     #     exit_error "az login failed." $return_code
     # fi
 
+    set +e
     key_vault_id=$(az resource list --name "${key_vault}" --resource-type Microsoft.KeyVault/vaults --query "[].id | [0]" -o tsv)
     export TF_VAR_deployer_kv_user_arm_id=${key_vault_id}
     if [ -n "${key_vault_id}" ]; then
@@ -132,6 +133,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
         this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
         az storage account network-rule add --account-name ${REINSTALL_ACCOUNTNAME} --resource-group ${REINSTALL_RESOURCE_GROUP} --ip-address ${this_ip} --only-show-errors --output none
     fi
+    set -e
 
     step=0
     end_group
