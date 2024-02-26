@@ -77,7 +77,7 @@ jobs:
 
       - name: 'Deploy control plane'
         run: |
-          echo '${{ toJSON(github) }}' > /tmp/github_context.json
+          echo ${{ toJSON(github) }} > /tmp/github_context.json
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
         # TODO: working-directory: /source
         env:
@@ -87,6 +87,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          # GITHUB_CONTEXT: ${{ toJSON(github) }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
           # TODO: connection_name: ${{ inputs.connection_name }}
           deployer_environment: ${{ inputs.environment }}
