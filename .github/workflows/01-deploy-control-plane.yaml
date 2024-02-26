@@ -105,7 +105,7 @@ jobs:
   deploy_controlplane:
     name: Deploy the control plane
     needs: prepare_deployer
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # or self-hosted
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -114,7 +114,7 @@ jobs:
     if: ${{ inputs.use_webapp_param }} && ${{ inputs.deploy_webapp_software }}
     name: Deploy SAP configuration Web App
     needs: deploy_controlplane
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # or self-hosted
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
