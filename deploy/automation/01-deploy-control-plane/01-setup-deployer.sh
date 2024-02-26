@@ -101,6 +101,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     export REINSTALL_RESOURCE_GROUP=$(get_value_with_key "Terraform_Remote_Storage_Resource_Group_Name")
 
     export FORCE_RESET=true
+    echo "Try reading key vaylt from GitHub Environment"
     var=$(get_value_with_key "Deployer_Key_Vault" | tr -d \")
     if [ -n "${var}" ]; then
         key_vault="${var}"
@@ -122,14 +123,14 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     export TF_VAR_deployer_kv_user_arm_id=${key_vault_id}
     if [ -n "${key_vault_id}" ]; then
         this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
-        az keyvault network-rule add --name ${key_vault} --ip-address ${this_ip} --subscription ${Terraform_Remote_Storage_Subscription} --only-show-errors --output none
+        az keyvault network-rule add --name ${key_vault} --ip-address ${this_ip} --subscription $(get_value_with_key "Terraform_Remote_Storage_Subscription") --only-show-errors --output none
         ip_added=1
     fi
 
-    tfstate_resource_id=$(az resource list --name ${Terraform_Remote_Storage_Account_Name} --subscription ${Terraform_Remote_Storage_Subscription} --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
+    tfstate_resource_id=$(az resource list --name $(get_value_with_key "Terraform_Remote_Storage_Account_Name") --subscription $(get_value_with_key "Terraform_Remote_Storage_Subscription") --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
     if [[ -v tfstate_resource_id ]]; then
         this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
-        az storage account network-rule add --account-name ${Terraform_Remote_Storage_Account_Name} --resource-group ${Terraform_Remote_Storage_Resource_Group_Name} --ip-address ${this_ip} --only-show-errors --output none
+        az storage account network-rule add --account-name $(get_value_with_key "Terraform_Remote_Storage_Account_Name") --resource-group $(get_value_with_key "Terraform_Remote_Storage_Resource_Group_Name") --ip-address ${this_ip} --only-show-errors --output none
     fi
 
     step=0
