@@ -95,6 +95,8 @@ function __get_value_with_key() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
+    echo "${api_url}/repositories/${repository_id}/environments/${ENVIRONMENT}/variables/${key}"
+
     value=$(curl -SsfL \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
