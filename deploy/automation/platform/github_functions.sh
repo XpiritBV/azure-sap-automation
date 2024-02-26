@@ -56,7 +56,7 @@ function commit_changes() {
 
     git config --global user.email github-actions@github.com
     git config --global user.name github-actions
-    git commit -m "Added updates from GitHub workflow ${workflow} [skip ci]"
+    git commit -m "Added updates from GitHub workflow: ${workflow} [skip ci]"
     git push
 }
 
@@ -64,7 +64,7 @@ function __get_repository_id() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository=$(__get_value_from_context_with_key "repository")
 
-    repository_id=$(curl -Ssf \
+    repository_id=$(curl -f \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -77,7 +77,7 @@ function __get_environments() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    curl -Ssf \
+    curl -f \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -95,7 +95,7 @@ function __get_value_with_key() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    value=$(curl -Ssf \
+    value=$(curl -f \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -129,7 +129,7 @@ function get_runner_registration_token() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository=$(__get_value_from_context_with_key "repository")
 
-    curl -Ssf \
+    curl -f \
         -X POST \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
