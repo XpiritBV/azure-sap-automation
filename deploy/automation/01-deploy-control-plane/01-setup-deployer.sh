@@ -95,7 +95,6 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     echo "Force reset: ${force_reset}"
 
     log_warning "Forcing a re-install"
-    echo "running on ${this_agent}"
     set_config_key_with_value "step" "0"
 
     # TODO: Terraform should be platform agnostic and use the set methods for the environment: $(set_value_with_key)
