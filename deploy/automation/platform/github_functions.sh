@@ -16,7 +16,7 @@ function setup_dependencies() {
 }
 
 function exit_error() {
-    MESSAGE="$(caller | awk '{print $2":"$1}')$1"
+    MESSAGE="$(caller | awk '{print $2":"$1} ') $1"
     ERROR_CODE=$2
 
     echo "::error::${MESSAGE}"
@@ -69,21 +69,21 @@ function __get_repository_id() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        -L "${api_url}/repos/${repository}" | jq '.id')
+        -L "${api_url}/repos/${repository}" | jq -r '.id')
 
     echo $repository_id
 }
 
-function __get_environments() {
-    api_url=$(__get_value_from_context_with_key "api_url")
-    repository_id=$(__get_repository_id)
+# function __get_environments() {
+#     api_url=$(__get_value_from_context_with_key "api_url")
+#     repository_id=$(__get_repository_id)
 
-    curl -Ssf \
-        -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${APP_TOKEN}" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables"
-}
+#     curl -Ssf \
+#         -H "Accept: application/vnd.github+json" \
+#         -H "Authorization: Bearer ${APP_TOKEN}" \
+#         -H "X-GitHub-Api-Version: 2022-11-28" \
+#         -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables"
+# }
 
 function __create_environment() {
     return 0
@@ -100,7 +100,7 @@ function __get_value_with_key() {
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        -L"${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}")
+        -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}" | jq -r '.value')
 
     echo $value
 }
