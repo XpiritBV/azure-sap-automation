@@ -65,20 +65,20 @@ function __get_repository_id() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository=$(__get_value_from_context_with_key "repository")
 
-    repository_id=$(curl -fv \
+    repository_id=$(curl -Ssf \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
         -L "${api_url}/repos/${repository}" | jq '.id')
 
-    return $repository_id
+    echo $repository_id
 }
 
 function __get_environments() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    curl -fv \
+    curl -Ssf \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -96,13 +96,13 @@ function __get_value_with_key() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
 
-    value=$(curl -fv \
+    value=$(curl -Ssf \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
         -L"${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}")
 
-    return $value
+    echo $value
 }
 
 function __set_value_with_key() {
@@ -130,7 +130,7 @@ function get_runner_registration_token() {
     api_url=$(__get_value_from_context_with_key "api_url")
     repository=$(__get_value_from_context_with_key "repository")
 
-    curl -fv \
+    curl -Ssf \
         -X POST \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
