@@ -77,7 +77,7 @@ jobs:
 
       - name: 'Deploy control plane'
         run:  |
-          echo ${{ toJSON(github) }} > /tmp/github_context.json
+          echo -e ${{ toJSON(github) }} > /tmp/github_context.json
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
         # TODO: working-directory: /source
         env:
