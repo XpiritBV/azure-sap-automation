@@ -5,7 +5,7 @@
 
 start_group "GitHub Context"
 cat /tmp/github_context.json
-echo GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}
+echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
 end_group
 
 function check_deploy_inputs() {
