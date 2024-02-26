@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function __is_github() {
-    if [[ -f /tmp/github_context.json ]]; then
+    if [[ -v GITHUB_CONTEXT ]]; then
         echo "true"
     else
         echo "false"

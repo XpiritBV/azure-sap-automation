@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function setup_dependencies() {
-    git config --global --add safe.directory $(__get_value_from_context_with_key "workspace")
+    git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
     server_url="$(__get_value_from_context_with_key "server_url")"
     api_url="$(__get_value_from_context_with_key "api_url")"
@@ -46,7 +46,7 @@ function __get_value_from_context_with_key() {
         exit_error "Cannot get a value by using an empty key"
     fi
 
-    value=$(jq -f /tmp/github_context.json ".\"$key\"" )
+    value=$(echo $GITHUB_CONTEXT | jq ".\"$key\"" )
 
     echo $value
 }
