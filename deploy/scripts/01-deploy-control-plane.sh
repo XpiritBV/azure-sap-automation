@@ -93,7 +93,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     echo "running on ${this_agent}"
     set_config_key_with_value "step" "0"
 
-    // TODO: Terraform should be platform agnostic and use the set methods for the environment: $(set_value_with_key)
+    # TODO: Terraform should be platform agnostic and use the set methods for the environment: $(set_value_with_key)
     export REINSTALL_ACCOUNTNAME=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
     export REINSTALL_SUBSCRIPTION=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
     export REINSTALL_RESOURCE_GROUP=$(get_value_with_key "Terraform_Remote_Storage_Resource_Group_Name")
@@ -259,7 +259,8 @@ if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     git add -f DEPLOYER/${deployerfolder}/state.zip
 fi
 
-GIT_DIFF_RETURN_CODE=$(git diff --cached --quiet)
+git diff --cached --quiet
+GIT_DIFF_RETURN_CODE=$?
 if [ 1 == $GIT_DIFF_RETURN_CODE ] then
     commit_changes
 fi
