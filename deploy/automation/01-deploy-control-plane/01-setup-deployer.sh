@@ -3,9 +3,9 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/shared_functions.sh
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
-start_group Github Context
-echo $GITHUB_CONTEXT
-echo $GITHUB_WORKSPACE
+start_group "GitHub Context"
+cat /tmp/github_context.json
+echo GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}
 end_group
 
 function check_deploy_inputs() {
