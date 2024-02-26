@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 function setup_dependencies() {
+    echo "git config --global --add safe.directory ${GITHUB_WORKSPACE}"
     git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
     server_url="$(__get_value_from_context_with_key "server_url")"

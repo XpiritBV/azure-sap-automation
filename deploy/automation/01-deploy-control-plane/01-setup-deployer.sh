@@ -4,7 +4,7 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
 start_group Github Context
-cat $GITHUB_CONTEXT
+echo $GITHUB_CONTEXT
 echo $GITHUB_WORKSPACE
 end_group
 
