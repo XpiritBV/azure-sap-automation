@@ -32,11 +32,11 @@ function get_platform() {
 
 case $(get_platform) in
 github)
-    . deploy/automation/platform/devops_functions.sh
+    . deploy/automation/platform/github_functions.sh
     ;;
 
 devops)
-    . deploy/automation/platform/github_functions.sh
+    . deploy/automation/platform/devops_functions.sh
     ;;
 
 *)

@@ -96,7 +96,7 @@ jobs:
           force_reset: ${{ inputs.force_reset }}
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
-          log: logfile_$(Build.BuildId)
+          log: logfile_${{ github.run_number }}-${{ github.run_attempt }}
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp_param }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
