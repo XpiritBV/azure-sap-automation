@@ -500,7 +500,7 @@ else
         "$${tf_bin}"
     wget -nv -O "/tmp/$${tf_zip}" "https://releases.hashicorp.com/terraform/$${tfversion}/$${tf_zip}"
     unzip -o /tmp/"$${tf_zip}" -d /tmp
-    sudo install -Dm755 /tmp/terraform "${tf_dir}/terraform"
+    sudo install -Dm755 /tmp/terraform "$${tf_dir}/terraform"
     rm /tmp/$${tf_zip}
 
     # Uninstall Azure CLI - For some platforms
