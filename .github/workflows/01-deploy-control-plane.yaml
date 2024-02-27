@@ -107,21 +107,6 @@ jobs:
     environment: ${{ inputs.deployer }}
     needs: setup_deployer
     runs-on: self-hosted
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
-
-      - name: Deploy Control Plane
-        run: |
-          echo '${{ toJSON(github) }}' > /tmp/github_context.json
-          deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
-        # TODO: working-directory: /source
-
-  web_app_deployment:
-    if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
-    name: Deploy SAP configuration Web App
-    needs: deploy_controlplane
-    runs-on: ubuntu-latest # or self-hosted
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
@@ -134,3 +119,20 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Deploy control plane
+        run: |
+          echo '${{ toJSON(github) }}' > /tmp/github_context.json
+          deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
+        # TODO: working-directory: /source
+
+  web_app_deployment:
+    if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
+    name: Deploy SAP configuration Web App
+    needs: deploy_controlplane
+    runs-on: self-hosted
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
