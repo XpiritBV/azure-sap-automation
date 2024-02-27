@@ -75,15 +75,31 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
+      - name: 'Generate app registration'
+        if: ${{ inputs.use_webapp_param }}
+        run: |
+          echo '[{"resourceAppId":"00000003-0000-0000-c000-000000000000","resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}]}]' >> manifest.json
+          region_code=$(echo ${{ inputs.deployer }} | awk -F'-' '{print $2}' | xargs)
+
+          az ad app create \
+            --display-name ${region_code}-webapp-registration \
+            --enable-id-token-issuance true \
+            --sign-in-audience AzureADMyOrg \
+            --required-resource-access @manifest.json \
+            --query "appId" | tr -d '"' >> TF_VAR_app_registration_app_id
+
+          az ad app credential reset \
+            --id $TF_VAR_app_registration_app_id --append \
+            --query "password" | tr -d '"' >> TF_VAR_webapp_client_secret
+
       - name: 'Setup deployer'
+        if: false
         run: |
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
         # TODO: working-directory: /source
         env:
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
-          WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
