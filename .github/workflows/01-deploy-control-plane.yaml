@@ -106,7 +106,7 @@ jobs:
 
   deploy_controlplane:
     name: Deploy the control plane
-    needs: prepare_deployer
+    needs: setup_deployer
     runs-on: ubuntu-latest # or self-hosted
     steps:
       - name: Checkout the code
