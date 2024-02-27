@@ -44,7 +44,7 @@ permissions:
   id-token: write
 
 jobs:
-  prepare_deployer:
+  setup_deployer:
     environment: ${{ inputs.deployer }}
     name: Prepare the self hosted runners(s)
     runs-on: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: 'Deploy control plane'
+      - name: 'Setup deployer'
         run: |
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
