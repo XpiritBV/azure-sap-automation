@@ -80,18 +80,18 @@ jobs:
         id: generate_app_registration
         run: |
           echo '[{"resourceAppId":"00000003-0000-0000-c000-000000000000","resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}]}]' >> manifest.json
-          region_code=$(echo ${{ inputs.deployer }} | awk -F'-' '{print $2}' | xargs)
+          REGION_CODE=$(echo ${{ inputs.deployer }} | awk -F'-' '{print $2}' | xargs)
 
-          az ad app create \
-            --display-name ${region_code}-webapp-registration \
+          APP_REGISTRATION_APP_ID=$(az ad app create \
+            --display-name ${REGION_CODE}-webapp-registration \
             --enable-id-token-issuance true \
             --sign-in-audience AzureADMyOrg \
             --required-resource-access @manifest.json \
-            --query "appId" | tr -d '"' >> $APP_REGISTRATION_APP_ID
+            --query "appId" | tr -d '"')
 
-          az ad app credential reset \
+          WEB_APP_CLIENT_SECRET=$(az ad app credential reset \
             --id ${APP_REGISTRATION_APP_ID} --append \
-            --query "password" | tr -d '"' >> $WEB_APP_CLIENT_SECRET
+            --query "password" | tr -d '"')
 
           echo "APP_REGISTRATION_APP_ID=${APP_REGISTRATION_APP_ID}" >> $GITHUB_OUTPUT
           echo "WEB_APP_CLIENT_SECRET=${WEB_APP_CLIENT_SECRET}" >> $GITHUB_OUTPUT
