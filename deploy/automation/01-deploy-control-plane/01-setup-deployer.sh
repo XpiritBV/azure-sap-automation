@@ -139,13 +139,16 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     end_group
 else
     if [ -f ${deployer_environment_file_name} ]; then
-        echo "Found environment file: ${deployer_environment_file_name}"
+        start_group "Check if we are finished"
+        echo "Found Deployer Environment File: ${deployer_environment_file_name}"
         cat ${deployer_environment_file_name}
         step=$(config_value_with_key "step")
         echo "Step: ${step}"
-        if [ "0" != ${step} ]; then
+
+        if [[ "0" != ${step} ]]; then
             exit 0
         fi
+        end_group
     fi
 fi
 
