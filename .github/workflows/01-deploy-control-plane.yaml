@@ -59,7 +59,9 @@ jobs:
         #   sparse-checkout: |
         #     WORKSPACES
 
-      # Required permissions: org level runner registration permissions
+      # Create an app with the following permissions:
+      # Repo admin: read/write (to register the runner)
+      # Repo environments, secrets and variables: read/write (to get and set environment secrets)
       - name: Get app token
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v3
@@ -103,7 +105,6 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          # GITHUB_CONTEXT: ${{ toJSON(github) }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
           # TODO: connection_name: ${{ inputs.connection_name }}
           deployer_environment: ${{ inputs.environment }}
@@ -116,9 +117,14 @@ jobs:
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp_param }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          RUNNER_GROUP: "Default"
+          RUNNER_GROUP: "SAP-Automation-Deployer"
           CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
+
+      - name: 'Clean-up context file'
+        if: always()
+        run: |
+          rm /tmp/github_context.json
 
   deploy_controlplane:
     name: Deploy the control plane
