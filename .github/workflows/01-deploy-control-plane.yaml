@@ -59,9 +59,7 @@ jobs:
         #   sparse-checkout: |
         #     WORKSPACES
 
-      # Create an app with the following permissions:
-      # Repo admin: read/write (to register the runner)
-      # Repo environments, secrets and variables: read/write (to get and set environment secrets)
+      # Required permissions: org level runner registration permissions
       - name: Get app token
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v3
@@ -79,6 +77,7 @@ jobs:
 
       - name: 'Generate app registration'
         if: ${{ inputs.use_webapp_param }}
+        id: generate_app_registration
         run: |
           echo '[{"resourceAppId":"00000003-0000-0000-c000-000000000000","resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}]}]' >> manifest.json
           region_code=$(echo ${{ inputs.deployer }} | awk -F'-' '{print $2}' | xargs)
@@ -88,11 +87,14 @@ jobs:
             --enable-id-token-issuance true \
             --sign-in-audience AzureADMyOrg \
             --required-resource-access @manifest.json \
-            --query "appId" | tr -d '"' >> TF_VAR_app_registration_app_id
+            --query "appId" | tr -d '"' >> $APP_REGISTRATION_APP_ID
 
           az ad app credential reset \
-            --id $TF_VAR_app_registration_app_id --append \
-            --query "password" | tr -d '"' >> TF_VAR_webapp_client_secret
+            --id ${APP_REGISTRATION_APP_ID} --append \
+            --query "password" | tr -d '"' >> $WEB_APP_CLIENT_SECRET
+
+          echo "APP_REGISTRATION_APP_ID=${APP_REGISTRATION_APP_ID}" >> $GITHUB_OUTPUT
+          echo "WEB_APP_CLIENT_SECRET=${WEB_APP_CLIENT_SECRET}" >> $GITHUB_OUTPUT
 
       - name: 'Setup deployer'
         if: false
@@ -105,6 +107,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          # GITHUB_CONTEXT: ${{ toJSON(github) }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
           # TODO: connection_name: ${{ inputs.connection_name }}
           deployer_environment: ${{ inputs.environment }}
@@ -117,72 +120,19 @@ jobs:
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp_param }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          RUNNER_GROUP: "SAP-Automation-Deployer"
+          RUNNER_GROUP: "Default"
           CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
-
-      - name: 'Clean-up context file'
-        if: always()
-        run: |
-          rm /tmp/github_context.json
+          APP_REGISTRATION_APP_ID: ${{ steps.generate_app_registration.outputs.APP_REGISTRATION_APP_ID }}
+          WEB_APP_CLIENT_SECRET: ${{ steps.generate_app_registration.outputs.WEB_APP_CLIENT_SECRET }}
 
   deploy_controlplane:
     name: Deploy the control plane
     needs: setup_deployer
-    environment: ${{ inputs.deployer }}
-    runs-on: "SAP-Automation-Deployer"
+    runs-on: ubuntu-latest # or self-hosted
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-
-      # Create an app with the following permissions:
-      # Repo admin: read/write (to register the runner)
-      # Repo environments, secrets and variables: read/write (to get and set environment secrets)
-      - name: Get app token
-        id: get_workflow_token
-        uses: peter-murray/workflow-application-token-action@v3
-        with:
-          application_id: ${{ secrets.APPLICATION_ID }}
-          application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
-          organization: ${{ github.repository_owner }}
-
-      - name: Azure Login
-        uses: Azure/Login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-
-      - name: 'Deploy control plane'
-        run: |
-          echo '${{ toJSON(github) }}' > /tmp/github_context.json
-          deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
-        # TODO: working-directory: /source
-        env:
-          CP_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
-          WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
-          CP_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          CP_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          CP_ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
-          # TODO: connection_name: ${{ inputs.connection_name }}
-          deployer_environment: ${{ inputs.environment }}
-          deployerconfig: ${{ inputs.deployer }}.tfvars
-          deployerfolder: ${{ inputs.deployer }}
-          libraryconfig: ${{ inputs.library }}.tfvars
-          libraryfolder: ${{ inputs.library }}
-          log: logfile_${{ github.run_number }}-${{ github.run_attempt }}
-          use_webapp: ${{ inputs.use_webapp_param }}
-          APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          RUNNER_GROUP: "SAP-Automation-Deployer"
-          CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
-          SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
-
-      - name: 'Clean-up context file'
-        if: always()
-        run: |
-          rm /tmp/github_context.json
 
   web_app_deployment:
     if: ${{ inputs.use_webapp_param }} && ${{ inputs.deploy_webapp_software }}
