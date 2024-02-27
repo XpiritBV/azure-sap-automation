@@ -288,8 +288,7 @@ export AZADHOME="/home/$${local_user}"
 
 if [ -f /etc/profile.d/deploy_server.sh ] ; then
     echo
-    echo ##vso[task.logissue type=warning]Deployer already configured
-
+    echo "##vso[task.logissue type=warning]Deployer already configured"
     exit 0
 else
     #
@@ -465,9 +464,7 @@ else
     # Install required packages as determined above
     set +o errexit
     pkg_mgr_install "$${required_pkgs[@]}"
-
     set -o errexit
-
 
     # Prepare Azure SAP Automated Deployment folder structure
     mkdir -p \
@@ -652,7 +649,7 @@ else
         "ansible-core>=$${ansible_major}.$${ansible_minor},<$${ansible_major}.$((ansible_minor + 1))" \
         argcomplete \
         'pywinrm>=0.3.0' \
-        netaddr  \
+        netaddr \
         jmespath \
         pywinrm[credssp]
 
@@ -832,10 +829,10 @@ else
         if [ $platform == "devops" ]; then
           ./env.sh
 
-          (echo "$${agent_home}/config.sh"  --unattended --url "$${DEVURL}" --auth pat --token "$${TOKEN}" --pool "$${POOL}" --agent "$${AGENTNAME}" --replace --acceptTeeEula | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
+          (echo "$${agent_home}/config.sh" --unattended --url "$${DEVURL}" --auth pat --token "$${TOKEN}" --pool "$${POOL}" --agent "$${AGENTNAME}" --replace --acceptTeeEula | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
           sudo chmod +x "$${agent_home}/config_fixed_params.sh"
 
-          sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh"  | sudo tee -a "$${agent_home}/log.txt"
+          sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh" | sudo tee -a "$${agent_home}/log.txt"
         elif [ $platform == "github" ]; then
           api_url="$${api_url}"
           repository="$${repository}"
@@ -847,10 +844,10 @@ else
               -H "X-GitHub-Api-Version: 2022-11-28" \
               -L "$${api_url}/repos/$${repository}/actions/runners/registration-token" | jq -r .token)
 
-          (echo "$${agent_home}/config.sh" --unattended --url "$${api_url}/$${repository}" --token "$${runner_token}" --runnergroup "$${runner_group}" --name "$${AGENTNAME}" | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
+          (echo "$${agent_home}/config.sh" --unattended --url "$${server_url}/$${repository}" --token "$${runner_token}" --runnergroup "$${runner_group}" --name "$${AGENTNAME}" | sudo tee -a "$${agent_home}/config_fixed_params.sh") > /dev/null 2>&1
           sudo chmod +x "$${agent_home}/config_fixed_params.sh"
 
-          sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh"  | sudo tee -a "$${agent_home}/log.txt"
+          sudo runuser -l "$${local_user}" -c "$${agent_home}/config_fixed_params.sh" | sudo tee -a "$${agent_home}/log.txt"
         fi
         # automatic start configuration after VM reboot
 
