@@ -791,7 +791,6 @@ else
       fi
       sudo tar zxvf agent.tar.gz >/dev/null 2>&1
 
-
       sudo touch "$${agent_home}/agent_installed"
 
       sudo chown -R "$${local_user}" "$${agent_home}"
@@ -801,11 +800,19 @@ else
     set +o xtrace
 
     if [ -n "$${TOKEN}" ]; then
-      echo "Token specified and using it"
+      echo "DevOps Token specified and using it"
       sudo touch "$${agent_home}/tok"
     else
-      echo "Token not specified for usage"
+      echo "DevOps Token not specified for usage"
       sudo touch "$${agent_home}/no_tok"
+    fi
+
+    if [ -n "$${app_token}" ]; then
+      echo "GitHub App Token specified and using it"
+      sudo touch "$${agent_home}/app_tok"
+    else
+      echo "GitHub App Token not specified for usage"
+      sudo touch "$${agent_home}/no_app_tok"
     fi
 
     set -o xtrace
@@ -817,7 +824,6 @@ else
         sudo chmod -R 744 "$${agent_home}"
         set -o xtrace
         cd "$${agent_home}"
-
 
         if [ -f "$${agent_home}/config_fixed_params.sh" ]; then
           sudo rm "$${agent_home}/config_fixed_params.sh"
@@ -834,7 +840,7 @@ else
           api_url="$${api_url}"
           repository="$${repository}"
 
-          runner_token=$(curl -Ssf \
+          runner_token=$(curl -Ss \
               -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer $${app_token}" \
@@ -890,5 +896,6 @@ else
         echo "export DEPLOYMENT_REPO_PATH='$${AZADHOME}/Azure_SAP_Automated_Deployment/sap-automation'" | sudo tee -a /etc/profile.d/deploy_server.sh
         echo "export CONFIG_REPO_PATH='$${AZADHOME}/Azure_SAP_Automated_Deployment/WORKSPACES'" | sudo tee -a /etc/profile.d/deploy_server.sh
       fi
+
     fi
 fi
