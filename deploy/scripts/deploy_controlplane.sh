@@ -113,7 +113,7 @@ fi
 # Convert the region to the correct code
 get_region_code "$region"
 
-echo "Region code for deployment:  $region_code"
+echo "Region code for deployment: $region_code"
 
 automation_config_directory=$CONFIG_REPO_PATH/.sap_deployment_automation
 generic_config_information="${automation_config_directory}"/config
@@ -140,6 +140,7 @@ if [ 0 != $return_code ]; then
 fi
 # Check that webapp exports are defined, if deploying webapp
 if [ -n "${TF_VAR_use_webapp}" ]; then
+    echo "TF_VAR use_webapp: $TF_VAR_use_webapp"
     if [ "${TF_VAR_use_webapp}" == "true" ]; then
         validate_webapp_exports
         return_code=$?
@@ -519,7 +520,7 @@ if [ 2 == $step ]; then
     REMOTE_STATE_RG=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw sapbits_sa_resource_group_name  | tr -d \")
     REMOTE_STATE_SA=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw remote_state_storage_account_name | tr -d \")
     STATE_SUBSCRIPTION=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw created_resource_group_subscription_id  | tr -d \")
-    
+
     # TO DO: Add app_config name as a variable after PR with terraform changes is merged
     #appconfig_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_app_config_name | tr -d \")
 
