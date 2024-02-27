@@ -22,7 +22,7 @@ on:
         default: MGMT
         description: Environment name, MGMT, DEV, QA, etc
         type: string
-      use_webapp_param:
+      use_webapp:
         default: true
         description: Deploy the configuration web application infrastructure
         type: boolean
@@ -101,7 +101,7 @@ jobs:
           libraryfolder: ${{ inputs.library }}
           log: logfile_${{ github.run_number }}-${{ github.run_attempt }}
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
-          use_webapp: ${{ inputs.use_webapp_param }}
+          use_webapp: ${{ inputs.use_webapp }}
 
   deploy_controlplane:
     name: Deploy the control plane
@@ -112,7 +112,7 @@ jobs:
         uses: actions/checkout@v4
 
   web_app_deployment:
-    if: ${{ inputs.use_webapp_param }} && ${{ inputs.deploy_webapp_software }}
+    if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
     name: Deploy SAP configuration Web App
     needs: deploy_controlplane
     runs-on: ubuntu-latest # or self-hosted
