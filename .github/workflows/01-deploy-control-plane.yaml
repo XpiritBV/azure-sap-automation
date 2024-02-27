@@ -45,14 +45,13 @@ permissions:
 
 jobs:
   setup_deployer:
-    environment: ${{ inputs.deployer }}
     name: Prepare the self hosted runners(s)
+    environment: ${{ inputs.deployer }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
-        id: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -75,7 +74,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: 'Setup deployer'
+      - name: Setup deployer
         run: |
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
@@ -105,17 +104,33 @@ jobs:
 
   deploy_controlplane:
     name: Deploy the control plane
+    environment: ${{ inputs.deployer }}
     needs: setup_deployer
-    runs-on: ubuntu-latest # or self-hosted
+    runs-on: self-hosted
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+
+      - name: Deploy Control Plane
+        run: |
+          echo '${{ toJSON(github) }}' > /tmp/github_context.json
+          deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
+        # TODO: working-directory: /source
 
   web_app_deployment:
     if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
     name: Deploy SAP configuration Web App
     needs: deploy_controlplane
     runs-on: ubuntu-latest # or self-hosted
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: Azure/Login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
