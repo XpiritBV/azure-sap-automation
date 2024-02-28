@@ -232,10 +232,10 @@ variable "deployer_image"                       {
                                                                   os_type         = "LINUX"
                                                                   source_image_id = ""
                                                                   type            = "marketplace"
-                                                                  publisher       = "Canonical"
-                                                                  offer           = "0001-com-ubuntu-server-jammy"
-                                                                  sku             = "22_04-lts-gen2"
-                                                                  version         = "latest"
+                                                                  publisher       = "MicrosoftCBLMariner"
+                                                                  offer           = "cbl-mariner"
+                                                                  sku             = "cbl-mariner-2-gen2"
+                                                                  version         = "2.20240223.01"
                                                                   type            = "marketplace"
                                                                 }
                                                 }
