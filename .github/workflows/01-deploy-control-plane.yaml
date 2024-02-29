@@ -115,6 +115,12 @@ jobs:
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp }}
 
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: 'setup-deployer-logs-${{ github.run_number }}-${{ github.run_attempt }}'
+          path: ${{ github.workspace }}/WORKSPACES/logs/.sap_deployment_automation/terraform.log
+
   deploy_controlplane:
     name: Deploy the control plane
     environment: ${{ inputs.deployer }}
