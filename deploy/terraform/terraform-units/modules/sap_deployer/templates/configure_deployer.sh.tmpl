@@ -2,21 +2,21 @@
 
 local_user="${local_user}"
 platform="${platform}"
-app_token="${app_token}"
+app_pat="${app_pat}"
 runner_group="${runner_group}"
 repository="${repository}"
 server_url="${server_url}"
 api_url="${api_url}"
-TOKEN="${pat}"
-DEVURL="${ado_repo}"
-POOL="${pool}"
+pat="${pat}"
+ado_repo="${ado_repo}"
+pool="${pool}"
 
 case "$platform" in
   (github)
     REQUIRED_VARS=(
       "api_url"
       "repository"
-      "app_token"
+      "app_pat"
       "runner_group"
       "server_url"
     )
@@ -24,9 +24,9 @@ case "$platform" in
 
   (devops)
     REQUIRED_VARS=(
-      "DEVURL"
-      "TOKEN"
-      "POOL"
+      "ado_repo"
+      "pat"
+      "pool"
     )
     ;;
 
@@ -57,16 +57,16 @@ function setup_github_runner() {
   pusd ${agent_home}
   curl -sSfL $(curl -sSf https://api.github.com/repos/actions/runner/releases/latest | jq '.assets.[].browser_download_url' -r | egrep 'linux-arm64-[0-9.]+tar.gz$') | tar zx
 
-  runner_token=$(curl -Ss \
+  runner_pat=$(curl -Ss \
     -X POST \
     -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer ${app_token}" \
+    -H "Authorization: Bearer ${app_pat}" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    -L "${api_url}/repos/${repository}/actions/runners/registration-token" | jq -r .token)
+    -L "${api_url}/repos/${repository}/actions/runners/registration-pat" | jq -r .pat)
 
   sudo chown -R "$${local_user}" ${agent_home}
 
-  sudo runuser -l "${local_user}" -c "${agent_home}/config.sh --unattended --url ${server_url}/${repository} --token ${runner_token} --runnergroup ${runner_group} --name $(hostname)"
+  sudo runuser -l "${local_user}" -c "${agent_home}/config.sh --unattended --url ${server_url}/${repository} --pat ${runner_pat} --runnergroup ${runner_group} --name $(hostname)"
   popd
 }
 
@@ -78,7 +78,7 @@ function setup_devops_runner() {
 
   sudo chown -R "$${local_user}" ${agent_home}
 
-  sudo runuser -l "$${local_user}" -c "${agent_home}/config.sh --unattended --url ${DEVURL} --auth pat --token ${TOKEN} --pool ${POOL} --agent $(hostname) --replace --acceptTeeEula"
+  sudo runuser -l "$${local_user}" -c "${agent_home}/config.sh --unattended --url ${ado_repo} --auth pat --pat ${pat} --pool ${pool} --agent $(hostname) --replace --acceptTeeEula"
   popd
 }
 
