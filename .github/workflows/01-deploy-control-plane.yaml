@@ -84,7 +84,7 @@ jobs:
             $log_level=DEBUG
           fi
 
-          echo "::set-output name=log_level::$log_level"
+          echo "{log_level}={$log_level}" >> $GITHUB_OUTPUT
 
       - name: Setup deployer
         run: |
