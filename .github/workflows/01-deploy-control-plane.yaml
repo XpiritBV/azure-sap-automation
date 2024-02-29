@@ -74,6 +74,18 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
+      - name: 'Set log level'
+        id: log_level
+        run: |
+          #!/usr/bin/env bash
+          log_level=WARN
+
+          if [ ${{ secrets.ACTIONS_RUNNER_DEBUG }} == "true" ] ||  [ ${{ env.ACTIONS_RUNNER_DEBUG }} == "true" ]; then
+            $log_level=DEBUG
+          fi
+
+          echo "::set-output name=log_level::$log_level"
+
       - name: Setup deployer
         run: |
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
@@ -98,6 +110,7 @@ jobs:
           force_reset: ${{ inputs.force_reset }}
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
+          TF_LOG: ${{ steps.log_level.outputs.log_level }}
           log: logfile_${{ github.run_number }}-${{ github.run_attempt }}
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp }}
