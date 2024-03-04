@@ -88,23 +88,57 @@ function setup_devops_runner() {
   popd
 }
 
-# Install required packages for this VM to act as a runner on the platform and support docker containers
-tdnf install -y \
-  ca-certificates \
-  curl \
-  dotnet-runtime-8.0 \
-  dotnet-runtime-deps-8.0 \
-  krb5-libs \
-  libicu \
-  lttng-ust \
-  moby-cli \
-  moby-engine \
-  openssl-libs \
-  zlib
+function install_deps_mariner() {
+  tdnf install -y \
+    ca-certificates \
+    curl \
+    dotnet-runtime-8.0 \
+    dotnet-runtime-deps-8.0 \
+    krb5-libs \
+    libicu \
+    lttng-ust \
+    moby-cli \
+    moby-engine \
+    openssl-libs \
+    zlib
 
-# Install jq, the Mariner version is ancient
-curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
-sudo install -m755 jq /usr/local/bin/jq
+  # Install jq, the Mariner version is ancient
+  curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
+  sudo install -m755 jq /usr/local/bin/jq
+}
+
+install_deps_ubuntu() {
+  sudo apt-get update
+  sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    docker.io \
+    docker-compose \
+    curl \
+    gnupg \
+    jq \
+    lsb-release
+
+    # Install dotnet 8.0
+    version=$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d= -f2 | tr -d "\"")
+    curl -sSfL https://packages.microsoft.com/config/ubuntu/${version}/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
+    sudo dpkg -i packages-microsoft-prod.deb
+
+    sudo apt-get update
+    sudo apt-get install -y \
+      dotnet-runtime-8.0
+}
+
+# Install required packages for this VM to act as a runner on the platform and support docker containers
+case $(cat /etc/os-release | grep "^ID="| cut -d= -f2 | tr -d "\"" | tr '[:upper:]' '[:lower:]') in
+  (*mariner*)
+    install_deps_mariner
+    ;;
+
+  (*ubuntu*)
+    install_deps_ubuntu
+    ;;
+esac
 
 if [[ -d $${agent_home} ]]; then
   echo "Runner might already be installed, let's try to stop it first"
