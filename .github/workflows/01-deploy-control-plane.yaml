@@ -134,6 +134,15 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
+      # Required permissions: org level runner registration permissions
+      - name: Get app token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v3
+        with:
+          application_id: ${{ secrets.APPLICATION_ID }}
+          application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
+          organization: ${{ github.repository_owner }}
+
       - name: Azure Login
         uses: Azure/Login@v1
         with:
@@ -148,6 +157,7 @@ jobs:
         # TODO: working-directory: /source
         env:
           APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
+          APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
           CP_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           CP_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}

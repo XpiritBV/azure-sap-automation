@@ -22,6 +22,21 @@ function check_required_inputs() {
         "CP_ARM_TENANT_ID"
     )
 
+    case get_platform in
+    github)
+        REQUIRED_VARS+=("APP_TOKEN")
+        ;;
+
+    # devops)
+    #     REQUIRED_VARS+=("this_agent")
+    #     REQUIRED_VARS+=("PAT")
+    #     REQUIRED_VARS+=("POOL")
+    #     REQUIRED_VARS+=("VARIABLE_GROUP_ID")
+    #     ;;
+
+    *) ;;
+    esac
+
     success=0
     for var in "${REQUIRED_VARS[@]}"; do
         if [[ -z "${!var}" ]]; then
