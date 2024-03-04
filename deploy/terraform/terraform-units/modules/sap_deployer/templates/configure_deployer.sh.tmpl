@@ -92,7 +92,6 @@ function setup_devops_runner() {
 tdnf install -y \
   ca-certificates \
   curl \
-  jq \
   dotnet-runtime-8.0 \
   dotnet-runtime-deps-8.0 \
   krb5-libs \
@@ -102,6 +101,10 @@ tdnf install -y \
   moby-engine \
   openssl-libs \
   zlib
+
+# Install jq, the Mariner version is ancient
+curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
+sudo install -m755 jq /usr/local/bin/jq
 
 if [[ -d $${agent_home} ]]; then
   echo "Runner might already be installed, let's try to stop it first"
