@@ -111,6 +111,11 @@ function install_deps_mariner() {
 }
 
 function install_deps_ubuntu() {
+  version=$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d= -f2 | tr -d "\"")
+  curl -sSfL https://packages.microsoft.com/config/ubuntu/$${version}/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
+  sudo dpkg -i packages-microsoft-prod.deb
+  rm packages-microsoft-prod.deb
+
   sudo apt-get update
   sudo apt-get install -y \
     apt-transport-https \
@@ -121,15 +126,7 @@ function install_deps_ubuntu() {
     lsb-release \
     moby-compose \
     moby-containerd \
-    moby-engine
-
-  # Install dotnet 8.0
-  version=$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d= -f2 | tr -d "\"")
-  curl -sSfL https://packages.microsoft.com/config/ubuntu/$${version}/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
-  sudo dpkg -i packages-microsoft-prod.deb
-
-  sudo apt-get update
-  sudo apt-get install -y \
+    moby-engine \
     dotnet-runtime-8.0
 
   # Install jq, the Ubuntu version is ancient
