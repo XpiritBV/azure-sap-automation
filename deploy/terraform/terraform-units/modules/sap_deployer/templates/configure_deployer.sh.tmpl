@@ -54,7 +54,7 @@ set -euo pipefail
 export agent_home="/home/$${local_user}/agent"
 
 function setup_github_runner() {
-  pusd $${agent_home}
+  pushd $${agent_home}
   curl -sSfL $(curl -sSf https://api.github.com/repos/actions/runner/releases/latest | jq '.assets.[].browser_download_url' -r | egrep 'linux-arm64-[0-9.]+tar.gz$') | tar zx
 
   runner_pat=$(curl -Ss \
@@ -74,7 +74,7 @@ function setup_github_runner() {
 }
 
 function setup_devops_runner() {
-  pusd $${agent_home}
+  pushd $${agent_home}
   curl -SsfL https://aka.ms/AAftpys | tar zx
 
   ./env.sh
@@ -103,12 +103,12 @@ tdnf install -y \
   openssl-libs \
   zlib
 
-if [[ -d /home/$${local_user} ]]; then
+if [[ -d $${agent_home} ]]; then
   echo "Runner might already be installed, let's try to stop it first"
-  sudo $${agent_home}/svc.sh stop" || true
+  sudo $${agent_home}/svc.sh stop || true
 fi
 
-mkdir -p /home/$${local_user}
+mkdir -p $${agent_home}
 
 function setup_runner() {
   case "$${platform}" in
@@ -121,6 +121,8 @@ function setup_runner() {
       ;;
   esac
 }
+
+setup_runner
 
 # Start docker service
 sudo systemctl enable docker.service
