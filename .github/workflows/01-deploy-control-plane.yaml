@@ -164,7 +164,6 @@ jobs:
           CP_ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
           WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
-          deployer_environment: ${{ inputs.environment }}
           deployerconfig: ${{ inputs.deployer }}.tfvars
           deployerfolder: ${{ inputs.deployer }}
           libraryconfig: ${{ inputs.library }}.tfvars

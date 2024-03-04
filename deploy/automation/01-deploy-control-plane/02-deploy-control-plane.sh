@@ -189,24 +189,6 @@ fi
 
 # Check if running on deployer
 if [[ ! -f /etc/profile.d/deploy_server.sh ]]; then
-    echo -e "$green --- Install dos2unix ---$reset"
-    sudo apt-get -qq install dos2unix
-
-    sudo apt -qq install zip
-
-    echo -e "$green --- Install terraform ---$reset"
-
-    wget -q $(tf_url)
-    return_code=$?
-    if [ 0 != $return_code ]; then
-        echo "##vso[task.logissue type=error]Unable to download Terraform version $(tf_version)."
-        exit 2
-    fi
-    unzip -qq terraform_$(tf_version)_linux_amd64.zip
-    sudo mv terraform /bin/
-    rm -f terraform_$(tf_version)_linux_amd64.zip
-
-    az extension add --name storage-blob-preview >/dev/null
     echo -e "$green--- az login ---$reset"
     az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
     return_code=$?
@@ -238,15 +220,14 @@ else
     fi
 fi
 
-echo -e "$green--- Configure parameters ---$reset"
 
+start_group "Configure parameters"
 echo -e "$green--- Convert config files to UX format ---$reset"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
-
 echo -e "$green--- Configuring variables ---$reset"
-
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
+end_group
 
 export key_vault=""
 ip_added=0
@@ -272,18 +253,16 @@ fi
 
 start_group "Deploy the Control Plane"
 
-if [ -n $(PAT) ]; then
+if [[ -v PAT ]]; then
     echo 'Deployer Agent PAT is defined'
 fi
-
-if [ -n $(POOL) ]; then
+if [[ -v POOL ]]; then
     echo 'Deployer Agent Pool' $(POOL)
     POOL_NAME=$(az pipelines pool list --query "[?name=='$(POOL)'].name | [0]")
-
     if [ ${#POOL_NAME} -eq 0 ]; then
-        echo "##vso[task.logissue type=warning]Agent Pool $TF_VAR_agent_pool does not exist."
+        log_warning "Agent Pool ${POOL} does not exist." 2
     fi
-
+    echo "Deployer Agent Pool found: $POOL_NAME"
     export TF_VAR_agent_pool=$(POOL)
     export TF_VAR_agent_pat=$(PAT)
 
@@ -299,14 +278,20 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
 fi
 
+# File could still be present from previous runs, when using self hosted runners
+if [ -f ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log ]; then
+    rm ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
+fi
+
+touch ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 
-export TF_VAR_deployer_parameter_group_name=$(variable_group)
+# TODO: export TF_VAR_deployer_parameter_group_name=$(variable_group)
 export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
 export TF_VAR_deployer_parameter_location=${LOCATION}
 export TF_VAR_deployer_tf_state_filename=$(basename "${deployerconfig}")
 
-sudo chmod +x $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh
+# NOT NEEDED? sudo chmod +x $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh
 
 set +eu
 
@@ -321,6 +306,8 @@ return_code=$?
 echo "Return code from deploy_controlplane $return_code."
 
 set -euo pipefail
+
+# TOT HIER
 
 if [ 0 != $return_code ]; then
     echo "##vso[task.logissue type=error]Return code from deploy_controlplane $return_code."

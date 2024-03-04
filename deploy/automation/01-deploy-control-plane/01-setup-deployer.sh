@@ -177,9 +177,11 @@ echo -e "$green--- Convert config files to UX format ---$reset"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
 echo -e "$green--- Configuring variables ---$reset"
-deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
+deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
 end_group
+
 start_group "Deploy the Control Plane"
+
 #echo -e "$green--- az login ---$reset"
 #az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
 # return_code=$?
