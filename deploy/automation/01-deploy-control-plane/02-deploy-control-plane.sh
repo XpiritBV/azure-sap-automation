@@ -37,6 +37,11 @@ function check_required_inputs() {
     *) ;;
     esac
 
+    if [[ ${use_webapp,,} == "true" ]]; then
+        REQUIRED_VARS+=("APP_REGISTRATION_APP_ID")
+        REQUIRED_VARS+=("WEB_APP_CLIENT_SECRET")
+    fi
+
     success=0
     for var in "${REQUIRED_VARS[@]}"; do
         if [[ -z "${!var}" ]]; then
@@ -125,11 +130,12 @@ fi
 # fi
 end_group
 
-echo -e "$green--- Validations ---$reset"
+start_group "Validations"
 
-if [[ ${use_webapp,,} == "true" ]]; then
-    echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
+if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
+    echo "Use WebApp is selected"
     export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}
+    echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
     export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
     export TF_VAR_use_webapp=true
 fi
@@ -264,7 +270,7 @@ if [ -f ${deployer_environment_file_name} ]; then
     fi
 fi
 
-echo -e "$green--- Deploy the Control Plane ---$reset"
+start_group "Deploy the Control Plane"
 
 if [ -n $(PAT) ]; then
     echo 'Deployer Agent PAT is defined'
@@ -302,6 +308,8 @@ export TF_VAR_deployer_tf_state_filename=$(basename "${deployerconfig}")
 
 sudo chmod +x $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh
 
+set +eu
+
 $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh \
     --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
     --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
@@ -310,6 +318,9 @@ $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh \
     --auto-approve \
     ${storage_account_parameter} ${keyvault_parameter} # TODO: --ado
 return_code=$?
+echo "Return code from deploy_controlplane $return_code."
+
+set -euo pipefail
 
 if [ 0 != $return_code ]; then
     echo "##vso[task.logissue type=error]Return code from deploy_controlplane $return_code."
