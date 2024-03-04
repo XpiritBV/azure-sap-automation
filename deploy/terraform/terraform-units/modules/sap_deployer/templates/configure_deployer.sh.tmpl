@@ -55,7 +55,7 @@ export agent_home="/home/$${local_user}/agent"
 
 function setup_github_runner() {
   pushd $${agent_home}
-  curl -sSfL $(curl -sSf https://api.github.com/repos/actions/runner/releases/latest | jq '.assets.[].browser_download_url' -r | egrep 'linux-amd-[0-9.]+tar.gz$') | tar zx
+  curl -sSfL $(curl -sSf https://api.github.com/repos/actions/runner/releases/latest | jq '.assets.[].browser_download_url' -r | egrep 'linux-x64-[0-9.]+tar.gz$') | tar zx
 
   runner_pat=$(curl -Ss \
     -X POST \
