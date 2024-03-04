@@ -62,7 +62,7 @@ function setup_github_runner() {
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $${app_token}" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    -L "$${api_url}/repos/$${repository}/actions/runners/registration-token" | jq -r .pat)
+    -L "$${api_url}/repos/$${repository}/actions/runners/registration-token" | jq -r .token)
 
   sudo chown -R "$${local_user}" $${agent_home}
 
