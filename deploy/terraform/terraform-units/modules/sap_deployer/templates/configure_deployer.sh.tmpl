@@ -66,6 +66,9 @@ function setup_github_runner() {
 
   sudo chown -R "$${local_user}" $${agent_home}
 
+  # Remove runner if it already exists
+  ./config.sh remove --token $${runner_token} || true
+
   sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${server_url}/$${repository} --token $${runner_token} --runnergroup $${runner_group} --name $(hostname)"
   sudo ./svc.sh install $${local_user}
   sudo ./svc.sh start
@@ -127,6 +130,10 @@ function install_deps_ubuntu() {
     sudo apt-get update
     sudo apt-get install -y \
       dotnet-runtime-8.0
+
+    # Install jq, the Ubuntu version is ancient
+    curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
+    sudo install -m755 jq /usr/local/bin/jq
 }
 
 # Install required packages for this VM to act as a runner on the platform and support docker containers
