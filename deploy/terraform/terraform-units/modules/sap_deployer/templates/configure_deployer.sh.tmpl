@@ -151,9 +151,13 @@ case $(cat /etc/os-release | grep "^ID="| cut -d= -f2 | tr -d "\"" | tr '[:upper
     ;;
 esac
 
-if [[ -d $${agent_home} ]]; then
+if [[ -f $${agent_home}/svc.sh ]]; then
   echo "Runner might already be installed, let's try to stop it first"
-  sudo $${agent_home}/svc.sh stop || true
+  if $(sudo $${agent_home}/svc.sh status); then
+    echo "Runner is running, let's stop it"
+    sudo $${agent_home}/svc.sh stop
+    sudo $${agent_home}/svc.sh uninstall
+  fi
 fi
 
 mkdir -p $${agent_home}
