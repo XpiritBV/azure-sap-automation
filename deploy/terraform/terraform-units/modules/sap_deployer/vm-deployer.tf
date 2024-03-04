@@ -252,34 +252,4 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                              )
                                            }
                                          )
-
-}
-
-resource "azurerm_virtual_machine_run_command" "docker" {
-  count              = var.auto_configure_deployer ? var.deployer_vm_count : 0
-  depends_on         = [azurerm_virtual_machine_extension.configure]
-  name               = "install_docker-ce"
-  virtual_machine_id = azurerm_linux_virtual_machine.deployer[count.index].id
-  location           = azurerm_linux_virtual_machine.deployer[count.index].location
-  source {
-    script = <<EOF
-echo "Add Docker's official GPG key:"
-sudo apt-get update
-sudo apt-get install ca-certificates curl -y
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-echo "Add the repository to Apt sources:"
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-echo "Install docker-ce"
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-/usr/bin/docker version
-EOF
-  }
 }
