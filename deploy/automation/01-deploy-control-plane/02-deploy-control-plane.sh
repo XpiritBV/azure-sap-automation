@@ -76,7 +76,7 @@ file_REMOTE_STATE_SA=""
 file_REMOTE_STATE_RG=${deployerfolder}
 
 start_group "Variables"
-var=$(get_value_with_key "Deployer_Key_Vault" | tr -d \")
+var=$(get_value_with_key "Deployer_Key_Vault")
 if [ -n "${var}" ]; then
     key_vault="${var}"
     echo 'Deployer Key Vault: ' ${key_vault}
@@ -87,7 +87,7 @@ else
     fi
 fi
 
-var=$(get_value_with_key "Deployer_Terraform_Remote_Storage_Subscription" | tr -d \")
+var=$(get_value_with_key "Deployer_Terraform_Remote_Storage_Subscription")
 if [ -n "${var}" ]; then
     STATE_SUBSCRIPTION="${var}"
     echo 'Terraform state file subscription: ' $STATE_SUBSCRIPTION
@@ -98,7 +98,7 @@ else
     fi
 fi
 
-var=$(get_value_with_key "Terraform_Remote_Storage_Account_Name.value" | tr -d \")
+var=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
 if [ -n "${var}" ]; then
     REMOTE_STATE_SA="${var}"
     echo 'Terraform state file storage account: ' $REMOTE_STATE_SA
@@ -116,12 +116,13 @@ else
     set_config_key_with_value "step" "1"
 fi
 
-keyvault_parameter=""
-if [ -n "${keyvault}" ]; then
-    if [ "${keyvault}" != "${Deployer_Key_Vault}" ]; then
-        keyvault_parameter=" --vault ${keyvault} "
-    fi
-fi
+# TODO: Uncleared code, is this correct?
+# keyvault_parameter=""
+# if [ -n "${keyvault}" ]; then
+#     if [ "${keyvault}" != "${Deployer_Key_Vault}" ]; then
+#         keyvault_parameter=" --vault ${keyvault} "
+#     fi
+# fi
 end_group
 
 echo -e "$green--- Validations ---$reset"
@@ -306,8 +307,8 @@ $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh \
     --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
     --subscription $CP_ARM_SUBSCRIPTION_ID --spn_id $CP_ARM_CLIENT_ID \
     --spn_secret $CP_ARM_CLIENT_SECRET --tenant_id $CP_ARM_TENANT_ID \
-    --auto-approve --ado \
-    ${storage_account_parameter} ${keyvault_parameter}
+    --auto-approve \
+    ${storage_account_parameter} ${keyvault_parameter} # TODO: --ado
 return_code=$?
 
 if [ 0 != $return_code ]; then
@@ -326,16 +327,16 @@ git pull -q
 
 if [ -f ${deployer_environment_file_name} ]; then
     file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
-    echo 'Deployer State File' $file_deployer_tfstate_key
+    echo 'Deployer State File: ' $file_deployer_tfstate_key
 
     file_key_vault=$(config_value_with_key "keyvault")
-    echo 'Deployer Key Vault' ${file_key_vault}
+    echo 'Deployer Key Vault: ' ${file_key_vault}
 
     file_REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA")
-    echo 'Terraform state file storage account' $file_REMOTE_STATE_SA
+    echo 'Terraform state file storage account: ' $file_REMOTE_STATE_SA
 
     file_REMOTE_STATE_RG=$(config_value_with_key "REMOTE_STATE_RG")
-    echo 'Terraform state file resource group' $file_REMOTE_STATE_RG
+    echo 'Terraform state file resource group: ' $file_REMOTE_STATE_RG
 fi
 
 echo -e "$green--- Update repo ---$reset"
@@ -409,13 +410,13 @@ fi
 
 if [ 0 == $return_code ]; then
     start_group "Saving variables"
-    set_value_with_key "Terraform_Remote_Storage_Account_Name"
-    set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name"
-    set_value_with_key "Terraform_Remote_Storage_Subscription"
-    set_value_with_key "Deployer_State_FileName"
-    set_value_with_key "Deployer_Key_Vault"
-    set_value_with_key "ControlPlaneEnvironment"
-    set_value_with_key "ControlPlaneLocation"
+    set_value_with_key "Terraform_Remote_Storage_Account_Name" ${file_REMOTE_STATE_SA}
+    set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name" ${file_REMOTE_STATE_RG}
+    set_value_with_key "Terraform_Remote_Storage_Subscription" ${ARM_SUBSCRIPTION_ID}
+    set_value_with_key "Deployer_State_FileName" ${file_deployer_tfstate_key}
+    set_value_with_key "Deployer_Key_Vault" ${file_key_vault}
+    set_value_with_key "ControlPlaneEnvironment" ${ENVIRONMENT}
+    set_value_with_key "ControlPlaneLocation" ${LOCATION}
     end_group
 fi
 exit $return_code
