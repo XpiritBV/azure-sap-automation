@@ -118,37 +118,23 @@ function install_deps_ubuntu() {
     curl \
     gnupg \
     jq \
-    lsb-release
+    lsb-release \
+    moby-compose \
+    moby-containerd \
+    moby-engine
 
-    # Install dotnet 8.0
-    version=$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d= -f2 | tr -d "\"")
-    curl -sSfL https://packages.microsoft.com/config/ubuntu/$${version}/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
-    sudo dpkg -i packages-microsoft-prod.deb
+  # Install dotnet 8.0
+  version=$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d= -f2 | tr -d "\"")
+  curl -sSfL https://packages.microsoft.com/config/ubuntu/$${version}/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
+  sudo dpkg -i packages-microsoft-prod.deb
 
-    sudo apt-get update
-    sudo apt-get install -y \
-      dotnet-runtime-8.0
+  sudo apt-get update
+  sudo apt-get install -y \
+    dotnet-runtime-8.0
 
-    # Install jq, the Ubuntu version is ancient
-    curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
-    sudo install -m755 jq /usr/local/bin/jq
-
-    # Install docker
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-    # Add the repository to Apt sources:
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    sudo apt-get update
-    sudo apt-get install -y \
-      containerd.io \
-      docker-buildx-plugin \
-      docker-ce \
-      docker-ce-cli \
-      docker-compose-plugin
+  # Install jq, the Ubuntu version is ancient
+  curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
+  sudo install -m755 jq /usr/local/bin/jq
 }
 
 # Install required packages for this VM to act as a runner on the platform and support docker containers
