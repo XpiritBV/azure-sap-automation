@@ -57,7 +57,7 @@ function setup_github_runner() {
   pushd $${agent_home}
   curl -sSfL $(curl -sSf https://api.github.com/repos/actions/runner/releases/latest | jq '.assets.[].browser_download_url' -r | egrep 'linux-x64-[0-9.]+tar.gz$') | tar zx
 
-  runner_pat=$(curl -Ss \
+  runner_token=$(curl -Ss \
     -X POST \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $${app_token}" \
@@ -66,7 +66,7 @@ function setup_github_runner() {
 
   sudo chown -R "$${local_user}" $${agent_home}
 
-  sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${server_url}/$${repository} --pat $${runner_pat} --runnergroup $${runner_group} --name $(hostname)"
+  sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${server_url}/$${repository} --token $${runner_token} --runnergroup $${runner_group} --name $(hostname)"
   sudo ./svc.sh install $${local_user}
   sudo ./svc.sh start
   sudo ./svc.sh status
