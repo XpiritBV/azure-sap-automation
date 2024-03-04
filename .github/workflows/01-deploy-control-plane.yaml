@@ -1,6 +1,6 @@
 # /*---------------------------------------------------------------------------8
 # |                                                                            |
-# |               This pipeline deploys the control plane in GitHub Actions    |
+# |         This pipeline deploys the control plane in GitHub Actions          |
 # |                                                                            |
 # +------------------------------------4--------------------------------------*/
 
@@ -11,17 +11,24 @@ on:
   workflow_dispatch:
     inputs:
       deployer:
-        default: MGMT-WEEU-DEP01-INFRASTRUCTURE
         description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
-        type: string
+        required: true
+        type: environment
       library:
         default: MGMT-WEEU-SAP_LIBRARY
         description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
-        type: string
+        type: choice
+        options:
+        - MGMT-WEEU-SAP_LIBRARY
       environment:
         default: MGMT
         description: Environment name, MGMT, DEV, QA, etc
-        type: string
+        type: choice
+        options:
+        - MGMT
+        - DEV
+        - QA
+        - PROD
       use_webapp:
         default: true
         description: Deploy the configuration web application infrastructure
@@ -29,10 +36,6 @@ on:
       deploy_webapp_software:
         default: true
         description: "Deploy the configuration web application software"
-        type: boolean
-      use_deployer:
-        default: false
-        description: Run on self hosted agent
         type: boolean
       force_reset:
         default: false
