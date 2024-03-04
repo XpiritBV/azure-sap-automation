@@ -110,7 +110,7 @@ variable "arm_client_id"               { description = "ARM client id" }
 variable "platform"                    {
                                          description = "Type of agent to be used"
                                          type       = string
-                                         default = "devops"
+                                         default    = "devops"
                                        }
 
 

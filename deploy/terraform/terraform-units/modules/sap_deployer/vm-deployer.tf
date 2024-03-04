@@ -230,11 +230,11 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                  format(
                                                  "%s/templates/configure_deployer.sh.tmpl", path.module),
                                                  {
-                                                   tfversion            = var.tf_version,
-                                                   rg_name              = local.resourcegroup_name,
-                                                   client_id            = azurerm_user_assigned_identity.deployer.client_id,
-                                                   subscription_id      = data.azurerm_subscription.primary.subscription_id,
-                                                   tenant_id            = data.azurerm_subscription.primary.tenant_id,
+                                                   tfversion            = var.tf_version
+                                                   rg_name              = local.resourcegroup_name
+                                                   client_id            = azurerm_user_assigned_identity.deployer.client_id
+                                                   subscription_id      = data.azurerm_subscription.primary.subscription_id
+                                                   tenant_id            = data.azurerm_subscription.primary.tenant_id
                                                    local_user           = local.username
                                                    pool                 = var.agent_pool
                                                    pat                  = var.agent_pat
