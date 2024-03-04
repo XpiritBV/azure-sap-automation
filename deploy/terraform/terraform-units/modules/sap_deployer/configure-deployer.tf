@@ -22,9 +22,9 @@ resource "null_resource" "prepare-deployer" {
   provisioner "file"                     {
                                            content = templatefile(format("%s/templates/configure_deployer.sh.tmpl", path.module), {
                                              local_user           = local.username
-                                             pool                 = var.agent_pool
-                                             pat                  = var.agent_pat
-                                             ado_repo             = var.agent_ado_url
+                                             agent_pool           = var.agent_pool
+                                             agent_pat            = var.agent_pat
+                                             agent_ado_url        = var.agent_ado_url
                                              platform             = var.platform
                                              app_token            = var.app_token
                                              runner_group         = var.runner_group
@@ -60,9 +60,9 @@ resource "local_file" "configure_deployer" {
   count                                = local.enable_deployer_public_ip ? 0 : 1
   content                              = templatefile(format("%s/templates/configure_deployer.sh.tmpl", path.module), {
                                            local_user           = local.username
-                                           pool                 = var.agent_pool
-                                           pat                  = var.agent_pat
-                                           ado_repo             = var.agent_ado_url
+                                           agent_pool           = var.agent_pool
+                                           agent_pat            = var.agent_pat
+                                           agent_ado_url        = var.agent_ado_url
                                            platform             = var.platform
                                            app_token            = var.app_token
                                            runner_group         = var.runner_group
