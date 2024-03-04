@@ -148,17 +148,20 @@ jobs:
           deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
         # TODO: working-directory: /source
         env:
+          APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
           CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
           CP_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           CP_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           CP_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           CP_ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
+          WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
           deployer_environment: ${{ inputs.environment }}
           deployerconfig: ${{ inputs.deployer }}.tfvars
           deployerfolder: ${{ inputs.deployer }}
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
+          use_webapp: ${{ inputs.use_webapp }}
 
   web_app_deployment:
     if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
