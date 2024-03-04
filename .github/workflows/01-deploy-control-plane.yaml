@@ -129,8 +129,8 @@ jobs:
     environment: ${{ inputs.deployer }}
     needs: setup_deployer
     runs-on: self-hosted
-    # container:
-    #   image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
