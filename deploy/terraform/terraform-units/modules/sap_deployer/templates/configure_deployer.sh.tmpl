@@ -155,10 +155,13 @@ function install_deps_ubuntu() {
 case $(cat /etc/os-release | grep "^ID="| cut -d= -f2 | tr -d "\"" | tr '[:upper:]' '[:lower:]') in
   (*mariner*)
     install_deps_mariner
+    sudo systemctl enable docker.service
+    sudo systemctl start docker.service
     ;;
 
   (*ubuntu*)
     install_deps_ubuntu
+    sudo service docker start
     ;;
 esac
 
@@ -182,7 +185,3 @@ function setup_runner() {
 }
 
 setup_runner
-
-# Start docker service
-sudo systemctl enable docker.service
-sudo systemctl start docker.service
