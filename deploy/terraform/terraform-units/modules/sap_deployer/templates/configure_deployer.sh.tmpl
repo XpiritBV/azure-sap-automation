@@ -67,6 +67,9 @@ function setup_github_runner() {
   sudo chown -R "$${local_user}" $${agent_home}
 
   sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${server_url}/$${repository} --pat $${runner_pat} --runnergroup $${runner_group} --name $(hostname)"
+  sudo ./svc.sh install $${local_user}
+  sudo ./svc.sh start
+  sudo ./svc.sh status
   popd
 }
 
@@ -79,6 +82,9 @@ function setup_devops_runner() {
   sudo chown -R "$${local_user}" $${agent_home}
 
   sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${agent_ado_url} --auth pat --pat $${agent_pat} --pool $${agent_pool} --agent $(hostname) --replace --acceptTeeEula"
+  sudo ./svc.sh install $${local_user}
+  sudo ./svc.sh start
+  sudo ./svc.sh status
   popd
 }
 
@@ -99,7 +105,7 @@ tdnf install -y \
 
 if [[ -d /home/$${local_user} ]]; then
   echo "Runner might already be installed, let's try to stop it first"
-  sudo runuser -l "$${local_user}" -c "cd /home/$${local_user}; ./svc.sh stop" || true
+  sudo $${agent_home}/svc.sh stop" || true
 fi
 
 mkdir -p /home/$${local_user}
