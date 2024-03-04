@@ -20,15 +20,15 @@ on:
         type: choice
         options:
         - MGMT-WEEU-SAP_LIBRARY
-      environment:
-        default: MGMT
-        description: Environment name, MGMT, DEV, QA, etc
-        type: choice
-        options:
-        - MGMT
-        - DEV
-        - QA
-        - PROD
+      # environment:
+      #   default: MGMT
+      #   description: Environment name, MGMT, DEV, QA, etc
+      #   type: choice
+      #   options:
+      #   - MGMT
+      #   - DEV
+      #   - QA
+      #   - PROD
       use_webapp:
         default: true
         description: Deploy the configuration web application infrastructure
@@ -107,7 +107,6 @@ jobs:
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
           WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
-          deployer_environment: ${{ inputs.environment }}
           deployerconfig: ${{ inputs.deployer }}.tfvars
           deployerfolder: ${{ inputs.deployer }}
           force_reset: ${{ inputs.force_reset }}

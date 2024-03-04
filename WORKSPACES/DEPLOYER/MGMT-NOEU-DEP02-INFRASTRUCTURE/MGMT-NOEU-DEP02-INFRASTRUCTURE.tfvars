@@ -20,7 +20,7 @@
 #########################################################################################
 environment = "MGMT"
 # The location/region value is a mandatory field, it is used to control where the resources are deployed
-location = "westeurope"
+location = "northeurope"
 
 # RESOURCEGROUP
 # The two resource group name and arm_id can be used to control the naming and the creation of the resource group
@@ -30,7 +30,7 @@ location = "westeurope"
 #resourcegroup_arm_id=""
 
 resourcegroup_tags = {
-  Control_plane = "West Europe"
+  Control_plane = "North Europe"
 }
 
 #########################################################################################
@@ -156,11 +156,10 @@ deployer_image = {
   "type"            = "marketplace"
   "os_type"         = "Linux"
   "source_image_id" = ""
-  "publisher"       = "MicrosoftCBLMariner"
-  "offer"           = "cbl-mariner"
-  "sku"             = "cbl-mariner-2-gen2"
-  "version"         = "2.20240223.01"
-  "type"            = "marketplace"
+  "publisher"       = "Canonical"
+  "offer"           = "0001-com-ubuntu-server-jammy"
+  "sku"             = "22_04-lts-gen2"
+  "version"         = "latest"
 }
 
 # Use this field if you are using a marketplace image that has a plan attached to it
