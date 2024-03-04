@@ -97,13 +97,12 @@ tdnf install -y \
   openssl-libs \
   zlib
 
-if [[ -d /home/runner ]]; then
+if [[ -d /home/$${local_user} ]]; then
   echo "Runner might already be installed, let's try to stop it first"
-  sudo runuser -l "$${local_user}" -c "cd /home/runner; ./svc.sh stop" || true
+  sudo runuser -l "$${local_user}" -c "cd /home/$${local_user}; ./svc.sh stop" || true
 fi
 
-mkdir -p /home/runner`
-cd /home/runner
+mkdir -p /home/$${local_user}
 
 function setup_runner() {
   case "$${platform}" in
