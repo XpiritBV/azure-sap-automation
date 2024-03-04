@@ -107,7 +107,7 @@ function install_deps_mariner() {
   sudo install -m755 jq /usr/local/bin/jq
 }
 
-install_deps_ubuntu() {
+function install_deps_ubuntu() {
   sudo apt-get update
   sudo apt-get install -y \
     apt-transport-https \
@@ -121,7 +121,7 @@ install_deps_ubuntu() {
 
     # Install dotnet 8.0
     version=$(cat /etc/os-release | grep 'VERSION_ID=' | cut -d= -f2 | tr -d "\"")
-    curl -sSfL https://packages.microsoft.com/config/ubuntu/${version}/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
+    curl -sSfL https://packages.microsoft.com/config/ubuntu/$${version}/packages-microsoft-prod.deb -o packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb
 
     sudo apt-get update
