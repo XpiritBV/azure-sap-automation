@@ -83,7 +83,7 @@ jobs:
           #!/usr/bin/env bash
           log_level=WARN
 
-          if [ ${{ secrets.ACTIONS_RUNNER_DEBUG }} == "true" ] ||  [ ${{ env.ACTIONS_RUNNER_DEBUG }} == "true" ]; then
+          if [ ${{ secrets.ACTIONS_RUNNER_DEBUG }} == "true" ] || [ ${{ env.ACTIONS_RUNNER_DEBUG }} == "true" ]; then
             $log_level=DEBUG
           fi
 
@@ -119,7 +119,6 @@ jobs:
           use_webapp: ${{ inputs.use_webapp }}
 
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: 'setup-deployer-logs-${{ github.run_number }}-${{ github.run_attempt }}'
           path: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/terraform.log
