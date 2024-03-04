@@ -75,8 +75,6 @@ storage_account_parameter=""
 
 start_group "Setup deployer and library folders"
 echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
-file_deployer_tfstate_key=${deployerfolder}.tfstate
-
 ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
 echo Environment: ${ENVIRONMENT}
 LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs)
@@ -84,6 +82,8 @@ echo Location: ${LOCATION}
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 echo "Deployer Environment File: ${deployer_environment_file_name}"
 end_group
+
+file_deployer_tfstate_key=${deployerfolder}.tfstate
 
 start_group "Setup platform dependencies"
 # Will return vars which we need to export afterwards

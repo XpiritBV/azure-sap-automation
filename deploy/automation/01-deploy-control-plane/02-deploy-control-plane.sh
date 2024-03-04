@@ -3,6 +3,11 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/shared_functions.sh
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
+start_group "GitHub Context"
+cat /tmp/github_context.json
+echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+end_group
+
 function check_required_inputs() {
     REQUIRED_VARS=(
         "CONFIG_REPO_PATH"
@@ -43,47 +48,49 @@ start_group "Setup deployer and library folders"
 echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 
 ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
-echo Environment ${ENVIRONMENT}
+echo Environment: ${ENVIRONMENT}
 LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs)
-echo Location ${LOCATION}
+echo Location: ${LOCATION}
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
+echo "Deployer Environment File: ${deployer_environment_file_name}"
+end_group
+
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 file_key_vault=""
 file_REMOTE_STATE_SA=""
 file_REMOTE_STATE_RG=${deployerfolder}
-end_group
 
 start_group "Variables"
 var=$(get_value_with_key "Deployer_Key_Vault" | tr -d \")
 if [ -n "${var}" ]; then
     key_vault="${var}"
-    echo 'Deployer Key Vault' ${key_vault}
+    echo 'Deployer Key Vault: ' ${key_vault}
 else
     if [ -f ${deployer_environment_file_name} ]; then
         key_vault=$(config_value_with_key "keyvault")
-        echo 'Deployer Key Vault' ${key_vault}
+        echo 'Deployer Key Vault: ' ${key_vault}
     fi
 fi
 
 var=$(get_value_with_key "Deployer_Terraform_Remote_Storage_Subscription" | tr -d \")
 if [ -n "${var}" ]; then
     STATE_SUBSCRIPTION="${var}"
-    echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
+    echo 'Terraform state file subscription: ' $STATE_SUBSCRIPTION
 else
     if [ -f ${deployer_environment_file_name} ]; then
         STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION")
-        echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
+        echo 'Terraform state file subscription: ' $STATE_SUBSCRIPTION
     fi
 fi
 
 var=$(get_value_with_key "Terraform_Remote_Storage_Account_Name.value" | tr -d \")
 if [ -n "${var}" ]; then
     REMOTE_STATE_SA="${var}"
-    echo 'Terraform state file storage account' $REMOTE_STATE_SA
+    echo 'Terraform state file storage account: ' $REMOTE_STATE_SA
 else
     if [ -f ${deployer_environment_file_name} ]; then
         REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA")
-        echo 'Terraform state file storage account' $REMOTE_STATE_SA
+        echo 'Terraform state file storage account: ' $REMOTE_STATE_SA
     fi
 fi
 
