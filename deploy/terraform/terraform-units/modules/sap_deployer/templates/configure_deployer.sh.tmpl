@@ -11,7 +11,7 @@ pat="${pat}"
 ado_repo="${ado_repo}"
 pool="${pool}"
 
-case "$platform" in
+case "$${platform}" in
   (github)
     REQUIRED_VARS=(
       "api_url"
@@ -31,21 +31,21 @@ case "$platform" in
     ;;
 
   (*)
-    echo "Invalid platform: $platform"
+    echo "Invalid platform: $${platform}"
     exit 1
     ;;
 esac
 
 missing_vars=false
 
-for var in "${REQUIRED_VARS[@]}"; do
-  if [[ -z "${!var}" ]]; then
+for var in "$${REQUIRED_VARS[@]}"; do
+  if [[ -z "$${!var}" ]]; then
     echo "Missing required variable: $var"
     missing_vars="true"
   fi
 done
 
-if [[ "${missing_vars}" == "true" ]]; then
+if [[ "$${missing_vars}" == "true" ]]; then
   exit 1
 fi
 
@@ -54,31 +54,31 @@ set -euo pipefail
 export agent_home="/home/$${local_user}/agent"
 
 function setup_github_runner() {
-  pusd ${agent_home}
+  pusd $${agent_home}
   curl -sSfL $(curl -sSf https://api.github.com/repos/actions/runner/releases/latest | jq '.assets.[].browser_download_url' -r | egrep 'linux-arm64-[0-9.]+tar.gz$') | tar zx
 
   runner_pat=$(curl -Ss \
     -X POST \
     -H "Accept: application/vnd.github+json" \
-    -H "Authorization: Bearer ${app_pat}" \
+    -H "Authorization: Bearer $${app_pat}" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    -L "${api_url}/repos/${repository}/actions/runners/registration-pat" | jq -r .pat)
+    -L "$${api_url}/repos/$${repository}/actions/runners/registration-token" | jq -r .pat)
 
-  sudo chown -R "$${local_user}" ${agent_home}
+  sudo chown -R "$${local_user}" $${agent_home}
 
-  sudo runuser -l "${local_user}" -c "${agent_home}/config.sh --unattended --url ${server_url}/${repository} --pat ${runner_pat} --runnergroup ${runner_group} --name $(hostname)"
+  sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${server_url}/$${repository} --pat $${runner_pat} --runnergroup $${runner_group} --name $$(hostname)"
   popd
 }
 
 function setup_devops_runner() {
-  pusd ${agent_home}
+  pusd $${agent_home}
   curl -SsfL https://aka.ms/AAftpys | tar zx
 
   ./env.sh
 
-  sudo chown -R "$${local_user}" ${agent_home}
+  sudo chown -R "$${local_user}" $${agent_home}
 
-  sudo runuser -l "$${local_user}" -c "${agent_home}/config.sh --unattended --url ${ado_repo} --auth pat --pat ${pat} --pool ${pool} --agent $(hostname) --replace --acceptTeeEula"
+  sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${ado_repo} --auth pat --pat $${pat} --pool $${pool} --agent $$(hostname) --replace --acceptTeeEula"
   popd
 }
 
@@ -97,16 +97,16 @@ tdnf install -y \
   openssl-libs \
   zlib
 
-  if [[ -d /home/runner ]]; then
-    echo "Runner might already be installed, let's try to stop it first"
-    sudo runuser -l "$${local_user}" -c "cd /home/runner; ./svc.sh stop" || true
-  fi
+if [[ -d /home/runner ]]; then
+  echo "Runner might already be installed, let's try to stop it first"
+  sudo runuser -l "$${local_user}" -c "cd /home/runner; ./svc.sh stop" || true
+fi
 
-  mkdir -p /home/runner
-  cd /home/runner
+mkdir -p /home/runner`
+cd /home/runner
 
 function setup_runner() {
-  case "$platform" in
+  case "$${platform}" in
     (github)
       setup_github_runner
       ;;
