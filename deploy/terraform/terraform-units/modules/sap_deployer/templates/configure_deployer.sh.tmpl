@@ -115,8 +115,6 @@ function install_deps_ubuntu() {
   sudo apt-get install -y \
     apt-transport-https \
     ca-certificates \
-    docker.io \
-    docker-compose \
     curl \
     gnupg \
     jq \
@@ -134,6 +132,23 @@ function install_deps_ubuntu() {
     # Install jq, the Ubuntu version is ancient
     curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
     sudo install -m755 jq /usr/local/bin/jq
+
+    # Install docker
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install -y \
+      containerd.io \
+      docker-buildx-plugin \
+      docker-ce \
+      docker-ce-cli \
+      docker-compose-plugin
 }
 
 # Install required packages for this VM to act as a runner on the platform and support docker containers
