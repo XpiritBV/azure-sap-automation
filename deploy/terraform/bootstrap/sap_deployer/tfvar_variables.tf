@@ -515,7 +515,7 @@ variable "PLATFORM"                                {
                                                        default = "devops"
                                                      }
 variable "APP_TOKEN"                                {
-                                                       description = "If provided, contains token to access github"
+                                                       description = "If provided, contains token to access GitHub"
                                                        default = ""
                                                     }
 variable "RUNNER_GROUP"                             {
