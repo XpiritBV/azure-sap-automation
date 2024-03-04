@@ -236,9 +236,9 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                    subscription_id      = data.azurerm_subscription.primary.subscription_id
                                                    tenant_id            = data.azurerm_subscription.primary.tenant_id
                                                    local_user           = local.username
-                                                   pool                 = var.agent_pool
-                                                   pat                  = var.agent_pat
-                                                   ado_repo             = var.agent_ado_url
+                                                   agent_pool           = var.agent_pool
+                                                   agent_pat            = var.agent_pat
+                                                   agent_ado_url        = var.agent_ado_url
                                                    use_webapp           = var.use_webapp
                                                    ansible_core_version = var.ansible_core_version
                                                    platform             = var.platform
