@@ -182,14 +182,12 @@ echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automat
 echo -e "$green--- File Validations ---$reset"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
     echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$reset"
-    echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found."
-    exit 2
+    exit_error "File ${CONFIG_REPO_PATH}/${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
 fi
 
 if [ ! -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} ]; then
     echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$reset"
-    echo "##vso[task.logissue type=error]File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found."
-    exit 2
+    exit_error "File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found." 2
 fi
 
 # Check if running on deployer
@@ -199,8 +197,7 @@ if [[ ! -f /etc/profile.d/deploy_server.sh ]]; then
     return_code=$?
     if [ 0 != $return_code ]; then
         echo -e "$boldred--- Login failed ---$reset"
-        echo "##vso[task.logissue type=error]az login failed."
-        exit $return_code
+        exit_error "az login failed." $return_code
     fi
 
     az account set --subscription $CP_ARM_SUBSCRIPTION_ID
@@ -211,14 +208,13 @@ else
         export ARM_CLIENT_ID=$CP_ARM_CLIENT_ID
         export ARM_CLIENT_SECRET=$CP_ARM_CLIENT_SECRET
         export ARM_TENANT_ID=$CP_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID
+        export ARM_SUBSCRIPTION_ID=$CP_ARM_SUBSCRIPTION_ID
         export ARM_USE_MSI=false
         az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
         return_code=$?
         if [ 0 != $return_code ]; then
             echo -e "$boldred--- Login failed ---$reset"
-            echo "##vso[task.logissue type=error]az login failed."
-            exit $return_code
+            exit_error "az login failed." $return_code
         fi
     else
         source /etc/profile.d/deploy_server.sh
@@ -296,8 +292,6 @@ export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
 export TF_VAR_deployer_parameter_location=${LOCATION}
 export TF_VAR_deployer_tf_state_filename=$(basename "${deployerconfig}")
 
-# NOT NEEDED? sudo chmod +x $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh
-
 set +eu
 
 $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh \
@@ -312,13 +306,10 @@ echo "Return code from deploy_controlplane $return_code."
 
 set -euo pipefail
 
-# TOT HIER
-
 if [ 0 != $return_code ]; then
-    echo "##vso[task.logissue type=error]Return code from deploy_controlplane $return_code."
     if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.err ]; then
         error_message=$(cat .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.err)
-        echo "##vso[task.logissue type=error]Error message: $error_message."
+        exit_error "Error message: $error_message." $return_code
     fi
 fi
 
@@ -405,12 +396,13 @@ if [ 1 == $git_diff_return_code ]; then
     commit_changes "Updated control plane deployment configuration."
 fi
 
-if [ -f ${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
-    echo "##vso[task.uploadsummary]${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
+if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
+    upload_summary ".sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md"
 fi
+end_group
 
+start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
-    start_group "Saving variables"
     set_value_with_key "Terraform_Remote_Storage_Account_Name" ${file_REMOTE_STATE_SA}
     set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name" ${file_REMOTE_STATE_RG}
     set_value_with_key "Terraform_Remote_Storage_Subscription" ${ARM_SUBSCRIPTION_ID}
@@ -418,6 +410,6 @@ if [ 0 == $return_code ]; then
     set_value_with_key "Deployer_Key_Vault" ${file_key_vault}
     set_value_with_key "ControlPlaneEnvironment" ${ENVIRONMENT}
     set_value_with_key "ControlPlaneLocation" ${LOCATION}
-    end_group
 fi
+end_group
 exit $return_code
