@@ -2,7 +2,7 @@
 environment="MGMT"
 
 # The location valus is a mandatory field, it is used to control where the resources are deployed
-location="westeurope"
+location="northeurope"
 
 # Defines the DNS suffix for the resources
 dns_label = "azure.sapcontoso.com"
