@@ -15,11 +15,11 @@ on:
         required: true
         type: environment
       library:
-        default: MGMT-NEEU-SAP_LIBRARY
+        default: MGMT-NOEU-SAP_LIBRARY
         description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
         type: choice
         options:
-        - MGMT-NEEU-SAP_LIBRARY
+        - MGMT-NOEU-SAP_LIBRARY
       environment:
         default: MGMT
         description: Environment name
