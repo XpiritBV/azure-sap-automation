@@ -53,6 +53,21 @@ export agent_home="/home/$${local_user}/agent"
 
 function setup_github_runner() {
   pushd $${agent_home}
+
+  if [[ -f svc.sh ]]; then
+    echo "Runner might already be installed"
+
+    set -e
+    sudo ./svc.sh status
+    exit_code=$?
+    set +e
+
+    if [ $exit_code -eq 0 ]; then
+      echo "Runner is running"
+      exit 0
+    fi
+  fi
+
   curl -sSfL $(curl -sSf https://api.github.com/repos/actions/runner/releases/latest | jq '.assets.[].browser_download_url' -r | egrep 'linux-x64-[0-9.]+tar.gz$') | tar zx
 
   runner_token=$(curl -Ss \
@@ -147,24 +162,6 @@ case $(cat /etc/os-release | grep "^ID="| cut -d= -f2 | tr -d "\"" | tr '[:upper
     sudo service docker start
     ;;
 esac
-
-if [[ -f $${agent_home}/svc.sh ]]; then
-  echo "Runner might already be installed, let's try to stop it first"
-  pushd $${agent_home}
-
-  set -e
-  sudo ./svc.sh status
-  exit_code=$?
-  set +e
-
-  if [ $exit_code -eq 0 ]; then
-    echo "Runner is running, let's stop it"
-    sudo ./svc.sh stop
-    sudo ./svc.sh uninstall
-  fi
-
-  popd
-fi
 
 mkdir -p $${agent_home}
 

@@ -172,7 +172,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 'setup-deployer-logs-${{ github.run_number }}-${{ github.run_attempt }}'
+          name: 'deploy-controlplane-logs-${{ github.run_number }}-${{ github.run_attempt }}'
           path: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/terraform.log
 
   web_app_deployment:
