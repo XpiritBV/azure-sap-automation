@@ -64,6 +64,8 @@ end_group
 
 set -euo pipefail
 
+export TF_VAR_PLATFORM=$(get_platform)
+
 start_group "Setup deployer and library folders"
 echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 
