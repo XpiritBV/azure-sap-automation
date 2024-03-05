@@ -103,7 +103,6 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
-          RUNNER_GROUP: "Default"
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
           TF_LOG: ${{ steps.log_level.outputs.log_level }}
           TF_VAR_ansible_core_version: 2.15 # TODO: Need to be stored in App Configurations
@@ -163,7 +162,6 @@ jobs:
           CP_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           CP_ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           TF_LOG: ${{ steps.log_level.outputs.log_level }}
-          RUNNER_GROUP: "Default"
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
           WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
           deployerconfig: ${{ inputs.deployer }}.tfvars

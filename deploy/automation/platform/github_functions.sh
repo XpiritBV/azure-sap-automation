@@ -12,7 +12,6 @@ function setup_dependencies() {
     echo "TF_VAR_REPOSITORY=${repository}"
 
     echo "TF_VAR_APP_TOKEN=${APP_TOKEN}"
-    echo "TF_VAR_RUNNER_GROUP=${RUNNER_GROUP}"
 }
 
 function exit_error() {

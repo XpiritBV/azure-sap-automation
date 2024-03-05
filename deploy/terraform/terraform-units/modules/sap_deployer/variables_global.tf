@@ -146,10 +146,6 @@ variable "app_token"                  {
                                        description = "If provided, contains token to access GitHub"
                                        default = ""
                                       }
-variable "runner_group"               {
-                                       description = "If provided, contains the Personal Access Token to be used"
-                                       default = ""
-                                      }
 variable "server_url"                 {
                                        description = "If provided, contains the Server Url of the GitHub instance"
                                        default = "https://github.com"

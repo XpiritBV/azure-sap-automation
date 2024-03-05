@@ -27,7 +27,6 @@ resource "null_resource" "prepare-deployer" {
                                              agent_ado_url        = var.agent_ado_url
                                              platform             = var.platform
                                              app_token            = var.app_token
-                                             runner_group         = var.runner_group
                                              repository           = var.repository
                                              server_url           = var.server_url
                                              api_url              = var.api_url
@@ -65,7 +64,6 @@ resource "local_file" "configure_deployer" {
                                            agent_ado_url        = var.agent_ado_url
                                            platform             = var.platform
                                            app_token            = var.app_token
-                                           runner_group         = var.runner_group
                                            repository           = var.repository
                                            server_url           = var.server_url
                                            api_url              = var.api_url

@@ -243,7 +243,6 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                    ansible_core_version = var.ansible_core_version
                                                    platform             = var.platform
                                                    app_token            = var.app_token
-                                                   runner_group         = var.runner_group
                                                    repository           = var.repository
                                                    server_url           = var.server_url
                                                    api_url              = var.api_url

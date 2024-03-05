@@ -55,7 +55,6 @@ module "sap_deployer" {
   use_webapp                                   = var.use_webapp
   webapp_client_secret                         = var.webapp_client_secret
   app_token                                    = var.APP_TOKEN
-  runner_group                                 = var.RUNNER_GROUP
   repository                                   = var.REPOSITORY
   server_url                                   = var.SERVER_URL
   api_url                                      = var.API_URL

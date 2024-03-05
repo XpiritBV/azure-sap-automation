@@ -3,7 +3,6 @@
 local_user="${local_user}"
 platform="${platform}"
 app_token="${app_token}"
-runner_group="${runner_group}"
 repository="${repository}"
 server_url="${server_url}"
 api_url="${api_url}"
@@ -17,7 +16,6 @@ case "$${platform}" in
       "api_url"
       "repository"
       "app_token"
-      "runner_group"
       "server_url"
     )
     ;;
@@ -69,7 +67,7 @@ function setup_github_runner() {
   # Remove runner if it already exists
   ./config.sh remove --token $${runner_token} || true
 
-  sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${server_url}/$${repository} --token $${runner_token} --runnergroup $${runner_group} --name $(hostname) --labels sap-deployer"
+  sudo runuser -l "$${local_user}" -c "$${agent_home}/config.sh --unattended --url $${server_url}/$${repository} --token $${runner_token} --name $(hostname) --labels sap-deployer"
   sudo ./svc.sh install $${local_user}
   sudo ./svc.sh start
   sudo ./svc.sh status

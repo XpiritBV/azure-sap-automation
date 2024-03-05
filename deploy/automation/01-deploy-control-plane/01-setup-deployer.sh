@@ -24,7 +24,6 @@ function check_deploy_inputs() {
     case get_platform in
     github)
         REQUIRED_VARS+=("APP_TOKEN")
-        REQUIRED_VARS+=("RUNNER_GROUP")
         ;;
 
     devops)
