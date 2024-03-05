@@ -402,7 +402,7 @@ start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
     set_value_with_key "Terraform_Remote_Storage_Account_Name" ${file_REMOTE_STATE_SA}
     set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name" ${file_REMOTE_STATE_RG}
-    set_value_with_key "Terraform_Remote_Storage_Subscription" ${ARM_SUBSCRIPTION_ID}
+    set_value_with_key "Terraform_Remote_Storage_Subscription" ${CP_ARM_SUBSCRIPTION_ID}
     set_value_with_key "Deployer_State_FileName" ${file_deployer_tfstate_key}
     set_value_with_key "Deployer_Key_Vault" ${file_key_vault}
     set_value_with_key "ControlPlaneEnvironment" ${ENVIRONMENT}
