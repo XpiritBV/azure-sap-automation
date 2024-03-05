@@ -1,8 +1,5 @@
 environment=MGMT
 deployer_tfstate_key=MGMT-NOEU-DEP02-INFRASTRUCTURE.terraform.tfstate
-REMOTE_STATE_SA=mgmtweeutfstated25
-REMOTE_STATE_RG=MGMT-WEEU-SAP_LIBRARY
-tfstate_resource_id=
 ARM_SUBSCRIPTION_ID=d6c8e3b6-467e-452e-97c9-49d9de9e37da
 keyvault=MGMTNOEUDEP02user4AA
 sshsecret=MGMT-NOEU-DEP02-sshkey
