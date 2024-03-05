@@ -121,12 +121,12 @@ function install_deps_ubuntu() {
     apt-transport-https \
     ca-certificates \
     curl \
+    dotnet-runtime-8.0 \
     gnupg \
     lsb-release \
     moby-compose \
     moby-containerd \
-    moby-engine \
-    dotnet-runtime-8.0
+    moby-engine
 
   # Install jq, the Ubuntu version is ancient
   curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
