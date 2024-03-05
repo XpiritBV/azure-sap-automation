@@ -133,6 +133,9 @@ function install_deps_ubuntu() {
   sudo install -m755 jq /usr/local/bin/jq
 }
 
+# Add the user to the docker group
+sudo usermod -aG docker $${local_user}
+
 # Install required packages for this VM to act as a runner on the platform and support docker containers
 case $(cat /etc/os-release | grep "^ID="| cut -d= -f2 | tr -d "\"" | tr '[:upper:]' '[:lower:]') in
   (*mariner*)

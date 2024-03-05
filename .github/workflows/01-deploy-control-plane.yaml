@@ -20,15 +20,15 @@ on:
         type: choice
         options:
         - MGMT-WEEU-SAP_LIBRARY
-      # environment:
-      #   default: MGMT
-      #   description: Environment name, MGMT, DEV, QA, etc
-      #   type: choice
-      #   options:
-      #   - MGMT
-      #   - DEV
-      #   - QA
-      #   - PROD
+      environment:
+        default: MGMT
+        description: Environment name
+        type: choice
+        options:
+        - MGMT
+        - DEV
+        - QA
+        - PROD
       use_webapp:
         default: true
         description: Deploy the configuration web application infrastructure
