@@ -8,6 +8,7 @@ resource "azurerm_app_configuration" "app_config" {
   name                = var.naming.appconfig_names.LIBRARY
   resource_group_name = local.resource_group_name
   location            = local.resource_group_library_location
+  sku                 = "standard"
 }
 
 resource "azurerm_role_assignment" "appconf_dataowner" {
@@ -19,7 +20,7 @@ resource "azurerm_role_assignment" "appconf_dataowner" {
 
 resource "time_sleep" "wait_for_appconf_dataowner_assignment" {
   create_duration = "60s"
-  
+
   depends_on = [
     azurerm_role_assignment.appconf_dataowner
   ]
