@@ -75,6 +75,11 @@ deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${
 echo "Deployer Environment File: ${deployer_environment_file_name}"
 end_group
 
+start_group "Setup platform dependencies"
+# Will return vars which we need to export afterwards
+eval "$(setup_dependencies | sed 's/^/export /')"
+end_group
+
 file_deployer_tfstate_key=${deployerfolder}.tfstate
 file_key_vault=""
 file_REMOTE_STATE_SA=""
