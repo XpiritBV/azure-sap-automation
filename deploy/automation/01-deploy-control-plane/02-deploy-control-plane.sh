@@ -3,11 +3,6 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/shared_functions.sh
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
-start_group "GitHub Context"
-cat /tmp/github_context.json
-echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
-end_group
-
 function check_required_inputs() {
     REQUIRED_VARS=(
         "CONFIG_REPO_PATH"
