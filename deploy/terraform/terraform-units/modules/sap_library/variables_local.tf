@@ -104,5 +104,9 @@ locals {
                                                     split("/", azurerm_resource_group.library[0].id)[2]
                                                   )
                                               }
+                                              "webapp_url_base" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.webapp_url_base
+                                              }
                                             })
 }
