@@ -19,6 +19,19 @@
 
 #error codes include those from /usr/include/sysexits.h
 
+# Print expanded commands as they are about to be executed
+set -o xtrace
+
+# Print shell input lines as they are read in
+set -o verbose
+
+# Fail if any command exits with a non-zero exit status
+set -o errexit
+
+# Ensure that the exit status of a pipeline command is non-zero if any
+# stage of the pipefile has a non-zero exit status.
+set -o pipefail
+
 #colors for terminal
 boldreduscore="\e[1;4;31m"
 boldred="\e[1;31m"

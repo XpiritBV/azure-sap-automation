@@ -423,9 +423,9 @@ if [ -f terraform.tfstate ]; then
   then
     echo ""
     echo -e "$cyan Reinitializing deployer in case of on a new deployer $resetformatting"
-
     terraform_module_directory="${SAP_AUTOMATION_REPO_PATH}"/deploy/terraform/bootstrap/"${deployment_system}"/
-    terraform -chdir="${terraform_module_directory}" init  -backend-config "path=${param_dirname}/terraform.tfstate" -reconfigure
+
+    terraform -chdir="${terraform_module_directory}" init -backend-config "path=${param_dirname}/terraform.tfstate" -reconfigure
     echo ""
     key_vault_id=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_kv_user_arm_id | tr -d \")
 
@@ -433,13 +433,12 @@ if [ -f terraform.tfstate ]; then
     then
       export TF_VAR_deployer_kv_user_arm_id="${key_vault_id}" ; echo $TF_VAR_deployer_kv_user_arm_id
     fi
-
-
   fi
 
   if [ "${deployment_system}" == sap_library ]
   then
-    echo "Reinitializing library in case of on a new deployer"
+    echo ""
+    echo -e "$cyan Reinitializing library in case of on a new deployer $resetformatting"
     terraform_module_directory="${SAP_AUTOMATION_REPO_PATH}"/deploy/terraform/bootstrap/"${deployment_system}"/
 
     terraform -chdir="${terraform_module_directory}" init -backend-config "path=${param_dirname}/terraform.tfstate" -reconfigure
@@ -493,9 +492,9 @@ else
         --backend-config "container_name=tfstate" \
         --backend-config "key=${key}.terraform.tfstate"
         return_value=$?
-
     fi
 fi
+
 if [ 0 != $return_value ]
 then
     echo "#########################################################################################"
@@ -507,6 +506,7 @@ then
     echo "Error when initializing Terraform" > "${system_config_information}".err
     exit $return_value
 fi
+
 if [ 1 == $check_output ]
 then
     outputs=$(terraform -chdir="${terraform_module_directory}" output )
@@ -645,15 +645,11 @@ if [ 0 == $return_value ] ; then
                       az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name WEBAPP_ID --value $webapp_id --output none --only-show-errors
                   fi
                 fi
-                fi
-
+            fi
         fi
-
-
     fi
 
     if [ "${deployment_system}" == sap_landscape ]
-
     then
         state_path="LANDSCAPE"
         if [ $landscape_tfstate_key_exists == false ]
@@ -688,13 +684,10 @@ if [ 0 == $return_value ] ; then
               fi
             fi
           fi
-
-
       fi
     fi
 
     ok_to_proceed=true
-
 fi
 
 container_exists=$(az storage container exists --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}" --name tfvars --only-show-errors --query exists)
@@ -702,7 +695,6 @@ container_exists=$(az storage container exists --subscription "${STATE_SUBSCRIPT
 if [ "${container_exists}" == "false" ]; then
     az storage container create --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}" --name tfvars --only-show-errors
 fi
-
 
 fatal_errors=0
 # HANA VM
