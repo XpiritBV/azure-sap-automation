@@ -106,7 +106,11 @@ locals {
                                               }
                                               "webapp_url_base" = {
                                                 label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.webapp_url_base
+                                                value = var.deployer.webapp[0].name
+                                              }
+                                              "webapp_url_base" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.webapp[0].name
                                               }
                                             })
 }
