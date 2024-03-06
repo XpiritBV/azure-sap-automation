@@ -213,20 +213,36 @@ jobs:
 
       - name: Configure Web Application Authentication
         run: |
-          printf "Configure the Web Application authentication using the following script.\n\`\`\`bash\naz ad app update --id %s --web-home-page-url https://%s.azurewebsites.net --web-redirect-uris https://%s.azurewebsites.net/ https://%s.azurewebsites.net/.auth/login/aad/callback\n\`\`\`\naz role assignment create --assignee %s --role reader --subscription %s --scope /subscriptions/%s \naz webapp restart --ids %s\n\n[Access the Web App](https://%s.azurewebsites.net)"  ${{ env.APP_REGISTRATION_APP_ID }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_IDENTITY }} ${{ env.ARM_SUBSCRIPTION_ID }} ${{ env.ARM_SUBSCRIPTION_ID }} ${{ env.WEBAPP_ID }} ${{ env.WEBAPP_URL_BASE }} > Web Application Configuration.md"
+          echo "Configure the Web Application authentication using the following script." >> $GITHUB_STEP_SUMMARY
+          echo "  ```bash" >> $GITHUB_STEP_SUMMARY
+          echo "  az ad app update --id ${{ env.APP_REGISTRATION_APP_ID }} \" >> $GITHUB_STEP_SUMMARY
+          echo "    --web-home-page-url https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net \" >> $GITHUB_STEP_SUMMARY
+          echo "    --web-redirect-uris https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net/ https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net/.auth/login/aad/callback" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "  az role assignment create \" >> $GITHUB_STEP_SUMMARY
+          echo "    --assignee ${{ env.WEBAPP_IDENTITY }} \" >> $GITHUB_STEP_SUMMARY
+          echo "    --role reader \" >> $GITHUB_STEP_SUMMARY
+          echo "    --subscription ${{ env.ARM_SUBSCRIPTION_ID }} \" >> $GITHUB_STEP_SUMMARY
+          echo "    --scope /subscriptions/${{ env.ARM_SUBSCRIPTION_ID }}/resourceGroups/${{ env.APP_RESOURCE_GROUP }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "  az webapp restart \" >> $GITHUB_STEP_SUMMARY
+          echo "    --resource-group ${{ env.APP_RESOURCE_GROUP }} \" >> $GITHUB_STEP_SUMMARY
+          echo "    --name ${{ env.WEBAPP_URL_BASE }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "  echo \"[Access the Web App](https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net)\"" >> $GITHUB_STEP_SUMMARY
+          echo "  ```" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
-          echo "##[group]Web Application Configuration"
-          cat "Web Application Configuration.md"
-          echo "##[endgroup]"
+          echo $GITHUB_STEP_SUMMARY > Web "Application Configuration.md"
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           SYSTEM_PIPELINE_ID: ${{ secrets.SYSTEM_PIPELINE_ID }}
           APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
           WEBAPP_URL_BASE: ${{ vars.WEBAPP_URL_BASE }}
-          WEBAPP_ID: ${{ vars.WEBAPP_ID }}
           WEBAPP_IDENTITY: ${{ secrets.WEBAPP_IDENTITY }}
+          APP_RESOURCE_GROUP: ${{ vars.TERRAFORM_REMOTE_STORAGE_RESOURCE_GROUP_NAME }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: 'web-application-configuration-${{ github.run_number }}-${{ github.run_attempt }}'
-          path: Web Application Configuration.md
+          path: "Web Application Configuration.md"
