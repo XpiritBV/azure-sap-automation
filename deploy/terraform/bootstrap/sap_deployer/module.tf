@@ -19,7 +19,6 @@ module "sap_deployer" {
   agent_pat                                    = var.agent_pat
   agent_pool                                   = var.agent_pool
   platform                                     = var.PLATFORM
-  ansible_core_version                         = var.ansible_core_version
   app_registration_app_id                      = var.app_registration_app_id
   app_service                                  = local.app_service
   arm_client_id                                = var.arm_client_id
@@ -48,7 +47,6 @@ module "sap_deployer" {
   spn_id                                       = var.spn_id
   ssh-timeout                                  = var.ssh-timeout
   subnets_to_add                               = var.subnets_to_add_to_firewall_for_keyvaults_and_storage
-  tf_version                                   = var.tf_version
   use_custom_dns_a_registration                = var.use_custom_dns_a_registration
   use_private_endpoint                         = var.use_private_endpoint
   use_service_endpoint                         = var.use_service_endpoint

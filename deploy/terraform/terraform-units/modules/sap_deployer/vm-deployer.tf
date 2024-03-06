@@ -230,7 +230,6 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                  format(
                                                  "%s/templates/configure_deployer.sh.tmpl", path.module),
                                                  {
-                                                   tfversion            = var.tf_version
                                                    rg_name              = local.resourcegroup_name
                                                    client_id            = azurerm_user_assigned_identity.deployer.client_id
                                                    subscription_id      = data.azurerm_subscription.primary.subscription_id
@@ -239,8 +238,6 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                    agent_pool           = var.agent_pool
                                                    agent_pat            = var.agent_pat
                                                    agent_ado_url        = var.agent_ado_url
-                                                   use_webapp           = var.use_webapp
-                                                   ansible_core_version = var.ansible_core_version
                                                    platform             = var.platform
                                                    app_token            = var.app_token
                                                    repository           = var.repository
@@ -251,4 +248,8 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                              )
                                            }
                                          )
+
+  lifecycle {
+    ignore_changes = [ protected_settings ]
+  }
 }

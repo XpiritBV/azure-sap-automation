@@ -16,7 +16,6 @@ variable "naming"                      { description = "Defines the names for th
 variable "options"                     { description = "Dictionary of miscallaneous parameters" }
 variable "place_delete_lock_on_resources" { description = "If defined, a delete lock will be placed on the key resources" }
 variable "ssh-timeout"                 { description = "SSH timeout" }
-variable "tf_version"                  { description = "Terraform version to install on deployer" }
 variable "use_private_endpoint"        { description = "Boolean value indicating if private endpoint should be used for the deployment" }
 variable "use_service_endpoint"        { description = "Boolean value indicating if service endpoints should be used for the deployment" }
 
@@ -123,7 +122,6 @@ variable "platform"                    {
 variable "agent_pool"                  { description = "If provided, contains the name of the agent pool to be used" }
 variable "agent_pat"                   { description = "If provided, contains the Personal Access Token to be used" }
 variable "agent_ado_url"               { description = "If provided, contains the Url to the ADO repository" }
-variable "ansible_core_version"        { description = "If provided, the version of ansible core to be installed" }
 variable "Agent_IP"                    { description = "If provided, contains the IP address of the agent" }
 variable "spn_id"                      { description = "SPN ID to be used for the deployment" }
 
