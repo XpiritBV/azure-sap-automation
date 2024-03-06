@@ -194,27 +194,28 @@ jobs:
       #     dotnet-version: '7.0.x'
 
       - name: Build the Configuration Web Application
-        run: dotnet build ${{ github.workspace }}/Webapp/SDAF/*.csproj
+        run: dotnet build Webapp/SDAF/*.csproj
 
       - name: Publish the Configuration Web Application
         run: |
-          dotnet publish **/Webapp/**/*.csproj \
-            -c Release \
-            --output ${{ github.workspace }}/WebApp
+          dotnet publish Webapp/**/*.csproj \
+            --configuration Release \
+            --nologo \
+            --output WebApp
 
       - name: Deploy the Configuration Web Application
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ vars.WEBAPP_URL_BASE }}
-          package: ${{ github.workspace }}/WebApp
+          package: WebApp
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 
       - name: Configure Web Application Authentication
         run: |
-          printf "Configure the Web Application authentication using the following script.\n\`\`\`bash\naz ad app update --id %s --web-home-page-url https://%s.azurewebsites.net --web-redirect-uris https://%s.azurewebsites.net/ https://%s.azurewebsites.net/.auth/login/aad/callback\n\`\`\`\naz role assignment create --assignee %s --role reader --subscription %s --scope /subscriptions/%s \naz webapp restart --ids %s\n\n[Access the Web App](https://%s.azurewebsites.net)"  ${{ env.APP_REGISTRATION_APP_ID }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_IDENTITY }} ${{ env.ARM_SUBSCRIPTION_ID }} ${{ env.ARM_SUBSCRIPTION_ID }} ${{ env.WEBAPP_ID }} ${{ env.WEBAPP_URL_BASE }} > ${{ github.workspace }}/Web Application Configuration.md"
+          printf "Configure the Web Application authentication using the following script.\n\`\`\`bash\naz ad app update --id %s --web-home-page-url https://%s.azurewebsites.net --web-redirect-uris https://%s.azurewebsites.net/ https://%s.azurewebsites.net/.auth/login/aad/callback\n\`\`\`\naz role assignment create --assignee %s --role reader --subscription %s --scope /subscriptions/%s \naz webapp restart --ids %s\n\n[Access the Web App](https://%s.azurewebsites.net)"  ${{ env.APP_REGISTRATION_APP_ID }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_URL_BASE }} ${{ env.WEBAPP_IDENTITY }} ${{ env.ARM_SUBSCRIPTION_ID }} ${{ env.ARM_SUBSCRIPTION_ID }} ${{ env.WEBAPP_ID }} ${{ env.WEBAPP_URL_BASE }} > Web Application Configuration.md"
 
           echo "##[group]Web Application Configuration"
-          cat "${{ github.workspace }}/Web Application Configuration.md"
+          cat "Web Application Configuration.md"
           echo "##[endgroup]"
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -227,4 +228,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: 'web-application-configuration-${{ github.run_number }}-${{ github.run_attempt }}'
-          path: ${{ github.workspace }}/Web Application Configuration.md
+          path: Web Application Configuration.md
