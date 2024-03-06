@@ -75,10 +75,6 @@ locals {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = try(var.deployer_tfstate.deployer_kv_user_name, "")
                                               }
-                                              "Deployer_Ansible_Version" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_ansible_version
-                                              }
                                               "ControlPlaneEnvironment" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = var.deployer.deployer_parameter_environment
@@ -86,11 +82,11 @@ locals {
                                               "ControlPlaneLocation" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = var.deployer.deployer_parameter_location
-                                              } 
+                                              }
                                               "Terraform_Remote_Storage_Resource_Group_Name" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = local.resource_group_name
-                                              }   
+                                              }
                                               "Terraform_Remote_Storage_Account_Name" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = local.sa_tfstate_exists ? (
@@ -107,6 +103,6 @@ locals {
                                                     split("/", data.azurerm_resource_group.library[0].id))[2] : (
                                                     split("/", azurerm_resource_group.library[0].id)[2]
                                                   )
-                                              }                                                 
+                                              }
                                             })
 }

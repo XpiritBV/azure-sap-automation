@@ -58,10 +58,6 @@ end_group
 
 set -euo pipefail
 
-if [ -v TF_VAR_ansible_core_version ]; then
-    export TF_VAR_ansible_core_version=2.15
-fi
-
 export TF_VAR_PLATFORM=$(get_platform)
 
 export TF_VAR_use_webapp=${use_webapp}

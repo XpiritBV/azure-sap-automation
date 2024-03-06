@@ -267,7 +267,7 @@ variable "dns_zone_names"                        {
 #                                                                                       #
 #  App Configuration settings                                                           #
 #                                                                                       #
-#########################################################################################                                           
+#########################################################################################
 
 variable "deployer_app_configuration_arm_id"         {
                                                        description = "Azure resource identifier for the app configuration"
@@ -299,15 +299,10 @@ variable "deployer_parameter_location"              {
                                                       type = string
                                                       description = "Location parameter value for the app config"
                                                       default = ""
-                                                    } 
+                                                    }
 
 variable "deployer_parameter_tf_state_filename"     {
                                                       type = string
                                                       description = "Terraform state file name after moving to remote state"
                                                       default = ""
-                                                    } 
-
-variable "ansible_core_version"                     {
-                                                      description = "If provided, the version of ansible core to be installed"
-                                                      default     = "2.15"
                                                     }
