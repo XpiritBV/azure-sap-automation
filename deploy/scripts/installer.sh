@@ -378,7 +378,6 @@ if [[ -z ${tfstate_resource_id} ]]; then
     load_config_vars "${system_config_information}" "STATE_SUBSCRIPTION"
     load_config_vars "${system_config_information}" "REMOTE_STATE_RG"
     load_config_vars "${system_config_information}" "tfstate_resource_id"
-
 fi
 
 tfstate_parameter=" -var tfstate_resource_id=${tfstate_resource_id}"

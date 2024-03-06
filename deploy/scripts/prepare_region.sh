@@ -592,7 +592,7 @@ export deployer_ip="${deployer_public_ip_address}"
 export terraform_state_storage_account="${REMOTE_STATE_SA}"
 
 if [ 5 == $step ]; then
-    if [ $ado_flag != "--ado" ] ; then
+    if [ "$ado_flag" != "--ado" ] ; then
         cd "${curdir}" || exit
 
         load_config_vars "${deployer_config_information}" "sshsecret"

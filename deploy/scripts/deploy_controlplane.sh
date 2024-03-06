@@ -387,7 +387,7 @@ if [ 1 == $step ] || [ 3 == $step ] ; then
     echo ""
 
     if [ -z "$keyvault" ]; then
-        if [ $ado_flag != "--ado" ] ; then
+        if [ "$ado_flag" != "--ado" ] ; then
 
             read -r -p "Deployer keyvault name: " keyvault
         else
@@ -524,7 +524,7 @@ if [ 2 == $step ]; then
     # TO DO: Add app_config name as a variable after PR with terraform changes is merged
     #appconfig_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_app_config_name | tr -d \")
 
-    if [ $ado_flag != "--ado" ] ; then
+    if [ "$ado_flag" != "--ado" ] ; then
         az storage account network-rule add -g "${REMOTE_STATE_RG}" --account-name "${REMOTE_STATE_SA}" --ip-address ${this_ip} --output none
     fi
 
