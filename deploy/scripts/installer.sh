@@ -1112,7 +1112,7 @@ then
         temp=$(echo "${random_id}" | grep "Backend reinitialization required")
         if [ -z "${temp}" ]
         then
-            save_config_var "deployer_random_id" "${random_id}"
+            save_config_var "deployer_random_id" "${system_config_information}"
             return_value=0
         fi
     fi
