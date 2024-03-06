@@ -1,10 +1,10 @@
 sshsecret=MGMT-NOEU-DEP02-sshkey
-deployer_random_id=SqQ_LA
 environment=MGMT
 subscription=d6c8e3b6-467e-452e-97c9-49d9de9e37da
 client_id=ef6134f6-3912-41f7-b684-63fe90ae4100
 tenant_id=c01abe72-ffef-4ecc-bda0-937975b49e6b
 deployer_tfstate_key=MGMT-NOEU-DEP02-INFRASTRUCTURE.terraform.tfstate
+deployer_random_id=
 keyvault=MGMTNOEUDEP02user4AA
 deployer_public_ip_address=40.69.212.43
 ARM_SUBSCRIPTION_ID=d6c8e3b6-467e-452e-97c9-49d9de9e37da
