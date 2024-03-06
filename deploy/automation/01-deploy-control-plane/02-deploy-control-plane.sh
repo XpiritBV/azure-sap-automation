@@ -196,9 +196,7 @@ if [[ ! -f /etc/profile.d/deploy_server.sh ]]; then
         echo -e "$boldred--- Login failed ---$reset"
         exit_error "az login failed." $return_code
     fi
-
     az account set --subscription $CP_ARM_SUBSCRIPTION_ID
-
 else
     if [ $LOGON_USING_SPN == "true" ]; then
         echo "Login using SPN"
@@ -217,7 +215,6 @@ else
         source /etc/profile.d/deploy_server.sh
     fi
 fi
-
 
 start_group "Configure parameters"
 echo -e "$green--- Convert config files to UX format ---$reset"
@@ -284,6 +281,7 @@ fi
 touch ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
 
+# TODO: Needs to be set to group the values in the app configuration
 # TODO: export TF_VAR_deployer_parameter_group_name=$(variable_group)
 export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
 export TF_VAR_deployer_parameter_location=${LOCATION}
