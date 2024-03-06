@@ -45,6 +45,7 @@ on:
 permissions:
   contents: write
   id-token: write
+  issues: write
 
 jobs:
   setup_deployer:
@@ -233,7 +234,7 @@ jobs:
           echo "  ```" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          echo $GITHUB_STEP_SUMMARY > Web "Application Configuration.md"
+          echo $GITHUB_STEP_SUMMARY > "Web Application Configuration.md"
         env:
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           SYSTEM_PIPELINE_ID: ${{ secrets.SYSTEM_PIPELINE_ID }}
@@ -246,3 +247,10 @@ jobs:
         with:
           name: 'web-application-configuration-${{ github.run_number }}-${{ github.run_attempt }}'
           path: "Web Application Configuration.md"
+
+      - name: Create GitHub issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create setup-webapp -c 00FF00 -d "Label for issues related to the setup of the configuration web application"
+          gh issue create -t "Create GitHub WebApp" -F "Web Application Configuration.md" -l "setup-webapp"
