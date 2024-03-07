@@ -107,7 +107,6 @@ jobs:
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
           log: logfile_${{ github.run_number }}-${{ github.run_attempt }}
-          tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp }}
 
       - uses: actions/upload-artifact@v4
