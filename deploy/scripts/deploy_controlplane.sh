@@ -160,6 +160,7 @@ relative_path="${deployer_dirname}"
 export TF_DATA_DIR="${relative_path}"/.terraform
 
 step=0
+save_config_var "step" "${deployer_config_information}"
 
 echo "#########################################################################################"
 echo "#                                                                                       #"
@@ -201,6 +202,7 @@ if [ -n "${subscription}" ]; then
         echo "#                                                                                       #"
         echo "#########################################################################################"
         step=0
+        save_config_var "step" "${deployer_config_information}"
     fi
 
 
@@ -612,7 +614,7 @@ if [ 3 == $step ]; then
 
     allParams=$(printf " --parameterfile %s --storageaccountname %s --type sap_deployer %s %s " "${deployer_file_parametername}" "${REMOTE_STATE_SA}" "${approveparam}" "${ado_flag}" )
 
-    echo -e "$cyan calling installer.sh with parameters: $allParams"
+    echo -e "$cyan calling installer.sh with parameters: $allParams $resetformatting"
 
     "${SAP_AUTOMATION_REPO_PATH}"/deploy/scripts/installer.sh $allParams
     return_code=$?
@@ -647,7 +649,7 @@ if [ 4 == $step ]; then
     cd "${library_dirname}" || exit
     allParams=$(printf " --parameterfile %s --storageaccountname %s --type sap_library %s %s" "${library_file_parametername}" "${REMOTE_STATE_SA}" "${approveparam}"  "${ado_flag}")
 
-    echo -e "$cyan calling installer.sh with parameters: $allParams"
+    echo -e "$cyan calling installer.sh with parameters: $allParams $resetformatting"
 
     "${SAP_AUTOMATION_REPO_PATH}"/deploy/scripts/installer.sh $allParams
     return_code=$?
