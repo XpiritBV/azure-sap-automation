@@ -52,13 +52,20 @@ function __get_value_from_context_with_key() {
 
 function commit_changes() {
     message=$1
+    is_custom_message=${2:-false}
     workflow=$(__get_value_from_context_with_key "workflow")
     run_number=$(__get_value_from_context_with_key "run_number")
     run_attempt=$(__get_value_from_context_with_key "run_attempt")
 
     git config --global user.email github-actions@github.com
     git config --global user.name github-actions
-    git commit -m "${message} - Workflow: ${workflow}:${run_number}-${run_attempt} [skip ci]"
+
+    if [[ $is_custom_message == "true" ]]; then
+        git commit -m "${message}"
+    else
+        git commit -m "${message} - Workflow: ${workflow}:${run_number}-${run_attempt} [skip ci]"
+    fi
+
     git push
 }
 
