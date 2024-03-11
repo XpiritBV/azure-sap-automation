@@ -160,7 +160,6 @@ relative_path="${deployer_dirname}"
 export TF_DATA_DIR="${relative_path}"/.terraform
 
 step=0
-save_config_var "step" "${deployer_config_information}"
 
 echo "#########################################################################################"
 echo "#                                                                                       #"
