@@ -203,10 +203,10 @@ if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
     set -e
 
     if [ ${return_code} != 0 ]; then
-        echo ${$ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --import ${CONFIG_REPO_PATH}/private.pgp
+        echo ${ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --import ${CONFIG_REPO_PATH}/private.pgp
     fi
 else
-    echo ${$ARM_CLIENT_SECRET} | ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/generate-pgp-key.sh
+    echo ${ARM_CLIENT_SECRET} | ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/generate-pgp-key.sh
     gpg --output ${CONFIG_REPO_PATH}/private.pgp --armor --export-secret-key sap-azure-deployer@foo.bar
     git add ${CONFIG_REPO_PATH}/private.pgp
     git commit -m "Adding PGP key for encryption of state file"
@@ -214,11 +214,11 @@ fi
 
 # Deprecated, as zip password are not secure. This is replaced with GPG encryption
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
-    pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
+    pass=$(echo ${ARM_CLIENT_SECRET} | sed 's/-//g')
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
     git rm ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
 
-    echo $ARM_CLIENT_SECRET | \
+    echo ${ARM_CLIENT_SECRET} | \
         gpg --batch --passphrase-fd 0 \
         --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg \
         --encrypt \
@@ -231,7 +231,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
 else
     if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
         echo "Decrypting state file"
-        echo $ARM_CLIENT_SECRET | gpg --batch --passphrase-fd 0 --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
+        echo ${ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
     fi
 fi
 
