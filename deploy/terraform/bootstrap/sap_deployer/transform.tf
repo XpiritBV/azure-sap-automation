@@ -126,7 +126,7 @@ locals {
                                                 prefix = var.webapp_subnet_address_prefix
                                               }
                                             }
-                                          }    
+                                          }
                                         }
   deployer                             = {
                                            size = try(
@@ -183,7 +183,11 @@ locals {
                                                                 ), "")
 
                                            deployer_diagnostics_account_arm_id  = var.deployer_diagnostics_account_arm_id
-                                           app_service_SKU                      = var.app_service_SKU_name                                           
+                                           app_service_SKU                      = var.app_service_SKU_name
+                                           pipeline_parameters                  = var.deployer_pipeline_parameters
+                                           deployer_parameter_group_name        = var.deployer_parameter_group_name
+                                           deployer_parameter_environment       = var.deployer_parameter_environment
+                                           deployer_parameter_location          = var.deployer_parameter_location
                                            }
 
   authentication                       = {

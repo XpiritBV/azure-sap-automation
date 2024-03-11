@@ -47,3 +47,10 @@ data "azuread_service_principal" "sp"             {
                                                     count        = var.use_deployer ? 1 : 0
                                                     client_id    = local.spn.client_id
                                                   }
+
+data "azurerm_app_configuration" "app_config"     {
+                                                    provider            = azurerm.deployer
+                                                    count               = length(var.deployer.deployer_app_configuration_arm_id) > 0 ? 0 : 1
+                                                    resource_group_name = local.deployer_rg_name
+                                                    name                = var.naming.appconfig_names.LIBRARY
+                                                  }

@@ -519,3 +519,61 @@ variable "REPOSITORY"                               {
                                                       description = "If provided, contains the Reference to tue repositry (e.g. owner/repository)"
                                                       default = ""
                                                     }
+
+#########################################################################################
+#                                                                                       #
+#  App Configuration settings                                                           #
+#                                                                                       #
+#########################################################################################
+
+variable "deployer_app_configuration_arm_id"         {
+                                                       description = "Azure resource identifier for the app configuration"
+                                                       type        = string
+                                                       default     = ""
+                                                     }
+variable "deployer_pipeline_parameters"              {
+                                                       description = "Values to define the pipeline parameters for the deployer and store them in app configuration"
+                                                       type = map(object({
+                                                         label = string
+                                                         value = string
+                                                       }))
+                                                       default = null
+                                                     }
+variable "deployer_parameter_group_name"            {
+                                                      type = string
+                                                      description = "Group name for the app config key based on environment"
+                                                      default = ""
+                                                    }
+
+variable "deployer_parameter_environment"           {
+                                                      type = string
+                                                      description = "Environment parameter value for the app config"
+                                                      default = ""
+                                                    }
+
+variable "deployer_parameter_location"              {
+                                                      type = string
+                                                      description = "Location parameter value for the app config"
+                                                      default = ""
+                                                    }
+
+variable "deployer_parameter_tf_state_filename"     {
+                                                      type = string
+                                                      description = "Terraform state file name after moving to remote state"
+                                                      default = ""
+                                                    }
+variable "deployer_parameter_webapp_url_base"       {
+                                                      type = string
+                                                      description = "The URL of the configuration Web Application"
+                                                      default = ""
+                                                    }
+variable "deployer_parameter_webapp_identity"       {
+                                                      type = string
+                                                      description = "The identity of the configuration Web Application"
+                                                      default = ""
+                                                    }
+variable "deployer_parameter_webapp_id"             {
+                                                      type = string
+                                                      description = "The Azure resource ID of the configuration Web Application"
+                                                      default = ""
+                                                    }
