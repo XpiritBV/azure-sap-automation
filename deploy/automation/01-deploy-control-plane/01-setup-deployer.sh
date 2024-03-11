@@ -135,7 +135,7 @@ else
         step=$(config_value_with_key "step")
         echo "Step: ${step}"
 
-        if [[ "0" != ${step} ]]; then
+        if [[ "0" != ${step} ]] && [[ "" != ${step} ]]; then
             log_warning "Step is not 0, so we are finished here."
             exit 0
         fi
