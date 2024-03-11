@@ -67,22 +67,22 @@ locals {
 
   pipeline_parameters                 = merge(var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {},
                                             {
-                                              "Deployer_State_FileName" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_tf_state_filename
-                                              }
-                                              "Deployer_Key_Vault" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = try(var.deployer_tfstate.deployer_kv_user_name, "")
-                                              }
-                                              "ControlPlaneEnvironment" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_environment
-                                              }
-                                              "ControlPlaneLocation" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_location
-                                              }
+                                              # "Deployer_State_FileName" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_tf_state_filename
+                                              # }
+                                              # "Deployer_Key_Vault" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = try(var.deployer_tfstate.deployer_kv_user_name, "")
+                                              # }
+                                              # "ControlPlaneEnvironment" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_environment
+                                              # }
+                                              # "ControlPlaneLocation" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_location
+                                              # }
                                               "Terraform_Remote_Storage_Resource_Group_Name" = {
                                                 label = var.deployer.deployer_parameter_group_name
                                                 value = local.resource_group_name
@@ -104,17 +104,17 @@ locals {
                                                     split("/", azurerm_resource_group.library[0].id)[2]
                                                   )
                                               }
-                                              "webapp_url_base" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_webapp_url_base
-                                              }
-                                              "webapp_identity" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_webapp_identity
-                                              }
-                                              "webapp_id" = {
-                                                label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_webapp_id
-                                              }
+                                              # "webapp_url_base" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_webapp_url_base
+                                              # }
+                                              # "webapp_identity" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_webapp_identity
+                                              # }
+                                              # "webapp_id" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_webapp_id
+                                              # }
                                             })
 }

@@ -264,4 +264,35 @@ locals {
   // Tags
   tags = try(var.deployer.tags, { "Role" = "Deployer" })
 
+  pipeline_parameters                 = merge(var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {},
+                                            {
+                                              # "Deployer_State_FileName" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_tf_state_filename
+                                              # }
+                                              # "Deployer_Key_Vault" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_kv_user_name
+                                              # }
+                                              "ControlPlaneEnvironment" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.infrastructure.environment
+                                              }
+                                              "ControlPlaneLocation" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.deployer_parameter_location
+                                              }
+                                              # "webapp_url_base" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_webapp_url_base
+                                              # }
+                                              # "webapp_identity" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_webapp_identity
+                                              # }
+                                              # "webapp_id" = {
+                                              #   label = var.deployer.deployer_parameter_group_name
+                                              #   value = var.deployer.deployer_parameter_webapp_id
+                                              # }
+                                            })
 }
