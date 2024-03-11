@@ -121,6 +121,9 @@ function install_deps_mariner() {
   # Install jq, the Mariner version is ancient
   curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
   sudo install -m755 jq /usr/local/bin/jq
+
+  # Add the user to the docker group
+  sudo usermod -aG docker $${local_user}
 }
 
 function install_deps_ubuntu() {
@@ -144,10 +147,10 @@ function install_deps_ubuntu() {
   # Install jq, the Ubuntu version is ancient
   curl -sSfL $(curl -sSf https://api.github.com/repos/jqlang/jq/releases/latest | grep browser_download_url | egrep 'jq-linux-amd64"' | tr -d " " | tr -d "\""| sed 's/browser_download_url://g') -o jq
   sudo install -m755 jq /usr/local/bin/jq
-}
 
-# Add the user to the docker group
-sudo usermod -aG docker $${local_user}
+  # Add the user to the docker group
+  sudo usermod -aG docker $${local_user}
+}
 
 # Install required packages for this VM to act as a runner on the platform and support docker containers
 case $(cat /etc/os-release | grep "^ID="| cut -d= -f2 | tr -d "\"" | tr '[:upper:]' '[:lower:]') in
@@ -162,6 +165,7 @@ case $(cat /etc/os-release | grep "^ID="| cut -d= -f2 | tr -d "\"" | tr '[:upper
     sudo service docker start
     ;;
 esac
+
 
 mkdir -p $${agent_home}
 
