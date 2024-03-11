@@ -272,7 +272,7 @@ else
             echo "#                                                                                       #"
             echo "#########################################################################################"
 
-            if [ $approve == "--auto-approve" ] ; then
+            if [ "$approve" == "--auto-approve" ] ; then
               tfstate_resource_id=$(az resource list --name $REINSTALL_ACCOUNTNAME --subscription $REINSTALL_SUBSCRIPTION --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
               if [ -n "${tfstate_resource_id}" ]; then
                   echo "Reinitializing against remote state"
