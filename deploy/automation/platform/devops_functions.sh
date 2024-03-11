@@ -60,10 +60,17 @@ function __get_value_with_key() {
 
 function commit_changes() {
     message=$1
+    is_custom_message=${2:-false}
 
     git config --global user.email "${Build.RequestedForEmail}"
     git config --global user.name "${Build.RequestedFor}"
-    git commit -m "${message} - DevOps Build: ${Build.DefinitionName} [skip ci]"
+
+    if [[ $is_custom_message == "true" ]]; then
+        git commit -m "${message}"
+    else
+        git commit -m "${message} - DevOps Build: ${Build.DefinitionName} [skip ci]"\
+    fi
+
     git -c http.extraheader="AUTHORIZATION: bearer ${System_AccessToken}" push --set-upstream origin ${Build.SourceBranchName}
 }
 
