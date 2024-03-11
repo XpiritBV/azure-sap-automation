@@ -106,11 +106,15 @@ locals {
                                               }
                                               "webapp_url_base" = {
                                                 label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.webapp[0].name
+                                                value = var.deployer.deployer_parameter_webapp_url_base
                                               }
-                                              "webapp_url_base" = {
+                                              "webapp_identity" = {
                                                 label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.webapp[0].name
+                                                value = var.deployer.deployer_parameter_webapp_identity
+                                              }
+                                              "webapp_id" = {
+                                                label = var.deployer.deployer_parameter_group_name
+                                                value = var.deployer.deployer_parameter_webapp_id
                                               }
                                             })
 }

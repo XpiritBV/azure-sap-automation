@@ -140,8 +140,8 @@ if [ 0 != $return_code ]; then
 fi
 # Check that webapp exports are defined, if deploying webapp
 if [ -n "${TF_VAR_use_webapp}" ]; then
-    echo "TF_VAR use_webapp: $TF_VAR_use_webapp"
-    if [ "${TF_VAR_use_webapp}" == "true" ]; then
+    echo "TF_VAR_use_webapp: $TF_VAR_use_webapp"
+    if [ "${TF_VAR_use_webapp,,}" == "true" ]; then
         validate_webapp_exports
         return_code=$?
         if [ 0 != $return_code ]; then

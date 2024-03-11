@@ -315,3 +315,18 @@ variable "deployer_parameter_tf_state_filename"     {
                                                       description = "Terraform state file name after moving to remote state"
                                                       default = ""
                                                     }
+variable "deployer_parameter_webapp_url_base"       {
+                                                      type = string
+                                                      description = "The URL of the configuration Web Application"
+                                                      default = ""
+                                                    }
+variable "deployer_parameter_webapp_identity"       {
+                                                      type = string
+                                                      description = "The identity of the configuration Web Application"
+                                                      default = ""
+                                                    }
+variable "deployer_parameter_webapp_id"             {
+                                                      type = string
+                                                      description = "The Azure resource ID of the configuration Web Application"
+                                                      default = ""
+                                                    }

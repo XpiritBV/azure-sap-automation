@@ -18,6 +18,9 @@ locals {
                                            deployer_parameter_environment       = var.deployer_parameter_environment
                                            deployer_parameter_location          = var.deployer_parameter_location
                                            deployer_parameter_tf_state_filename = var.deployer_parameter_tf_state_filename
+                                           deployer_parameter_webapp_url_base   = var.deployer_parameter_webapp_url_base
+                                           deployer_parameter_webapp_identity   = var.deployer_parameter_webapp_identity
+                                           deployer_parameter_webapp_id         = var.deployer_parameter_webapp_id
                                          }
   key_vault                            = {
                                            kv_spn_id = try(coalesce(local.spn_key_vault_arm_id, var.spn_keyvault_id, try(var.key_vault.kv_spn_id, "")), "")
