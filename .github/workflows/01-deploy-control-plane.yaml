@@ -65,7 +65,7 @@ jobs:
       - name: Store the configuration in Azure App Configuration
         uses: azure/appconfiguration-sync@v1
         with:
-          configurationFile: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/MGMTNOEU
+          configurationFile: /WORKSPACES/.sap_deployment_automation/MGMTNOEU
           format: 'properties'
           connectionString: ${{ secrets.APP_CONFIGURATION_CONNECTION_STRING }}
           separator: ':'
