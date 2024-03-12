@@ -209,7 +209,7 @@ else
     echo ${ARM_CLIENT_SECRET} | ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/generate-pgp-key.sh
     gpg --output ${CONFIG_REPO_PATH}/private.pgp --armor --export-secret-key sap-azure-deployer@example.com
     git add ${CONFIG_REPO_PATH}/private.pgp
-    git commit -m "Adding PGP key for encryption of state file"
+    commit_changes "Adding PGP key for encryption of state file" true
 fi
 
 # Deprecated, as zip password are not secure. This is replaced with PGP encryption
