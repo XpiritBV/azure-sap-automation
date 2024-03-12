@@ -85,6 +85,7 @@ jobs:
 
       - uses: flcdrg/get-azure-app-configuration-action@v2
         id: get-app-configuration
+        if: always()
         with:
           resourceGroup: mgmt-noeu-dep02-infrastructure
           appConfigurationName: mgmtnoeuapc8f0
