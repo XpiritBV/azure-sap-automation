@@ -290,17 +290,17 @@ locals {
                                                 label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
                                                 value = local.resourcegroup_name
                                               }
-                                              # "webapp_url_base" = {
-                                              #   label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                              #   value = var.deployer.deployer_parameter_webapp_url_base
-                                              # }
-                                              # "webapp_identity" = {
-                                              #   label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                              #   value = var.deployer.deployer_parameter_webapp_identity
-                                              # }
-                                              # "webapp_id" = {
-                                              #   label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                              #   value = var.deployer.deployer_parameter_webapp_id
-                                              # }
+                                              "webapp_url_base" = {
+                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.use_webapp ? (var.configure ? try(azurerm_windows_web_app.webapp[0].name, "") : "") : ""
+                                              }
+                                              "webapp_identity" = {
+                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.use_webapp ? (var.configure ? try(azurerm_windows_web_app.webapp[0].identity[0].principal_id, "") : "") : ""
+                                              }
+                                              "webapp_id" = {
+                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.use_webapp ? (var.configure ? try(azurerm_windows_web_app.webapp[0].id, "") : "") : ""
+                                              }
                                             })
 }
