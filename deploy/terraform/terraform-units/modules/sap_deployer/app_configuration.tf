@@ -47,8 +47,18 @@ resource "azurerm_app_configuration_key" "deployer_app_configuration_keys" {
   key                    = each.key
   label                  = each.value.label
   value                  = each.value.value
+  content_type           = "text/plain"
+  type                   = "kv"
 
   depends_on = [
     time_sleep.wait_for_appconf_dataowner_assignment
   ]
+
+  lifecycle {
+    ignore_changes = [
+      configuration_store_id,
+      etag,
+      id
+    ]
+  }
 }

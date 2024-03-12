@@ -212,7 +212,7 @@ resource "time_sleep" "wait_for_VM" {
 }
 
 resource "azurerm_virtual_machine_extension" "configure" {
-  count = var.auto_configure_deployer ? var.deployer_vm_count : 0
+  count = 0 # TODO var.auto_configure_deployer ? var.deployer_vm_count : 0
 
   depends_on = [
     time_sleep.wait_for_VM

@@ -266,18 +266,6 @@ locals {
 
   pipeline_parameters                 = merge(var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {},
                                             {
-                                              # "Deployer_State_FileName" = {
-                                              #   label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                              #   value = var.deployer.deployer_parameter_tf_state_filename
-                                              # }
-                                              "Deployer_Key_Vault" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                                value = var.naming.keyvault_names.DEPLOYER
-                                              }
-                                              "Deployer_Key_Vault" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                                value = local.keyvault_names.user_access
-                                              }
                                               "ControlPlaneEnvironment" = {
                                                 label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
                                                 value = var.infrastructure.environment
@@ -286,21 +274,41 @@ locals {
                                                 label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
                                                 value = var.naming.DEPLOYER.location_short
                                               }
+                                              "Deployer_Key_Vault" = {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.key_vault.kv_exists ? data.azurerm_key_vault.kv_user[0].name : azurerm_key_vault.kv_user[0].name
+                                              }
+                                              "deployer_public_ip_address"= {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = local.enable_deployer_public_ip ? azurerm_public_ip.deployer[0].ip_address : ""
+                                              }
+                                              "deployer_random_id" = {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = random_id.deployer.b64_url
+                                              }
+                                              # "Deployer_State_FileName" = {
+                                              #   label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                              #   value = var.deployer.deployer_parameter_tf_state_filename
+                                              # }
                                               "resourcegroup_name" = {
                                                 label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
                                                 value = local.resourcegroup_name
                                               }
-                                              "webapp_url_base" = {
-                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                                value = var.use_webapp ? (var.configure ? try(azurerm_windows_web_app.webapp[0].name, "") : "") : ""
+                                              "webapp_id" = {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.use_webapp ? azurerm_windows_web_app.webapp[0].id : ""
                                               }
                                               "webapp_identity" = {
-                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                                value = var.use_webapp ? (var.configure ? try(azurerm_windows_web_app.webapp[0].identity[0].principal_id, "") : "") : ""
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.use_webapp ? azurerm_windows_web_app.webapp[0].identity[0].principal_id : ""
                                               }
-                                              "webapp_id" = {
-                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                                value = var.use_webapp ? (var.configure ? try(azurerm_windows_web_app.webapp[0].id, "") : "") : ""
+                                              "webapp_url_base" = {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.use_webapp ? azurerm_windows_web_app.webapp[0].name : ""
+                                              }
+                                              "WEBAPP_RESOURCE_GROUP" = {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.use_webapp ? azurerm_windows_web_app.webapp[0].resource_group_name : ""
                                               }
                                             })
 }

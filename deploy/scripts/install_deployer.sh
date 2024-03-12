@@ -56,7 +56,6 @@ VALID_ARGUMENTS=$?
 
 if [ "$VALID_ARGUMENTS" != "0" ]; then
     showhelp
-
 fi
 
 eval set -- "$INPUT_ARGUMENTS"
@@ -223,8 +222,8 @@ echo "##########################################################################
 echo ""
 
 terraform -chdir="${terraform_module_directory}"  plan  -detailed-exitcode -var-file="${var_file}" $extra_vars | tee -a plan_output.log
+return_value=${PIPESTATUS[0]}
 
-return_value=$?
 if [ 1 == $return_value ]
 then
     echo ""
@@ -267,7 +266,7 @@ then
 else
   terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars
 fi
-return_value=$?
+return_value=${PIPESTATUS[0]}
 
 rerun_apply=0
 if [ -f apply_output.json ]
@@ -303,7 +302,7 @@ then
         echo "#########################################################################################"
         echo ""
         terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
-        return_value=$?
+        return_value=${PIPESTATUS[0]}
         rerun_apply=0
     fi
 
@@ -341,7 +340,7 @@ then
             echo "#########################################################################################"
             echo ""
             terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
-            return_value=$?
+            return_value=${PIPESTATUS[0]}
         fi
 
         return_value=$?
