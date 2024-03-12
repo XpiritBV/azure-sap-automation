@@ -37,9 +37,9 @@ data "azurerm_resource_group" "deployer" {
 
 // TODO: PLEASE REMOVE ROBERT DE VEEN FROM THE CODE
 resource "azurerm_role_assignment" "rg_owner" {
-  scope                = azurerm_resource_group.deployer.id
-  role_definition_name = "Owner"
-  principal_id         = "47778390-c43d-4e18-a90f-d816301b569f" # Robert de Veen
+  scope                                = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].id : azurerm_resource_group.deployer[0].id
+  role_definition_name                 = "Owner"
+  principal_id                         = "47778390-c43d-4e18-a90f-d816301b569f" # Robert de Veen
 }
 
 // Create/Import management vnet
