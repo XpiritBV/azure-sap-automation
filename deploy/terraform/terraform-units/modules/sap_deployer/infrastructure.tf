@@ -35,6 +35,12 @@ data "azurerm_resource_group" "deployer" {
 //        Management lock should be implemented id a seperate Terraform workspace
 
 
+resource "azurerm_role_assignment" "rg_owner" {
+  scope                = azurerm_resource_group.deployer.id
+  role_definition_name = "Owner"
+  principal_id         = "47778390-c43d-4e18-a90f-d816301b569f" # Robert de Veen
+}
+
 // Create/Import management vnet
 resource "azurerm_virtual_network" "vnet_mgmt" {
   count                                = (!local.vnet_mgmt_exists) ? 1 : 0

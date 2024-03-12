@@ -71,24 +71,6 @@ jobs:
           application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
           organization: ${{ github.repository_owner }}
 
-      - name: Azure Login
-        uses: Azure/Login@v1
-        with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
-
-      - uses: flcdrg/get-azure-app-configuration-action@v2
-        id: get-app-configuration
-        with:
-          resourceGroup: mgmt-noeu-dep02-infrastructure
-          appConfigurationName: mgmtnoeuapc8f0
-          labelFilter: 'GitHub'
-
-      - run: |
-          echo ${{ steps.get-app-configuration.outputs.step }}
-          echo ${{ env.step }}
-          echo ${step}
-          exit 1
-
       - name: 'Set log level'
         id: log_level
         run: |
@@ -127,15 +109,6 @@ jobs:
           log: logfile_${{ github.run_number }}-${{ github.run_attempt }}
           tf_version: 1.6.2 # Latest version is already installed in the hosted agent
           use_webapp: ${{ inputs.use_webapp }}
-
-      - name: Sync the configuration in Azure App Configuration
-        uses: azure/appconfiguration-sync@v1
-        with:
-          configurationFile: /WORKSPACES/.sap_deployment_automation/MGMTNOEU
-          format: 'properties'
-          connectionString: ${{ secrets.APP_CONFIGURATION_CONNECTION_STRING }}
-          separator: ':'
-          label: 'MGMTNOEU'
 
       - uses: actions/upload-artifact@v4
         with:
@@ -212,6 +185,13 @@ jobs:
         uses: Azure/Login@v1
         with:
           creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - uses: flcdrg/get-azure-app-configuration-action@v2
+        id: get-app-configuration
+        with:
+          resourceGroup: mgmt-noeu-dep02-infrastructure
+          appConfigurationName: mgmtnoeuapc8f0
+          labelFilter: 'GitHub'
 
       - name: Build the Configuration Web Application
         run: dotnet build Webapp/SDAF/*.csproj
