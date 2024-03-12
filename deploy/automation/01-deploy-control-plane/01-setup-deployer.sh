@@ -295,6 +295,8 @@ if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
 fi
 
 if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
+    rm DEPLOYER/${deployerfolder}/state.gpg || true
+
     gpg --batch \
         --output DEPLOYER/${deployerfolder}/state.gpg \
         --encrypt \
