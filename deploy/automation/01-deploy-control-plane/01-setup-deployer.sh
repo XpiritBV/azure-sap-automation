@@ -223,7 +223,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
         gpg --batch --passphrase-fd 0 \
         --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg \
         --encrypt \
-        --recipient sap-azure-deployer@foo.bar \
+        --recipient sap-azure-deployer@example.com \
         ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
 
     git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
@@ -297,10 +297,10 @@ if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
     zip -j -P "${pass}" DEPLOYER/${deployerfolder}/state DEPLOYER/${deployerfolder}/terraform.tfstate
     git add -f DEPLOYER/${deployerfolder}/state.zip
 fi
-# # # if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-# # #     echo $ARM_CLIENT_SECRET | gpg --batch --passphrase-fd 0 --output DEPLOYER/${deployerfolder}/state.gpg --encrypt --recipient sap-azure-deployer@foo.bar DEPLOYER/${deployerfolder}/terraform.tfstate
-# # #     git add -f DEPLOYER/${deployerfolder}/state.gpg
-# # # fi
+if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
+    echo $ARM_CLIENT_SECRET | gpg --batch --passphrase-fd 0 --output DEPLOYER/${deployerfolder}/state.gpg --encrypt --recipient sap-azure-deployer@example.com DEPLOYER/${deployerfolder}/terraform.tfstate
+    git add -f DEPLOYER/${deployerfolder}/state.gpg
+fi
 
 set +e
 git diff --cached --quiet
