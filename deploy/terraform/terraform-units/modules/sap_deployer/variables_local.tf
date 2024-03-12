@@ -264,26 +264,25 @@ locals {
   // Tags
   tags = try(var.deployer.tags, { "Role" = "Deployer" })
 
-  pipeline_parameters                 = merge(var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {},
-                                            {
+  pipeline_parameters = {
                                               "ControlPlaneEnvironment" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = var.infrastructure.environment
                                               }
                                               "ControlPlaneLocation" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = var.naming.DEPLOYER.location_short
                                               }
                                               "Deployer_Key_Vault" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = var.key_vault.kv_exists ? data.azurerm_key_vault.kv_user[0].name : azurerm_key_vault.kv_user[0].name
                                               }
                                               "deployer_public_ip_address"= {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = local.enable_deployer_public_ip ? azurerm_public_ip.deployer[0].ip_address : ""
                                               }
                                               "deployer_random_id" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = random_id.deployer.b64_url
                                               }
                                               # "Deployer_State_FileName" = {
@@ -291,24 +290,24 @@ locals {
                                               #   value = var.deployer.deployer_parameter_tf_state_filename
                                               # }
                                               "resourcegroup_name" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = local.resourcegroup_name
                                               }
                                               "webapp_id" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = var.use_webapp ? azurerm_windows_web_app.webapp[0].id : ""
                                               }
                                               "webapp_identity" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = var.use_webapp ? azurerm_windows_web_app.webapp[0].identity[0].principal_id : ""
                                               }
                                               "webapp_url_base" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = var.use_webapp ? azurerm_windows_web_app.webapp[0].name : ""
                                               }
                                               "WEBAPP_RESOURCE_GROUP" = {
-                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
                                                 value = var.use_webapp ? azurerm_windows_web_app.webapp[0].resource_group_name : ""
                                               }
-                                            })
+                                            }
 }
