@@ -225,6 +225,7 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
         --encrypt \
         --recipient sap-azure-deployer@example.com \
         --disable-dirmngr \
+        --trust-model always \
         ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
 
     git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
@@ -298,7 +299,9 @@ if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
         --output DEPLOYER/${deployerfolder}/state.gpg \
         --encrypt \
         --disable-dirmngr\
-        --recipient sap-azure-deployer@example.com DEPLOYER/${deployerfolder}/terraform.tfstate
+        --recipient sap-azure-deployer@example.com \
+        --trust-model always \
+        DEPLOYER/${deployerfolder}/terraform.tfstate
     git add -f DEPLOYER/${deployerfolder}/state.gpg
 fi
 
