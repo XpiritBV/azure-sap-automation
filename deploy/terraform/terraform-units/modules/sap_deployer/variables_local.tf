@@ -271,16 +271,24 @@ locals {
                                               #   value = var.deployer.deployer_parameter_tf_state_filename
                                               # }
                                               "Deployer_Key_Vault" = {
-                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
-                                                value = var.deployer.deployer_user_keyvault_name
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = var.naming.keyvault_names.DEPLOYER
+                                              }
+                                              "Deployer_Key_Vault" = {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = local.keyvault_names.user_access
                                               }
                                               "ControlPlaneEnvironment" = {
-                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
                                                 value = var.infrastructure.environment
                                               }
                                               "ControlPlaneLocation" = {
-                                                label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
                                                 value = var.naming.DEPLOYER.location_short
+                                              }
+                                              "resourcegroup_name" = {
+                                                label = format("%s%s", var.infrastructure.environment, var.naming.DEPLOYER.location_short)
+                                                value = local.resourcegroup_name
                                               }
                                               # "webapp_url_base" = {
                                               #   label = concat(var.infrastructure.environment, var.naming.DEPLOYER.location_short)
