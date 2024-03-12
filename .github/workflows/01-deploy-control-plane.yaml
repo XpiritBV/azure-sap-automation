@@ -62,6 +62,15 @@ jobs:
         #   sparse-checkout: |
         #     WORKSPACES
 
+      - name: Store the configuration in Azure App Configuration
+        uses: azure/appconfiguration-sync@v1
+        with:
+          configurationFile: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/MGMTNOEU
+          format: 'properties'
+          connectionString: ${{ secrets.APP_CONFIGURATION_CONNECTION_STRING }}
+          separator: ':'
+          label: 'GitHub'
+
       # Required permissions: org level runner registration permissions
       - name: Get app token
         id: get_workflow_token
