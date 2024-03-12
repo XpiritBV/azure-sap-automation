@@ -195,44 +195,44 @@ if [[ -v POOL ]]; then
     export TF_VAR_agent_pat=${PAT}
 fi
 
-# # # # Import PGP key if it exists, otherwise generate it
-# # # if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
-# # #     set +e
-# # #     gpg --list-keys sap-azure-deployer@example.com
-# # #     return_code=$?
-# # #     set -e
+# Import PGP key if it exists, otherwise generate it
+if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
+    set +e
+    gpg --list-keys sap-azure-deployer@example.com
+    return_code=$?
+    set -e
 
-# # #     if [ ${return_code} != 0 ]; then
-# # #         echo ${ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --import ${CONFIG_REPO_PATH}/private.pgp
-# # #     fi
-# # # else
-# # #     echo ${ARM_CLIENT_SECRET} | ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/generate-pgp-key.sh
-# # #     gpg --output ${CONFIG_REPO_PATH}/private.pgp --armor --export-secret-key sap-azure-deployer@foo.bar
-# # #     git add ${CONFIG_REPO_PATH}/private.pgp
-# # #     git commit -m "Adding PGP key for encryption of state file"
-# # # fi
+    if [ ${return_code} != 0 ]; then
+        echo ${ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --import ${CONFIG_REPO_PATH}/private.pgp
+    fi
+else
+    echo ${ARM_CLIENT_SECRET} | ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/generate-pgp-key.sh
+    gpg --output ${CONFIG_REPO_PATH}/private.pgp --armor --export-secret-key sap-azure-deployer@example.com
+    git add ${CONFIG_REPO_PATH}/private.pgp
+    git commit -m "Adding PGP key for encryption of state file"
+fi
 
-# # # # Deprecated, as zip password are not secure. This is replaced with GPG encryption
+# Deprecated, as zip password are not secure. This is replaced with PGP encryption
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     pass=$(echo ${ARM_CLIENT_SECRET} | sed 's/-//g')
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
-#     git rm ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
+    git rm ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
 
-#     echo ${ARM_CLIENT_SECRET} | \
-#         gpg --batch --passphrase-fd 0 \
-#         --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg \
-#         --encrypt \
-#         --recipient sap-azure-deployer@foo.bar \
-#         ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
+    echo ${ARM_CLIENT_SECRET} | \
+        gpg --batch --passphrase-fd 0 \
+        --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg \
+        --encrypt \
+        --recipient sap-azure-deployer@foo.bar \
+        ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
 
-#     git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
+    git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
 
-#     commit_changes "Replace zip with gpg encrypted state file" true
-# else
-#     if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
-#         echo "Decrypting state file"
-#         echo ${ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
-#     fi
+    commit_changes "Replace zip with gpg encrypted state file" true
+else
+    if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
+        echo "Decrypting state file"
+        echo ${ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
+    fi
 fi
 
 if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase

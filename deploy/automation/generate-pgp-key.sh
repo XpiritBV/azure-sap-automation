@@ -10,7 +10,8 @@
   Subkey-Type: ECDH
     Subkey-Curve: cv25519
 Name-Real: Sap Azure Deployer
-Name-Email: sap-azure-deployer@example.com # Non-existing e-mail. We just use PGP to encrypt, so no identity is needed
+# Non-existing e-mail. We just use PGP to encrypt, so no identity is needed
+Name-Email: sap-azure-deployer@example.com
   Expire-Date: 0
   # Now, let's do a commit here, so that we can later print "done" :-)
   %commit
