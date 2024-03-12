@@ -217,18 +217,19 @@ fi
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     pass=$(echo ${ARM_CLIENT_SECRET} | sed 's/-//g')
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
-    # # # git rm ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
+    git rm ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
 
-    # # # echo ${ARM_CLIENT_SECRET} | \
-    # # #     gpg --batch --passphrase-fd 0 \
-    # # #     --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg \
-    # # #     --encrypt \
-    # # #     --recipient sap-azure-deployer@example.com \
-    # # #     ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
+    echo ${ARM_CLIENT_SECRET} | \
+        gpg --batch \
+        --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg \
+        --encrypt \
+        --recipient sap-azure-deployer@example.com \
+        --disable-dirmngr \
+        ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
 
-    # # # git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
+    git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
 
-    # # # commit_changes "Replace zip with gpg encrypted state file" true
+    commit_changes "Replace zip with gpg encrypted state file" true
 else
     if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
         echo "Decrypting state file"
@@ -293,14 +294,13 @@ if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
 fi
 
 if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-    pass=$(echo $ARM_CLIENT_SECRET | sed 's/-//g')
-    zip -j -P "${pass}" DEPLOYER/${deployerfolder}/state DEPLOYER/${deployerfolder}/terraform.tfstate
-    git add -f DEPLOYER/${deployerfolder}/state.zip
+    gpg --batch \
+        --output DEPLOYER/${deployerfolder}/state.gpg \
+        --encrypt \
+        --disable-dirmngr\
+        --recipient sap-azure-deployer@example.com DEPLOYER/${deployerfolder}/terraform.tfstate
+    git add -f DEPLOYER/${deployerfolder}/state.gpg
 fi
-# # # if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-# # #     echo $ARM_CLIENT_SECRET | gpg --batch --passphrase-fd 0 --output DEPLOYER/${deployerfolder}/state.gpg --encrypt --recipient sap-azure-deployer@example.com DEPLOYER/${deployerfolder}/terraform.tfstate
-# # #     git add -f DEPLOYER/${deployerfolder}/state.gpg
-# # # fi
 
 set +e
 git diff --cached --quiet
