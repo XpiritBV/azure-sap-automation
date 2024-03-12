@@ -35,6 +35,7 @@ data "azurerm_resource_group" "deployer" {
 //        Management lock should be implemented id a seperate Terraform workspace
 
 
+// TODO: PLEASE REMOVE ROBERT DE VEEN FROM THE CODE
 resource "azurerm_role_assignment" "rg_owner" {
   scope                = azurerm_resource_group.deployer.id
   role_definition_name = "Owner"

@@ -143,12 +143,13 @@ else
     fi
 fi
 
-# TODO: Is this necessary on GitHub?
+# TODO: Is this necessary (on GitHub)?
 start_group "Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent"
 echo "Current Directory: $(pwd)"
 mkdir -p ${CONFIG_REPO_PATH}/.sap_deployment_automation
 echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >${CONFIG_REPO_PATH}/.sap_deployment_automation/config
 end_group
+
 start_group "File Validations"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
     exit_error "File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
@@ -167,7 +168,7 @@ echo -e "$green--- Convert config files to UX format ---$reset"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
 echo -e "$green--- Configuring variables ---$reset"
-deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
+deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 end_group
 
 start_group "Deploy the Control Plane"

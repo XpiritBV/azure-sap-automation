@@ -19,24 +19,24 @@ on:
         description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
         type: choice
         options:
-        - MGMT-NOEU-SAP_LIBRARY
+          - MGMT-NOEU-SAP_LIBRARY
       environment:
         default: MGMT
         description: Environment name
         type: choice
         options:
-        - MGMT
-        - DEV
-        - QA
-        - PROD
+          - MGMT
+          - DEV
+          - QA
+          - PROD
       use_webapp:
-        default: true
+        default: false # Default should be: true
         description: Deploy the configuration web application infrastructure
         type: boolean
-      deploy_webapp_software:
-        default: true
-        description: "Deploy the configuration web application software"
-        type: boolean
+      # deploy_webapp_software:
+      #   default: true
+      #   description: "Deploy the configuration web application software"
+      #   type: boolean
       force_reset:
         default: false
         description: Force a re-install - may require multiple re-runs
@@ -71,7 +71,7 @@ jobs:
           application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
           organization: ${{ github.repository_owner }}
 
-      - name: 'Set log level'
+      - name: "Set log level"
         id: log_level
         run: |
           #!/usr/bin/env bash
@@ -112,7 +112,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 'setup-deployer-logs-${{ github.run_number }}-${{ github.run_attempt }}'
+          name: "setup-deployer-logs-${{ github.run_number }}-${{ github.run_attempt }}"
           path: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/terraform.log
 
   deploy_controlplane:
@@ -166,11 +166,12 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 'deploy-controlplane-logs-${{ github.run_number }}-${{ github.run_attempt }}'
+          name: "deploy-controlplane-logs-${{ github.run_number }}-${{ github.run_attempt }}"
           path: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/terraform.log
 
   web_app_deployment:
-    if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
+    if: ${{ inputs.use_webapp }}
+    # if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
     name: Deploy SAP configuration Web App
     environment: ${{ inputs.deployer }}
     needs: deploy_controlplane
@@ -191,7 +192,7 @@ jobs:
         with:
           resourceGroup: mgmt-noeu-dep02-infrastructure
           appConfigurationName: mgmtnoeuapc8f0
-          labelFilter: 'GitHub'
+          labelFilter: "GitHub"
 
       - name: Build the Configuration Web Application
         run: dotnet build Webapp/SDAF/*.csproj
@@ -208,7 +209,24 @@ jobs:
         with:
           app-name: ${{ vars.WEBAPP_URL_BASE }}
           package: WebApp
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          #publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+
+      # - uses: azure/appservice-settings@v1
+      #   with:
+      #     app-name: "my-app"
+      #     slot-name: "staging" # Optional and needed only if the settings have to be configured on the specific deployment slot
+      #     app-settings-json: "${{ secrets.APP_SETTINGS }}"
+      # appSettings: '-CollectionUri $(System.CollectionUri)
+      #                 -ProjectName "$(System.TeamProject)"
+      #                 -RepositoryId $(Build.Repository.ID)
+      #                 -SourceBranch "$(Build.SourceBranchName)"
+      #                 -WORKLOADZONE_PIPELINE_ID $(WORKLOADZONE_PIPELINE_ID)
+      #                 -SYSTEM_PIPELINE_ID $(SYSTEM_PIPELINE_ID)
+      #                 -SAP_INSTALL_PIPELINE_ID $(SAP_INSTALL_PIPELINE_ID)
+      #                 -SDAF_GENERAL_GROUP_ID $(SDAF_GENERAL_GROUP_ID)
+      #                 -IS_PIPELINE_DEPLOYMENT true
+      #                 -CONTROLPLANE_ENV $(ControlPlaneEnvironment)
+      #                 -CONTROLPLANE_LOC $(ControlPlaneLocation)'
 
       - name: Configure Web Application Authentication
         run: |
@@ -243,7 +261,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 'web-application-configuration-${{ github.run_number }}-${{ github.run_attempt }}'
+          name: "web-application-configuration-${{ github.run_number }}-${{ github.run_attempt }}"
           path: "Web Application Configuration.md"
 
       - name: Create GitHub issue

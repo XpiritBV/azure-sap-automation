@@ -280,7 +280,7 @@ locals {
                                               }
                                               "ControlPlaneLocation" = {
                                                 label = var.deployer.deployer_parameter_group_name
-                                                value = var.deployer.deployer_parameter_location
+                                                value = var.naming.DEPLOYER.location_short
                                               }
                                               # "webapp_url_base" = {
                                               #   label = var.deployer.deployer_parameter_group_name
