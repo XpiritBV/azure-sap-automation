@@ -434,7 +434,13 @@ then
     return_value=0
 fi
 
-
+appconfig_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_app_config_name | tr -d \")
+if [ -n "${appconfig_name}" ]
+then
+    echo "appconfig_name: $appconfig_name"
+    save_config_var "appconfig_name" "${deployer_config_information}"
+    return_value=0
+fi
 unset TF_DATA_DIR
 
 exit $return_value

@@ -320,10 +320,16 @@ end_group
 
 start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
-    set_value_with_key "Deployer_State_FileName" "${file_deployer_tfstate_key}"
-    set_value_with_key "Deployer_Key_Vault" "${file_key_vault}"
-    set_value_with_key "ControlPlaneEnvironment" "${ENVIRONMENT}"
-    set_value_with_key "ControlPlaneLocation" "${LOCATION}"
+    # set_value_with_key "Deployer_State_FileName" "${file_deployer_tfstate_key}"
+    # set_value_with_key "Deployer_Key_Vault" "${file_key_vault}"
+    # set_value_with_key "ControlPlaneEnvironment" "${ENVIRONMENT}"
+    # set_value_with_key "ControlPlaneLocation" "${LOCATION}"
+
+    appconfig_name=$(config_value_with_key "appconfig_name")
+    echo "appconfig_name: ${appconfig_name}"
+    set_value_with_key "APP_CONFIGURATION_NAME" "${appconfig_name}"
+
+    set_value_with_key "APP_CONFIGURATION_RESOURCE_GROUP" "${APP_CONFIGURATION_RESOURCE_GROUP}"
 fi
 end_group
 exit $return_code

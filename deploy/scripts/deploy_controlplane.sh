@@ -203,8 +203,6 @@ if [ -n "${subscription}" ]; then
         step=0
         save_config_var "step" "${deployer_config_information}"
     fi
-
-
 fi
 
 if [ 3 == $step ]; then
@@ -217,10 +215,8 @@ else
   set_executing_user_environment_variables "${spn_secret}"
 fi
 
-
 load_config_vars "${deployer_config_information}" "step"
 load_config_vars "${deployer_config_information}" "keyvault"
-
 
 if [ $recover == 1 ]; then
     if [ -n "$REMOTE_STATE_SA" ]; then
@@ -521,9 +517,6 @@ if [ 2 == $step ]; then
     REMOTE_STATE_RG=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw sapbits_sa_resource_group_name  | tr -d \")
     REMOTE_STATE_SA=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw remote_state_storage_account_name | tr -d \")
     STATE_SUBSCRIPTION=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw created_resource_group_subscription_id  | tr -d \")
-
-    # TO DO: Add app_config name as a variable after PR with terraform changes is merged
-    #appconfig_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_app_config_name | tr -d \")
 
     if [ "$ado_flag" != "--ado" ] ; then
         az storage account network-rule add -g "${REMOTE_STATE_RG}" --account-name "${REMOTE_STATE_SA}" --ip-address ${this_ip} --output none
