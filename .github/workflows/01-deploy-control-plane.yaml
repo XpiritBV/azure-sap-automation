@@ -77,7 +77,6 @@ jobs:
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
         # TODO: working-directory: /source
         env:
-          # TODO: connection_name: ${{ inputs.connection_name }}
           APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}

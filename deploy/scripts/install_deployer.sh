@@ -370,7 +370,6 @@ then
                         echo "##vso[task.logissue type=error]${string_to_report}"
 
                     done
-
                 fi
                 echo "#                                                                                       #"
                 echo "#########################################################################################"
@@ -387,7 +386,7 @@ then
     fi
 fi
 
-keyvault=$(terraform -chdir="${terraform_module_directory}"  output deployer_kv_user_name | tr -d \")
+keyvault=$(terraform -chdir="${terraform_module_directory}" output deployer_kv_user_name | tr -d \")
 temp=$(echo "${keyvault}" | grep "Warning")
 if [ -z "${temp}" ]
 then
@@ -434,13 +433,22 @@ then
     return_value=0
 fi
 
-appconfig_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_app_config_name | tr -d \")
-if [ -n "${appconfig_name}" ]
+deployer_app_config_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_app_config_name | tr -d \")
+if [ -n "${deployer_app_config_name}" ]
 then
-    echo "appconfig_name: $appconfig_name"
-    save_config_var "appconfig_name" "${deployer_config_information}"
+    echo "deployer_app_config_name: $deployer_app_config_name"
+    save_config_var "deployer_app_config_name" "${deployer_config_information}"
     return_value=0
 fi
+
+created_resource_group_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw created_resource_group_name  | tr -d \")
+if [ -n "${created_resource_group_name}" ]
+then
+    echo "created_resource_group_name: $created_resource_group_name"
+    save_config_var "created_resource_group_name" "${deployer_config_information}"
+    return_value=0
+fi
+
 unset TF_DATA_DIR
 
 exit $return_value

@@ -264,19 +264,20 @@ start_group "Update deployment configuration to repo"
 cd $CONFIG_REPO_PATH
 git pull -q
 
-if [ -f ${deployer_environment_file_name} ]; then
-    file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
-    if [ -z "$file_deployer_tfstate_key" ]; then
-        file_deployer_tfstate_key=${deployerfolder}/.terraform.tfstate
-    fi
-    echo "Deployer State File: $file_deployer_tfstate_key"
+# Not needed anymore???
+# if [ -f ${deployer_environment_file_name} ]; then
+#     file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
+#     if [ -z "$file_deployer_tfstate_key" ]; then
+#         file_deployer_tfstate_key=${deployerfolder}/.terraform.tfstate
+#     fi
+#     echo "Deployer State File: $file_deployer_tfstate_key"
 
-    file_key_vault=$(config_value_with_key "keyvault")
-    echo "Deployer Key Vault: ${file_key_vault}"
+#     file_key_vault=$(config_value_with_key "keyvault")
+#     echo "Deployer Key Vault: ${file_key_vault}"
 
-    deployer_random_id=$(config_value_with_key "deployer_random_id")
-    library_random_id=$(config_value_with_key "library_random_id")
-fi
+#     deployer_random_id=$(config_value_with_key "deployer_random_id")
+#     library_random_id=$(config_value_with_key "library_random_id")
+# fi
 
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
@@ -309,6 +310,14 @@ fi
 
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     upload_summary .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
+fi
+
+start_group "Adding variables to platform variable group"
+if [ 0 == $return_code ]; then
+    APP_CONFIGURATION_NAME=$(config_value_with_key "deployer_app_config_name")
+    set_value_with_key "APP_CONFIGURATION_NAME" ${APP_CONFIGURATION_NAME}
+    APP_CONFIGURATION_RESOURCE_GROUP=$(config_value_with_key "created_resource_group_name")
+    set_value_with_key "APP_CONFIGURATION_RESOURCE_GROUP" ${APP_CONFIGURATION_RESOURCE_GROUP}
 fi
 end_group
 
