@@ -93,6 +93,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     export REINSTALL_RESOURCE_GROUP=$(get_value_with_key "Terraform_Remote_Storage_Resource_Group_Name")
 
     export FORCE_RESET=true
+
     echo "Try reading key vault from GitHub Environment"
     var=$(get_value_with_key "Deployer_Key_Vault")
     if [ -n "${var}" ]; then

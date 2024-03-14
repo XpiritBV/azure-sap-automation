@@ -20,17 +20,17 @@ on:
         type: choice
         options:
           - MGMT-NOEU-SAP_LIBRARY
-      environment:
-        default: MGMT
-        description: Environment name
-        type: choice
-        options:
-          - MGMT
-          - DEV
-          - QA
-          - PROD
+      # environment:
+      #   default: MGMT
+      #   description: Environment name
+      #   type: choice
+      #   options:
+      #     - MGMT
+      #     - DEV
+      #     - QA
+      #     - PROD
       use_webapp:
-        default: false # Default should be: true
+        default: true
         description: Deploy the configuration web application infrastructure
         type: boolean
       # deploy_webapp_software:

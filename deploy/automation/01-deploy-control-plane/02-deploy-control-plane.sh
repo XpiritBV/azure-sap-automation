@@ -117,18 +117,19 @@ else
 fi
 
 storage_account_parameter=""
-if [[ -v "${REMOTE_STATE_SA}" ]]; then
+if [ -n "${REMOTE_STATE_SA}" ]; then
     storage_account_parameter="--storageaccountname ${REMOTE_STATE_SA}"
 else
     set_config_key_with_value "step" "1"
 fi
 
-keyvault_parameter=""
-if [[ -v "${keyvault}" ]]; then
-    if [ "${keyvault}" != "${Deployer_Key_Vault}" ]; then
-        keyvault_parameter=" --vault ${keyvault} "
-    fi
-fi
+# TODO: Why?
+# keyvault_parameter=""
+# if [ -n "${keyvault}" ]; then
+#     if [ "${keyvault}" != "${Deployer_Key_Vault}" ]; then
+#         keyvault_parameter=" --vault ${keyvault} "
+#     fi
+# fi
 end_group
 
 start_group "Validations"
