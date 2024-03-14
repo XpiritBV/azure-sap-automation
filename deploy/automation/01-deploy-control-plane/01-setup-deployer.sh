@@ -69,6 +69,8 @@ ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
 echo Environment: ${ENVIRONMENT}
 LOCATION=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs)
 echo Location: ${LOCATION}
+
+mkdir -p ${CONFIG_REPO_PATH}/.sap_deployment_automation
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 echo "Deployer Environment File: ${deployer_environment_file_name}"
 end_group
