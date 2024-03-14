@@ -229,7 +229,6 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
         ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
 
     git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
-    git add ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
 
     commit_changes "Replace zip with gpg encrypted state file" true
 else
@@ -310,7 +309,6 @@ if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
         --trust-model always \
         DEPLOYER/${deployerfolder}/terraform.tfstate
     git add -f DEPLOYER/${deployerfolder}/state.gpg
-    git add -f DEPLOYER/${deployerfolder}/terraform.tfstate
 fi
 
 set +e
