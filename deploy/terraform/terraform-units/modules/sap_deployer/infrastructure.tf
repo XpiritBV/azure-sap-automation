@@ -34,14 +34,6 @@ data "azurerm_resource_group" "deployer" {
 // TODO: Add management lock when this issue is addressed https://github.com/terraform-providers/terraform-provider-azurerm/issues/5473
 //        Management lock should be implemented id a seperate Terraform workspace
 
-
-// TODO: PLEASE REMOVE ROBERT DE VEEN FROM THE CODE
-resource "azurerm_role_assignment" "rg_owner" {
-  scope                                = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].id : azurerm_resource_group.deployer[0].id
-  role_definition_name                 = "Owner"
-  principal_id                         = "47778390-c43d-4e18-a90f-d816301b569f" # Robert de Veen
-}
-
 // Create/Import management vnet
 resource "azurerm_virtual_network" "vnet_mgmt" {
   count                                = (!local.vnet_mgmt_exists) ? 1 : 0
