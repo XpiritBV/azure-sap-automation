@@ -268,9 +268,27 @@ if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip ]; then
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip -d ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}
 fi
 
+if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${libraryfolder}/state.gpg ]; then
+    echo "Decrypting library state file"
+    echo ${CP_ARM_CLIENT_SECRET} | \
+        gpg --batch \
+        --passphrase-fd 0 \
+        --output ${CONFIG_REPO_PATH}/DEPLOYER/${libraryfolder}/terraform.tfstate \
+        --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${libraryfolder}/state.gpg
+fi
+
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
+fi
+
+if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
+    echo "Decrypting deployer state file"
+    echo ${CP_ARM_CLIENT_SECRET} | \
+        gpg --batch \
+        --passphrase-fd 0 \
+        --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate \
+        --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
 fi
 
 # TODO: Needs to be set to group the values in the app configuration
