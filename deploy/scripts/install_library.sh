@@ -596,7 +596,7 @@ then
     temp=$(echo "${random_id_b64}" | grep "Backend reinitialization required")
     if [ -z "${temp}" ]
     then
-        save_config_var "library_random_id" "${random_id_b64}"
+        save_config_var "library_random_id" "${library_config_information}"
         return_value=0
     fi
 fi
