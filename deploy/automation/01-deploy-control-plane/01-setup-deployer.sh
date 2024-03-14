@@ -337,7 +337,7 @@ if [ 0 == $return_code ]; then
     echo "appconfig_name: ${appconfig_name}"
     set_value_with_key "APP_CONFIGURATION_NAME" "${appconfig_name}"
 
-    set_value_with_key "APP_CONFIGURATION_RESOURCE_GROUP" "${APP_CONFIGURATION_RESOURCE_GROUP}"
+    # set_value_with_key "APP_CONFIGURATION_RESOURCE_GROUP" "${APP_CONFIGURATION_RESOURCE_GROUP}"
 fi
 end_group
 exit $return_code
