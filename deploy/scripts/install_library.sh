@@ -52,7 +52,6 @@ VALID_ARGUMENTS=$?
 
 if [ "$VALID_ARGUMENTS" != "0" ]; then
   showhelp
-
 fi
 
 eval set -- "$INPUT_ARGUMENTS"
@@ -103,13 +102,10 @@ if [ "${ext}" == json ]; then
     region=$(jq --raw-output .infrastructure.region "${parameterfile}")
     use_deployer=$(jq --raw-output .deployer.use "${parameterfile}")
 else
-
     load_config_vars "${param_dirname}"/"${parameterfile}" "environment"
     load_config_vars "${param_dirname}"/"${parameterfile}" "location"
     region=$(echo ${location} | xargs)
-
 fi
-
 
 key=$(echo "${parameterfile}" | cut -d. -f1)
 
@@ -171,9 +167,6 @@ then
 fi
 export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
 
-param_dirname=$(pwd)
-
-
 arm_config_stored=false
 
 param_dirname=$(pwd)
@@ -187,10 +180,10 @@ if [ ! -n "${SAP_AUTOMATION_REPO_PATH}" ]; then
     echo ""
     echo "#########################################################################################"
     echo "#                                                                                       #"
-    echo "#   Missing environment variables (SAP_AUTOMATION_REPO_PATH)!!!                             #"
+    echo "#   Missing environment variables (SAP_AUTOMATION_REPO_PATH)!!!                         #"
     echo "#                                                                                       #"
     echo "#   Please export the folloing variables:                                               #"
-    echo "#      SAP_AUTOMATION_REPO_PATH (path to the repo folder (sap-automation))                        #"
+    echo "#      SAP_AUTOMATION_REPO_PATH (path to the repo folder (sap-automation))              #"
     echo "#      ARM_SUBSCRIPTION_ID (subscription containing the state file storage account)     #"
     echo "#                                                                                       #"
     echo "#########################################################################################"
@@ -262,7 +255,6 @@ if [ ! -d ./.terraform/ ]; then
     sed -i /REMOTE_STATE_RG/d  "${library_config_information}"
     sed -i /REMOTE_STATE_SA/d  "${library_config_information}"
     sed -i /tfstate_resource_id/d  "${library_config_information}"
-
 else
     if [ -f ./.terraform/terraform.tfstate ]; then
         if grep "azurerm" ./.terraform/terraform.tfstate ; then
@@ -321,7 +313,6 @@ else
     fi
 fi
 
-
 echo ""
 echo "#########################################################################################"
 echo "#                                                                                       #"
@@ -332,6 +323,7 @@ echo ""
 
 if [ -n "${deployer_statefile_foldername}" ]; then
     echo "Deployer folder specified:" "${deployer_statefile_foldername}"
+    dir -la "${deployer_statefile_foldername}"
     terraform -chdir="${terraform_module_directory}" plan -no-color -detailed-exitcode -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" > plan_output.log 2>&1
 else
     terraform -chdir="${terraform_module_directory}" plan -no-color -detailed-exitcode -var-file="${var_file}" > plan_output.log 2>&1
