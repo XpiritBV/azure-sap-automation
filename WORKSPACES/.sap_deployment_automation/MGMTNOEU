@@ -10,3 +10,7 @@ client_id=ef6134f6-3912-41f7-b684-63fe90ae4100
 tenant_id=c01abe72-ffef-4ecc-bda0-937975b49e6b
 STATE_SUBSCRIPTION=d6c8e3b6-467e-452e-97c9-49d9de9e37da
 step=2
+REMOTE_STATE_SA=mgmtweeutfstatec2f
+tfstate_resource_id=/subscriptions/d6c8e3b6-467e-452e-97c9-49d9de9e37da/resourceGroups/MGMT-WEEU-SAP_LIBRARY/providers/Microsoft.Storage/storageAccounts/mgmtweeutfstatec2f
+REMOTE_STATE_RG=MGMT-WEEU-SAP_LIBRARY
+library_random_id=

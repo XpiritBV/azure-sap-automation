@@ -273,14 +273,6 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
 fi
 
-# File could still be present from previous runs, when using self hosted runners
-if [ -f ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log ]; then
-    rm ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
-fi
-
-touch ${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
-export TF_LOG_PATH=${CONFIG_REPO_PATH}/.sap_deployment_automation/terraform.log
-
 # TODO: Needs to be set to group the values in the app configuration
 # TODO: export TF_VAR_deployer_parameter_group_name=$(variable_group)
 export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
