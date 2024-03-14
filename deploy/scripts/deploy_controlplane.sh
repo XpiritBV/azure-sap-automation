@@ -639,7 +639,7 @@ if [ 4 == $step ]; then
     echo ""
 
     cd "${library_dirname}" || exit
-    allParams=$(printf " --parameterfile %s --storageaccountname %s --type sap_library %s %s" "${library_file_parametername}" "${REMOTE_STATE_SA}" "${approveparam}"  "${ado_flag}")
+    allParams=$(printf " --parameterfile %s --storageaccountname %s --type sap_library %s %s" "${library_file_parametername}" "${REMOTE_STATE_SA}" "${approveparam}" "${ado_flag}")
 
     echo -e "$cyan calling installer.sh with parameters: $allParams $resetformatting"
 

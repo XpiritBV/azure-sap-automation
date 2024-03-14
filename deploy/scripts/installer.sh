@@ -194,6 +194,7 @@ then
     deployer_tfstate_key=${key}.terraform.tfstate
     STATE_SUBSCRIPTION=$ARM_SUBSCRIPTION_ID
 fi
+
 if [[ -z $STATE_SUBSCRIPTION ]];
 then
   STATE_SUBSCRIPTION=$ARM_SUBSCRIPTION_ID
@@ -207,7 +208,7 @@ then
     load_config_vars "${system_config_information}" "tfstate_resource_id"
     load_config_vars "${system_config_information}" "STATE_SUBSCRIPTION"
 else
-    save_config_vars "${system_config_information}" REMOTE_STATE_SA
+    save_config_vars "${system_config_information}" "REMOTE_STATE_SA"
 fi
 
 echo "Terraform state file storage:" "${REMOTE_STATE_SA}"
