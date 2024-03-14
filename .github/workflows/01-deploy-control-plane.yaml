@@ -95,6 +95,7 @@ jobs:
           use_webapp: ${{ inputs.use_webapp }}
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: "setup-deployer-logs-${{ github.run_number }}-${{ github.run_attempt }}"
           path: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/terraform.log
@@ -148,6 +149,7 @@ jobs:
           use_webapp: ${{ inputs.use_webapp }}
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: "deploy-controlplane-logs-${{ github.run_number }}-${{ github.run_attempt }}"
           path: ${{ github.workspace }}/WORKSPACES/.sap_deployment_automation/terraform.log
