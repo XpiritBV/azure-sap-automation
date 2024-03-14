@@ -10,6 +10,7 @@ RUN tdnf install -y \
   dos2unix \
   dotnet-sdk-7.0 \
   gawk \
+  gh \
   git \
   glibc-i18n \
   gnupg \
