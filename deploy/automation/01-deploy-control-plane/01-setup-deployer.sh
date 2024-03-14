@@ -332,8 +332,11 @@ if [ 0 == $return_code ]; then
     # set_value_with_key "ControlPlaneLocation" "${LOCATION}"
 
     appconfig_name=$(config_value_with_key "appconfig_name")
+    variable_group=${deployerfolder}
+
     echo "appconfig_name: ${appconfig_name}"
     set_value_with_key "APP_CONFIGURATION_NAME" "${appconfig_name}"
+    set_value_with_key "TEST" "${appconfig_name}"
 
     # set_value_with_key "APP_CONFIGURATION_RESOURCE_GROUP" "${APP_CONFIGURATION_RESOURCE_GROUP}"
 fi
