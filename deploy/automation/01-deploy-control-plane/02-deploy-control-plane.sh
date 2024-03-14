@@ -255,12 +255,26 @@ if [[ -v POOL ]]; then
     echo 'Deployer Agent Pool' $(POOL)
     POOL_NAME=$(az pipelines pool list --query "[?name=='$(POOL)'].name | [0]")
     if [ ${#POOL_NAME} -eq 0 ]; then
-        log_warning "Agent Pool ${POOL} does not exist." 2
+        log_warning "Agent Pool ${POOL} does not exist."
     fi
     echo "Deployer Agent Pool found: $POOL_NAME"
     export TF_VAR_agent_pool=$(POOL)
     export TF_VAR_agent_pat=$(PAT)
 
+fi
+
+# Import PGP key if it exists, otherwise generate it
+if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
+    set +e
+    gpg --list-keys sap-azure-deployer@example.com
+    return_code=$?
+    set -e
+
+    if [ ${return_code} != 0 ]; then
+        echo ${CP_ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --import ${CONFIG_REPO_PATH}/private.pgp
+    fi
+else
+    log_warning "Private PGP key not found."
 fi
 
 if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip ]; then

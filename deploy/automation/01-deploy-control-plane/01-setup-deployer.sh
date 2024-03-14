@@ -185,7 +185,7 @@ if [[ -v POOL ]]; then
     echo 'Deployer Agent Pool' ${POOL}
     POOL_NAME=$(az pipelines pool list --organization ${System_CollectionUri} --query "[?name=='${POOL}'].name | [0]")
     if [ ${#POOL_NAME} -eq 0 ]; then
-        log_warning "Agent Pool ${POOL} does not exist." 2
+        log_warning "Agent Pool ${POOL} does not exist."
     fi
     echo "Deployer Agent Pool found: $POOL_NAME"
     export TF_VAR_agent_pool=${POOL}
