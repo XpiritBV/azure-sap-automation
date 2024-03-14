@@ -426,6 +426,7 @@ variable "management_dns_resourcegroup_name"          {
                                                         default     = null
                                                         type        = string
                                                       }
+
 variable "dns_zone_names"                             {
                                                         description = "Private DNS zone names"
                                                         type        = map(string)
@@ -534,3 +535,18 @@ variable "REPOSITORY"                               {
                                                       description = "If provided, contains the Reference to tue repositry (e.g. owner/repository)"
                                                       default = ""
                                                     }
+
+#########################################################################################
+#                                                                                       #
+#  App Configuration settings                                                           #
+#                                                                                       #
+#########################################################################################
+
+variable "deployer_pipeline_parameters"              {
+                                                       description = "Values to define the pipeline parameters for the deployer and store them in app configuration"
+                                                       type = map(object({
+                                                         label = string
+                                                         value = string
+                                                       }))
+                                                       default = null
+                                                     }

@@ -3,6 +3,7 @@
 #                            Local variables                                   #
 #                                                                              #
 #######################################4#######################################8
+
 locals {
   version_label                        = trimspace(file("${path.module}/../../../configs/version.txt"))
 

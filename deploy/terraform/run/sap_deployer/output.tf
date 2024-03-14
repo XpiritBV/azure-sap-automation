@@ -194,7 +194,7 @@ output "webapp_identity"                         {
 
 output "webapp_id"                               {
                                                    description = "The Azure resource ID of the configuration Web Application"
-                                                   value = var.use_webapp ? module.sap_deployer.webapp_id : ""
+                                                   value       = var.use_webapp ? module.sap_deployer.webapp_id : ""
                                                  }
 
 ###############################################################################

@@ -59,15 +59,15 @@ module "sap_deployer" {
 }
 
 module "sap_namegenerator" {
-  source                                               = "../../terraform-units/modules/sap_namegenerator"
-  codename                                             = lower(local.infrastructure.codename)
-  deployer_environment                                 = lower(local.infrastructure.environment)
-  deployer_vm_count                                    = var.deployer_count
-  environment                                          = lower(local.infrastructure.environment)
-  location                                             = lower(local.infrastructure.region)
-  management_vnet_name                                 = coalesce(
-                                                          var.management_network_logical_name,
-                                                          local.vnet_mgmt_name_part
-                                                        )
-  random_id                                            = module.sap_deployer.random_id
+  source                                        = "../../terraform-units/modules/sap_namegenerator"
+  codename                                      = lower(local.infrastructure.codename)
+  deployer_environment                          = lower(local.infrastructure.environment)
+  deployer_vm_count                             = var.deployer_count
+  environment                                   = lower(local.infrastructure.environment)
+  location                                      = lower(local.infrastructure.region)
+  management_vnet_name                          = coalesce(
+                                                   var.management_network_logical_name,
+                                                   local.vnet_mgmt_name_part
+                                                 )
+  random_id                                     = module.sap_deployer.random_id
 }

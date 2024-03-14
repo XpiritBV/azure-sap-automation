@@ -66,27 +66,27 @@ locals {
                                          )
 
   pipeline_parameters                 = merge(var.deployer.pipeline_parameters != null ? var.deployer.pipeline_parameters : {},
-                                            # {
-                                            #   "Terraform_Remote_Storage_Resource_Group_Name" = {
-                                            #     label = var.deployer.deployer_parameter_group_name
-                                            #     value = local.resource_group_name
-                                            #   }
-                                            #   "Terraform_Remote_Storage_Account_Name" = {
-                                            #     label = var.deployer.deployer_parameter_group_name
-                                            #     value = local.sa_tfstate_exists ? (
-                                            #               split("/", var.storage_account_tfstate.arm_id)[8]) : (
-                                            #               length(var.storage_account_tfstate.name) > 0 ? (
-                                            #                 var.storage_account_tfstate.name) : (
-                                            #                 var.naming.storageaccount_names.LIBRARY.terraformstate_storageaccount_name
-                                            #               )
-                                            #             )
-                                            #   }
-                                            #   "Terraform_Remote_Storage_Subscription" = {
-                                            #     label = var.deployer.deployer_parameter_group_name
-                                            #     value = local.resource_group_exists ? (
-                                            #         split("/", data.azurerm_resource_group.library[0].id))[2] : (
-                                            #         split("/", azurerm_resource_group.library[0].id)[2]
-                                            #       )
-                                            #   }
-                                            #})
+                                            {
+                                              "Terraform_Remote_Storage_Resource_Group_Name" = {
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                                value = local.resource_group_name
+                                              }
+                                              "Terraform_Remote_Storage_Account_Name" = {
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                                value = local.sa_tfstate_exists ? (
+                                                          split("/", var.storage_account_tfstate.arm_id)[8]) : (
+                                                          length(var.storage_account_tfstate.name) > 0 ? (
+                                                            var.storage_account_tfstate.name) : (
+                                                            var.naming.storageaccount_names.LIBRARY.terraformstate_storageaccount_name
+                                                          )
+                                                        )
+                                              }
+                                              "Terraform_Remote_Storage_Subscription" = {
+                                                label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                                value = local.resource_group_exists ? (
+                                                    split("/", data.azurerm_resource_group.library[0].id))[2] : (
+                                                    split("/", azurerm_resource_group.library[0].id)[2]
+                                                  )
+                                              }
+                                            })
 }
