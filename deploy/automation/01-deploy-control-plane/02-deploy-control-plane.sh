@@ -94,7 +94,7 @@ else
     fi
 fi
 
-var=$(get_value_with_key "Deployer_Terraform_Remote_Storage_Subscription")
+var=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
 if [ -n "${var}" ]; then
     STATE_SUBSCRIPTION="${var}"
     echo 'Terraform state file subscription: ' $STATE_SUBSCRIPTION
@@ -123,13 +123,12 @@ else
     set_config_key_with_value "step" "1"
 fi
 
-# TODO: Uncleared code, is this correct?
-# keyvault_parameter=""
-# if [ -n "${keyvault}" ]; then
-#     if [ "${keyvault}" != "${Deployer_Key_Vault}" ]; then
-#         keyvault_parameter=" --vault ${keyvault} "
-#     fi
-# fi
+keyvault_parameter=""
+if [ -n "${keyvault}" ]; then
+    if [ "${keyvault}" != "${Deployer_Key_Vault}" ]; then
+        keyvault_parameter=" --vault ${keyvault} "
+    fi
+fi
 end_group
 
 start_group "Validations"
