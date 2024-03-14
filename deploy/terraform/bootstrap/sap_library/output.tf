@@ -79,15 +79,3 @@ output "random_id_b64"                          {
                                                    description = "Random ID in base64"
                                                    value      = module.sap_library.random_id_b64
                                                  }
-
-###############################################################################
-#                                                                             #
-#                                App configuration                            #
-#                                                                             #
-###############################################################################
-
-output "deployer_app_config_name"                {
-                                                   description = "Deployer app configuration name"
-                                                   value = module.sap_library.deployer_app_config_name
-                                                 }
-

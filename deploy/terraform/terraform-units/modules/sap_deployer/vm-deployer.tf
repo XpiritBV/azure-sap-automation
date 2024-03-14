@@ -137,7 +137,6 @@ resource "azurerm_linux_virtual_machine" "deployer" {
     disk_size_gb           = 128
   }
 
-
   dynamic "source_image_reference" {
     for_each = range(var.deployer.os.type == "marketplace" || var.deployer.os.type == "marketplace_with_plan" ? 1 : 0)
     content {

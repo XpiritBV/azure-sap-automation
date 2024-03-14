@@ -48,9 +48,9 @@ data "azuread_service_principal" "sp"             {
                                                     client_id    = local.spn.client_id
                                                   }
 
-data "azurerm_app_configuration" "app_config"     {
-                                                    provider            = azurerm.deployer
-                                                    count               = length(var.deployer.deployer_app_configuration_arm_id) > 0 ? 0 : 1
-                                                    resource_group_name = local.deployer_rg_name
-                                                    name                = var.naming.appconfig_names.LIBRARY
-                                                  }
+# data "azurerm_app_configuration" "app_config"     {
+#                                                     provider            = azurerm.deployer
+#                                                     count               = length(var.deployer.deployer_app_configuration_arm_id) > 0 ? 0 : 1
+#                                                     resource_group_name = local.deployer_rg_name
+#                                                     name                = module.sap_namegenerator.naming.appconfig_names.LIBRARY
+#                                                   }
