@@ -57,7 +57,7 @@ function __appconfig_set_value_with_key() {
     key=$1
     value=$2
 
-    var=$(az appconfig kv set -n ${appconfig_name} --key ${key} --label ${variable_group} --value $value --content-type plain/text --yes)
+    var=$(az appconfig kv set -n ${appconfig_name} --key ${key} --label ${variable_group} --value $value --content-type text/plain --yes)
 
     echo $var
 }
