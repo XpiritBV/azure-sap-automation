@@ -318,20 +318,6 @@ cd ${CONFIG_REPO_PATH}
 git fetch -q --all
 git pull -q
 
-if [ -f ${deployer_environment_file_name} ]; then
-    file_deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
-    echo 'Deployer State File: ' $file_deployer_tfstate_key
-
-    file_key_vault=$(config_value_with_key "keyvault")
-    echo 'Deployer Key Vault: ' ${file_key_vault}
-
-    file_REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA")
-    echo 'Terraform state file storage account: ' $file_REMOTE_STATE_SA
-
-    file_REMOTE_STATE_RG=$(config_value_with_key "REMOTE_STATE_RG")
-    echo 'Terraform state file resource group: ' $file_REMOTE_STATE_RG
-fi
-
 echo -e "$green--- Update repo ---$reset"
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
@@ -359,7 +345,7 @@ if [ "local" == "${backend}" ]; then
             git add -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
         fi
     fi
-else
+elif [ "azurerm" == "${backend}" ]; then
     echo "Remote deployer Terraform state"
     if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
         git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/terraform.tfstate
@@ -367,6 +353,9 @@ else
     if [ -f DEPLOYER/${deployerfolder}/state.gpg ]; then
         git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/state.gpg
     fi
+else
+    echo "Unknown backend type: ${backend}"
+    exit_error "Unknown backend type: ${backend}" 4
 fi
 
 backend=$(jq '.backend.type' -r LIBRARY/${libraryfolder}/.terraform/terraform.tfstate)
@@ -387,7 +376,7 @@ if [ "local" == "${backend}" ]; then
             git add -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate
         fi
     fi
-else
+elif [ "azurerm" == "${backend}" ]; then
     echo "Remote library Terraform state"
     if [ -f LIBRARY/${libraryfolder}/terraform.tfstate ]; then
         git rm -q -f --ignore-unmatch LIBRARY/${libraryfolder}/terraform.tfstate
@@ -395,6 +384,9 @@ else
     if [ -f LIBRARY/${libraryfolder}/state.gpg ]; then
         git rm -q --ignore-unmatch -f LIBRARY/${libraryfolder}/state.gpg
     fi
+else
+    echo "Unknown backend type: ${backend}"
+    exit_error "Unknown backend type: ${backend}" 4
 fi
 
 set +e
