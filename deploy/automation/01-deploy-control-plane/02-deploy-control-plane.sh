@@ -341,9 +341,8 @@ if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
 fi
 
-backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
-echo "Backend: ${backend}"
-if [ -n "${backend}" ]; then
+backend=$(jq '.backend.type' -r DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate)
+if [ "local" == "${backend}" ]; then
     echo "Local deployer Terraform state"
     if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
         rm DEPLOYER/${deployerfolder}/state.gpg || true
@@ -371,7 +370,7 @@ else
 fi
 
 backend=$(jq '.backend.type' -r LIBRARY/${libraryfolder}/.terraform/terraform.tfstate)
-if [ -n "${backend}" ]; then
+if [ "local" == "${backend}" ]; then
     echo "Local library Terraform state"
     if [ -f LIBRARY/${libraryfolder}/terraform.tfstate ]; then
         rm LIBRARY/${libraryfolder}/state.gpg || true
