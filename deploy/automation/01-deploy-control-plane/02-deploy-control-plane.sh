@@ -275,11 +275,6 @@ else
     log_warning "Private PGP key not found."
 fi
 
-if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
-    pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
-    unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
-fi
-
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
     echo "Decrypting deployer state file"
     echo ${CP_ARM_CLIENT_SECRET} | \
@@ -287,11 +282,6 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
         --passphrase-fd 0 \
         --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate \
         --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
-fi
-
-if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip ]; then
-    pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
-    unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip -d ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}
 fi
 
 if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
@@ -373,10 +363,6 @@ backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.
 if [ -n "${backend}" ]; then
     echo "Local deployer Terraform state"
     if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-        # echo "Compressing the deployer state file"
-        # pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
-        # zip -j -P "${pass}" DEPLOYER/${deployerfolder}/state DEPLOYER/${deployerfolder}/terraform.tfstate
-        # git add -f $DEPLOYER/${deployerfolder}/state.zip
         rm DEPLOYER/${deployerfolder}/state.gpg || true
 
         gpg --batch \
@@ -393,9 +379,6 @@ else
     if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
         git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/terraform.tfstate
     fi
-    if [ -f DEPLOYER/${deployerfolder}/state.zip ]; then
-        git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/state.zip
-    fi
     if [ -f DEPLOYER/${deployerfolder}/state.gpg ]; then
         git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/state.gpg
     fi
@@ -405,10 +388,6 @@ backend=$(jq '.backend.type' -r LIBRARY/${libraryfolder}/.terraform/terraform.tf
 if [ -n "${backend}" ]; then
     echo "Local library Terraform state"
     if [ -f LIBRARY/${libraryfolder}/terraform.tfstate ]; then
-        # echo "Compressing the library state file"
-        # pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
-        # zip -j -P "${pass}" LIBRARY/${libraryfolder}/state LIBRARY/${libraryfolder}/terraform.tfstate
-        # git add -f LIBRARY/${libraryfolder}/state.zip
         rm LIBRARY/${libraryfolder}/state.gpg || true
 
         gpg --batch \
@@ -424,9 +403,6 @@ else
     echo "Remote library Terraform state"
     if [ -f LIBRARY/${libraryfolder}/terraform.tfstate ]; then
         git rm -q -f --ignore-unmatch LIBRARY/${libraryfolder}/terraform.tfstate
-    fi
-    if [ -f LIBRARY/${libraryfolder}/state.zip ]; then
-        git rm -q --ignore-unmatch -f LIBRARY/${libraryfolder}/state.zip
     fi
     if [ -f LIBRARY/${libraryfolder}/state.gpg ]; then
         git rm -q --ignore-unmatch -f LIBRARY/${libraryfolder}/state.gpg

@@ -25,8 +25,7 @@ RUN tdnf install -y \
   sshpass \
   sudo \
   unzip \
-  util-linux \
-  zip
+  util-linux
 
 # Install Terraform
 RUN curl -fsSo terraform.zip \
