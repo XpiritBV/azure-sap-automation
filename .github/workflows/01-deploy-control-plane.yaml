@@ -20,23 +20,10 @@ on:
         type: choice
         options:
           - MGMT-NOEU-SAP_LIBRARY
-      # environment:
-      #   default: MGMT
-      #   description: Environment name
-      #   type: choice
-      #   options:
-      #     - MGMT
-      #     - DEV
-      #     - QA
-      #     - PROD
       use_webapp:
         default: true
         description: Deploy the configuration web application infrastructure
         type: boolean
-      # deploy_webapp_software:
-      #   default: true
-      #   description: "Deploy the configuration web application software"
-      #   type: boolean
       force_reset:
         default: false
         description: Force a re-install - may require multiple re-runs
@@ -50,7 +37,6 @@ permissions:
 jobs:
   setup_deployer:
     name: Prepare the self hosted runners(s)
-    if: false
     environment: ${{ inputs.deployer }}
     runs-on: ubuntu-latest
     container:
@@ -60,8 +46,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        #   sparse-checkout: |
-        #     WORKSPACES
 
       # Required permissions: org level runner registration permissions
       - name: Get app token
@@ -96,7 +80,6 @@ jobs:
 
   deploy_controlplane:
     name: Deploy the control plane
-    if: false
     environment: ${{ inputs.deployer }}
     needs: setup_deployer
     runs-on: self-hosted
@@ -150,10 +133,9 @@ jobs:
 
   web_app_deployment:
     if: ${{ inputs.use_webapp }}
-    # if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
     name: Deploy SAP configuration Web App
     environment: ${{ inputs.deployer }}
-    #needs: deploy_controlplane
+    needs: deploy_controlplane
     runs-on: self-hosted
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
@@ -192,6 +174,7 @@ jobs:
       - uses: azure/appservice-settings@v1
         with:
           app-name: ${{ env.webapp_url_base }}
+          mask-inputs: false
           app-settings-json: |
             [
              {
@@ -238,11 +221,10 @@ jobs:
           echo "az webapp restart \\" >> "Web Application Configuration.md"
           echo "  --resource-group ${{ env.resourcegroup_name }} \\" >> "Web Application Configuration.md"
           echo "   --name ${{ env.webapp_url_base }}" >> "Web Application Configuration.md"
-          echo "" >> "Web Application Configuration.md"
           echo "\`\`\`" >> "Web Application Configuration.md"
           echo "[Access the Web App](https://${{ env.webapp_url_base }}.azurewebsites.net)" >> "Web Application Configuration.md"
           echo "" >> "Web Application Configuration.md"
-          cat "Web Application Configuration.md" > $GITHUB_STEP_SUMMARY
+          echo "Configure the Web Application authentication using the script in the artifacts or issue:" >> $GITHUB_STEP_SUMMARY
 
       - uses: actions/upload-artifact@v4
         with:
