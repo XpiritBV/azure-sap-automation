@@ -260,6 +260,7 @@ if [[ -v POOL ]]; then
 fi
 
 start_group "Decrypting state files"
+ls -R ${CONFIG_REPO_PATH}
 # Import PGP key if it exists
 if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
     set +e
