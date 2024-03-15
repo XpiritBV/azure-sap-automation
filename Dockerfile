@@ -15,6 +15,7 @@ RUN tdnf install -y \
   glibc-i18n \
   gnupg \
   jq \
+  moreutils \
   openssl-devel \
   openssl-libs \
   powershell \
@@ -45,7 +46,8 @@ RUN pip3 install --upgrade \
     pip \
     pywinrm \
     setuptools \
-    wheel
+    wheel \
+    yq
 
 COPY . /source
 
