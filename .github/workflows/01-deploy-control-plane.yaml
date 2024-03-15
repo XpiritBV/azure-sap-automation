@@ -218,14 +218,14 @@ jobs:
           echo "\n  az role assignment create \\" >> $GITHUB_STEP_SUMMARY
           echo "\n    --assignee ${{ env.webapp_identity }} \\" >> $GITHUB_STEP_SUMMARY
           echo "\n    --role reader \\" >> $GITHUB_STEP_SUMMARY
-          echo "\n    --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \\" >> $GITHUB_STEP_SUMMARY
           echo "\n    --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.resourcegroup_name }}" >> $GITHUB_STEP_SUMMARY
           echo "\n" >> $GITHUB_STEP_SUMMARY
           echo "\n  az webapp restart \\" >> $GITHUB_STEP_SUMMARY
           echo "\n    --resource-group ${{ env.resourcegroup_name }} \\" >> $GITHUB_STEP_SUMMARY
           echo "\n    --name ${{ env.webapp_url_base }}" >> $GITHUB_STEP_SUMMARY
           echo "\n" >> $GITHUB_STEP_SUMMARY
-          echo "\n  echo \"[Access the Web App](https://${{ env.webapp_url_base }}.azurewebsites.net)\"" >> $GITHUB_STEP_SUMMARY
+          echo "\n  [Access the Web App](https://${{ env.webapp_url_base }}.azurewebsites.net)" >> $GITHUB_STEP_SUMMARY
           echo "\n  \`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "\n" >> $GITHUB_STEP_SUMMARY
           echo $(cat $GITHUB_STEP_SUMMARY) > "Web Application Configuration.md"
