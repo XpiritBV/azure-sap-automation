@@ -167,8 +167,6 @@ echo -e "$green--- Configuring variables ---$reset"
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 end_group
 
-start_group "Deploy the Control Plane"
-
 echo -e "$green--- az login ---$reset"
 az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
 return_code=$?
@@ -192,6 +190,7 @@ if [[ -v POOL ]]; then
     export TF_VAR_agent_pat=${PAT}
 fi
 
+start_group "Decrypting state files"
 # Import PGP key if it exists, otherwise generate it
 if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
     set +e
@@ -237,7 +236,9 @@ else
             --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
     fi
 fi
+end_group
 
+start_group "Deploy the Control Plane"
 if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     echo "Use WebApp is selected"
 
@@ -259,6 +260,7 @@ return_code=$?
 echo "Return code from deploy_controlplane $return_code."
 
 set -euo pipefail
+end_group
 
 start_group "Update deployment configuration to repo"
 cd $CONFIG_REPO_PATH

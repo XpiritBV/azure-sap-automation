@@ -259,7 +259,7 @@ if [[ -v POOL ]]; then
     export TF_VAR_agent_pat=$(PAT)
 fi
 
-begin_group "Decrypting state files"
+start_group "Decrypting state files"
 # Import PGP key if it exists
 if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
     set +e
