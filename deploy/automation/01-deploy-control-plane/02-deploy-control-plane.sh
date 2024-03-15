@@ -235,7 +235,6 @@ if [ -f ${deployer_environment_file_name} ]; then
             echo 'Deployer Key Vault' ${key_vault}
             key_vault_id=$(az resource list --name "${key_vault}" --resource-type Microsoft.KeyVault/vaults --query "[].id | [0]" -o tsv)
             if [ -n "${key_vault_id}" ]; then
-
                 if [ "azure pipelines" = "$(this_agent)" ]; then
                     this_ip=$(curl -s ipinfo.io/ip) >/dev/null 2>&1
                     az keyvault network-rule add --name ${key_vault} --ip-address ${this_ip} --only-show-errors --output none
@@ -245,8 +244,6 @@ if [ -f ${deployer_environment_file_name} ]; then
         fi
     fi
 fi
-
-start_group "Deploy the Control Plane"
 
 if [[ -v PAT ]]; then
     echo 'Deployer Agent PAT is defined'
@@ -260,9 +257,9 @@ if [[ -v POOL ]]; then
     echo "Deployer Agent Pool found: $POOL_NAME"
     export TF_VAR_agent_pool=$(POOL)
     export TF_VAR_agent_pat=$(PAT)
-
 fi
 
+begin_group "Decrypting state files"
 # Import PGP key if it exists
 if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
     set +e
@@ -304,7 +301,9 @@ if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
         --output ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate \
         --decrypt ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg
 fi
+end_group
 
+start_group "Deploy the Control Plane"
 # TODO: Needs to be set to group the values in the app configuration
 # TODO: export TF_VAR_deployer_parameter_group_name=$(variable_group)
 export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
@@ -377,7 +376,7 @@ if [ -n "${backend}" ]; then
         # pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
         # zip -j -P "${pass}" DEPLOYER/${deployerfolder}/state DEPLOYER/${deployerfolder}/terraform.tfstate
         # git add -f $DEPLOYER/${deployerfolder}/state.zip
-        rm DEPLOYER/${libraryfolder}/state.gpg || true
+        rm DEPLOYER/${deployerfolder}/state.gpg || true
 
         gpg --batch \
             --output DEPLOYER/${deployerfolder}/state.gpg \
