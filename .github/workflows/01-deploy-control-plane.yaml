@@ -242,6 +242,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --global --add safe.directory ${{ GITHUB_WORKSPACE }}
+          git config --global --add safe.directory ${GITHUB_WORKSPACE}
           gh label create setup-webapp -c 00FF00 -d "Label for issues related to the setup of the configuration web application"
           gh issue create -t "Create GitHub WebApp" -F "Web Application Configuration.md" -l "setup-webapp"
