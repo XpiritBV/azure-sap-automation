@@ -36,7 +36,7 @@ RUN curl -fsSo terraform.zip \
 
 # Install yq, as there are two competing versions and Azure Linux uses the jq wrappers, which breaks the GitHub Workflows
 RUN curl -fsSo yq_linux_amd64.tar.gz\
-  https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz && \
+  https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64.tar.gz && \
   tar -xvf yq_linux_amd64.tar.gz && \
   install -Dm755 yq_linux_amd64/yq_linux_amd64 /usr/bin/yq && \
   rm -rf yq_linux_amd64.tar.gz yq_linux_amd64
