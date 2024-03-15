@@ -155,12 +155,9 @@ jobs:
     environment: ${{ inputs.deployer }}
     #needs: deploy_controlplane
     runs-on: self-hosted
-    # container:
-    #   image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
-       # The "Cleanup old checkout" step is needed because of this bug: https://github.com/actions/checkout/issues/1014
-      - name: Cleanup old checkout
-        run: shopt -s dotglob; sudo rm -rf ${{ github.workspace }}/*; shopt -u dotglob;
       - name: Checkout the code
         uses: actions/checkout@v4
 
