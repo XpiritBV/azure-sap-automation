@@ -155,8 +155,8 @@ jobs:
     environment: ${{ inputs.deployer }}
     #needs: deploy_controlplane
     runs-on: self-hosted
-    container:
-      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+    # container:
+    #   image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -210,32 +210,25 @@ jobs:
       - name: Configure Web Application Authentication
         run: |
           echo "Configure the Web Application authentication using the following script." >> $GITHUB_STEP_SUMMARY
-          echo "  ```bash" >> $GITHUB_STEP_SUMMARY
+          echo "  \`\`\`bash" >> $GITHUB_STEP_SUMMARY
           echo "  az ad app update --id ${{ secrets.APP_REGISTRATION_APP_ID }} \" >> $GITHUB_STEP_SUMMARY
-          echo "    --web-home-page-url https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net \" >> $GITHUB_STEP_SUMMARY
-          echo "    --web-redirect-uris https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net/ https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net/.auth/login/aad/callback" >> $GITHUB_STEP_SUMMARY
+          echo "    --web-home-page-url https://${{ env.webapp_url_base }}.azurewebsites.net \" >> $GITHUB_STEP_SUMMARY
+          echo "    --web-redirect-uris https://${{ env.webapp_url_base }}.azurewebsites.net/ https://${{ env.webapp_url_base }}.azurewebsites.net/.auth/login/aad/callback" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "  az role assignment create \" >> $GITHUB_STEP_SUMMARY
-          echo "    --assignee ${{ env.WEBAPP_IDENTITY }} \" >> $GITHUB_STEP_SUMMARY
+          echo "    --assignee ${{ env.webapp_identity }} \" >> $GITHUB_STEP_SUMMARY
           echo "    --role reader \" >> $GITHUB_STEP_SUMMARY
           echo "    --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \" >> $GITHUB_STEP_SUMMARY
-          echo "    --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.RESOURCEGROUP_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "    --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.resourcegroup_name }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "  az webapp restart \" >> $GITHUB_STEP_SUMMARY
-          echo "    --resource-group ${{ env.RESOURCEGROUP_NAME }} \" >> $GITHUB_STEP_SUMMARY
-          echo "    --name ${{ env.WEBAPP_URL_BASE }}" >> $GITHUB_STEP_SUMMARY
+          echo "    --resource-group ${{ env.resourcegroup_name }} \" >> $GITHUB_STEP_SUMMARY
+          echo "    --name ${{ env.webapp_url_base }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "  echo \"[Access the Web App](https://${{ env.WEBAPP_URL_BASE }}.azurewebsites.net)\"" >> $GITHUB_STEP_SUMMARY
-          echo "  ```" >> $GITHUB_STEP_SUMMARY
+          echo "  echo \"[Access the Web App](https://${{ env.webapp_url_base }}.azurewebsites.net)\"" >> $GITHUB_STEP_SUMMARY
+          echo "  \`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
           echo $(cat $GITHUB_STEP_SUMMARY) > "Web Application Configuration.md"
-        env:
-          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
-          WEBAPP_URL_BASE: ${{ env.WEBAPP_URL_BASE }}
-          WEBAPP_IDENTITY: ${{ env.webapp_identity }}
-          RESOURCEGROUP_NAME: ${{ env.resourcegroup_name }}
 
       - uses: actions/upload-artifact@v4
         with:
