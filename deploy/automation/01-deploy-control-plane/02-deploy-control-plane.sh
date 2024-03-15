@@ -310,6 +310,7 @@ if [ 0 != $return_code ]; then
         exit_error "Error message: $error_message." $return_code
     fi
 fi
+end_group
 
 start_group "Adding deployment automation configuration to git repository"
 
@@ -340,14 +341,6 @@ if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
 fi
 
-if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
-    git add -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
-fi
-
-if [ -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate ]; then
-    git add -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate
-fi
-
 backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
 echo "Backend: ${backend}"
 if [ -n "${backend}" ]; then
@@ -363,6 +356,9 @@ if [ -n "${backend}" ]; then
             --trust-model always \
             DEPLOYER/${deployerfolder}/terraform.tfstate
         git add -f DEPLOYER/${deployerfolder}/state.gpg
+        if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
+            git add -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
+        fi
     fi
 else
     echo "Remote deployer Terraform state"
@@ -388,6 +384,9 @@ if [ -n "${backend}" ]; then
             --trust-model always \
             LIBRARY/${libraryfolder}/terraform.tfstate
         git add -f LIBRARY/${libraryfolder}/state.gpg
+        if [ -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate ]; then
+            git add -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate
+        fi
     fi
 else
     echo "Remote library Terraform state"
@@ -423,4 +422,5 @@ if [ 0 == $return_code ]; then
     set_value_with_key "ControlPlaneLocation" ${LOCATION}
 fi
 end_group
+
 exit $return_code
