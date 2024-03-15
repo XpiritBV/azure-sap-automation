@@ -25,6 +25,7 @@ RUN tdnf install -y \
   python3-virtualenv \
   sshpass \
   sudo \
+  tar \
   unzip \
   util-linux
 
@@ -35,11 +36,9 @@ RUN curl -fsSo terraform.zip \
   install -Dm755 terraform /usr/bin/terraform
 
 # Install yq, as there are two competing versions and Azure Linux uses the jq wrappers, which breaks the GitHub Workflows
-RUN curl -fsSo yq_linux_amd64.tar.gz\
-  https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64.tar.gz && \
-  tar -xvf yq_linux_amd64.tar.gz && \
-  install -Dm755 yq_linux_amd64/yq_linux_amd64 /usr/bin/yq && \
-  rm -rf yq_linux_amd64.tar.gz yq_linux_amd64
+RUN curl -sSfL https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64.tar.gz | tar zx && \
+  install -Dm755 yq_linux_amd64 /usr/bin/yq && \
+  rm -rf yq_linux_amd64.tar.gz yq_linux_amd64 install-man-page.sh yq.1
 
 RUN locale-gen.sh
 RUN echo "export LC_ALL=en_US.UTF-8" >> /root/.bashrc && \
