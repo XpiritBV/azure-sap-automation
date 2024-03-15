@@ -26,6 +26,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Determine package versions
+      id: versions
+      run: |
+        jq_version=$(gh api https://api.github.com/repos/mikefarah/yq/releases/latest| jq '.name' -r)
+        echo "jq=$jq_version" >> $GITHUB_OUTPUT
+
+        tf_version=$(curl -sSfL https://releases.hashicorp.com/terraform/index.json  | jq '.versions[].builds[].version' -r|egrep -v 'rc|beta|alpha' | tail -1)
+        echo "tf=$tf_version" >> $GITHUB_OUTPUT
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -58,6 +67,9 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
+        build-args: |
+          JQ_VERSION=${{ steps.versions.outputs.jq }}
+          TF_VERSION=${{ steps.versions.outputs.tf }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
