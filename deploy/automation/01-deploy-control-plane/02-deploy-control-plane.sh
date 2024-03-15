@@ -385,7 +385,7 @@ if [ -n "${backend}" ]; then
             --recipient sap-azure-deployer@example.com \
             --trust-model always \
             DEPLOYER/${deployerfolder}/terraform.tfstate
-        git add -f LIBRARY/${deployerfolder}/state.gpg
+        git add -f DEPLOYER/${deployerfolder}/state.gpg
     fi
 else
     echo "Remote deployer Terraform state"
