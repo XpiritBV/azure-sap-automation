@@ -277,20 +277,6 @@ else
     log_warning "Private PGP key not found."
 fi
 
-if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip ]; then
-    pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
-    unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip -d ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}
-fi
-
-if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
-    echo "Decrypting library state file"
-    echo ${CP_ARM_CLIENT_SECRET} | \
-        gpg --batch \
-        --passphrase-fd 0 \
-        --output ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate \
-        --decrypt ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg
-fi
-
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
     pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip -d ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}
@@ -303,6 +289,20 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
         --passphrase-fd 0 \
         --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate \
         --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
+fi
+
+if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip ]; then
+    pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
+    unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip -d ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}
+fi
+
+if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
+    echo "Decrypting library state file"
+    echo ${CP_ARM_CLIENT_SECRET} | \
+        gpg --batch \
+        --passphrase-fd 0 \
+        --output ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate \
+        --decrypt ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg
 fi
 
 # TODO: Needs to be set to group the values in the app configuration
@@ -361,50 +361,76 @@ if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
 fi
 
-if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
-    git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
+if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
+    git add -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
 fi
 
-backend=$(jq '.backend.type' -r ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
+if [ -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate ]; then
+    git add -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate
+fi
+
+backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
 if [ -n "${backend}" ]; then
-    echo "Local Terraform state"
-    if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-        echo "Compressing the deployer state file"
-        pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
-        zip -j -P "${pass}" ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
-        git add -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
+    echo "Local deployer Terraform state"
+    if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
+        # echo "Compressing the deployer state file"
+        # pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
+        # zip -j -P "${pass}" DEPLOYER/${deployerfolder}/state DEPLOYER/${deployerfolder}/terraform.tfstate
+        # git add -f $DEPLOYER/${deployerfolder}/state.zip
+        rm DEPLOYER/${libraryfolder}/state.gpg || true
+
+        gpg --batch \
+            --output DEPLOYER/${deployerfolder}/state.gpg \
+            --encrypt \
+            --disable-dirmngr\
+            --recipient sap-azure-deployer@example.com \
+            --trust-model always \
+            DEPLOYER/${deployerfolder}/terraform.tfstate
+        git add -f LIBRARY/${deployerfolder}/state.gpg
     fi
 else
-    echo "Remote Terraform state"
-    if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-        git rm -q --ignore-unmatch -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
+    echo "Remote deployer Terraform state"
+    if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
+        git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/terraform.tfstate
     fi
-    if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
-        git rm -q --ignore-unmatch -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip
+    if [ -f DEPLOYER/${deployerfolder}/state.zip ]; then
+        git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/state.zip
+    fi
+    if [ -f DEPLOYER/${deployerfolder}/state.gpg ]; then
+        git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/state.gpg
     fi
 fi
 
-backend=$(jq '.backend.type' -r ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/.terraform/terraform.tfstate)
+backend=$(jq '.backend.type' -r LIBRARY/${libraryfolder}/.terraform/terraform.tfstate)
 if [ -n "${backend}" ]; then
-    echo "Local Terraform state"
-    if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate ]; then
-        echo "Compressing the library state file"
-        pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
-        zip -j -P "${pass}" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate
-        git add -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip
+    echo "Local library Terraform state"
+    if [ -f LIBRARY/${libraryfolder}/terraform.tfstate ]; then
+        # echo "Compressing the library state file"
+        # pass=$(echo $CP_ARM_CLIENT_SECRET | sed 's/-//g')
+        # zip -j -P "${pass}" LIBRARY/${libraryfolder}/state LIBRARY/${libraryfolder}/terraform.tfstate
+        # git add -f LIBRARY/${libraryfolder}/state.zip
+        rm LIBRARY/${libraryfolder}/state.gpg || true
+
+        gpg --batch \
+            --output LIBRARY/${libraryfolder}/state.gpg \
+            --encrypt \
+            --disable-dirmngr\
+            --recipient sap-azure-deployer@example.com \
+            --trust-model always \
+            LIBRARY/${libraryfolder}/terraform.tfstate
+        git add -f LIBRARY/${libraryfolder}/state.gpg
     fi
 else
-    echo "Remote Terraform state"
-    if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate ]; then
-        git rm -q -f --ignore-unmatch ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate
+    echo "Remote library Terraform state"
+    if [ -f LIBRARY/${libraryfolder}/terraform.tfstate ]; then
+        git rm -q -f --ignore-unmatch LIBRARY/${libraryfolder}/terraform.tfstate
     fi
-    if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip ]; then
-        git rm -q --ignore-unmatch -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip
+    if [ -f LIBRARY/${libraryfolder}/state.zip ]; then
+        git rm -q --ignore-unmatch -f LIBRARY/${libraryfolder}/state.zip
     fi
-fi
-
-if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/.terraform/terraform.tfstate ]; then
-    git add -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/.terraform/terraform.tfstate
+    if [ -f LIBRARY/${libraryfolder}/state.gpg ]; then
+        git rm -q --ignore-unmatch -f LIBRARY/${libraryfolder}/state.gpg
+    fi
 fi
 
 set +e
