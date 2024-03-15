@@ -327,7 +327,7 @@ if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
 fi
 
-backend=$(jq '.backend.type' -r DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate)
+backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
 if [ "local" == "${backend}" ]; then
     echo "Local deployer Terraform state"
     if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
