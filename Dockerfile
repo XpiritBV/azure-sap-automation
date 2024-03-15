@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
 
 ARG TF_VERSION=1.7.5
+ARG YQ_VERSION=4.42.1
 
 RUN tdnf install -y \
   ansible \
@@ -33,6 +34,13 @@ RUN curl -fsSo terraform.zip \
   unzip terraform.zip && \
   install -Dm755 terraform /usr/bin/terraform
 
+# Install yq, as there are two competing versions and Azure Linux uses the jq wrappers, which breaks the GitHub Workflows
+RUN curl -fsSo yq_linux_amd64.tar.gz\
+  https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64.tar.gz && \
+  tar -xvf yq_linux_amd64.tar.gz && \
+  install -Dm755 yq_linux_amd64/yq_linux_amd64 /usr/bin/yq && \
+  rm -rf yq_linux_amd64.tar.gz yq_linux_amd64
+
 RUN locale-gen.sh
 RUN echo "export LC_ALL=en_US.UTF-8" >> /root/.bashrc && \
     echo "export LANG=en_US.UTF-8" >> /root/.bashrc
@@ -45,8 +53,7 @@ RUN pip3 install --upgrade \
     pip \
     pywinrm \
     setuptools \
-    wheel \
-    yq
+    wheel
 
 COPY . /source
 
