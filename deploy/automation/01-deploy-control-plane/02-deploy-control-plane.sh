@@ -263,7 +263,7 @@ if [[ -v POOL ]]; then
 
 fi
 
-# Import PGP key if it exists, otherwise generate it
+# Import PGP key if it exists
 if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
     set +e
     gpg --list-keys sap-azure-deployer@example.com
