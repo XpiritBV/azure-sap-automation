@@ -153,7 +153,7 @@ jobs:
     # if: ${{ inputs.use_webapp }} && ${{ inputs.deploy_webapp_software }}
     name: Deploy SAP configuration Web App
     environment: ${{ inputs.deployer }}
-    needs: deploy_controlplane
+    #needs: deploy_controlplane
     runs-on: self-hosted
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
