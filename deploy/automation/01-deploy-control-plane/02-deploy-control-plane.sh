@@ -174,7 +174,7 @@ fi
 echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
 cd ${CONFIG_REPO_PATH}
 mkdir -p .sap_deployment_automation
-echo SAP_AUTOMATION_REPO_PATH=$SAP_AUTOMATION_REPO_PATH >.sap_deployment_automation/config
+echo SAP_AUTOMATION_REPO_PATH=${SAP_AUTOMATION_REPO_PATH} > .sap_deployment_automation/config
 
 echo -e "$green--- File Validations ---$reset"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
@@ -260,18 +260,8 @@ if [[ -v POOL ]]; then
 fi
 
 start_group "Decrypting state files"
-# Import PGP key if it exists
-if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
-    set +e
-    gpg --list-keys sap-azure-deployer@example.com
-    return_code=$?
-    set -e
-
-    if [ ${return_code} != 0 ]; then
-        echo ${CP_ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --import ${CONFIG_REPO_PATH}/private.pgp
-    fi
-else
-    log_warning "Private PGP key not found."
+if [ ! -f ${CONFIG_REPO_PATH}/private.pgp ]; then
+    exit_error "Private PGP key not found." 3
 fi
 
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
@@ -302,7 +292,7 @@ export TF_VAR_deployer_tf_state_filename=$(basename "${deployerconfig}")
 
 set +eu
 
-$SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh \
+${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
     --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
     --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
     --subscription $CP_ARM_SUBSCRIPTION_ID --spn_id $CP_ARM_CLIENT_ID \
@@ -315,8 +305,8 @@ echo "Return code from deploy_controlplane $return_code."
 set -euo pipefail
 
 if [ 0 != $return_code ]; then
-    if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.err ]; then
-        error_message=$(cat .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.err)
+    if [ -f ${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.err ]; then
+        error_message=$(cat ${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}.err)
         exit_error "Error message: $error_message." $return_code
     fi
 fi
@@ -359,6 +349,7 @@ if [ -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate ]; then
 fi
 
 backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
+echo "Backend: ${backend}"
 if [ -n "${backend}" ]; then
     echo "Local deployer Terraform state"
     if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
