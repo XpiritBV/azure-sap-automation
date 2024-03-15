@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/cbl-mariner/base/core:2.0
 
-ARG TF_VERSION=1.7.4
+ARG TF_VERSION=1.7.5
 
 RUN tdnf install -y \
   ansible \
