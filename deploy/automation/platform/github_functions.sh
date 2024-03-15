@@ -141,7 +141,11 @@ function __set_value_with_key() {
 
 function upload_summary() {
     summary=$1
-    echo $summary >> $GITHUB_STEP_SUMMARY
+    if [[ -f $GITHUB_STEP_SUMMARY ]]; then
+        cat $summary >> $GITHUB_STEP_SUMMARY
+    else
+        echo $summary >> $GITHUB_STEP_SUMMARY
+    fi
 }
 
 function get_runner_registration_token() {
