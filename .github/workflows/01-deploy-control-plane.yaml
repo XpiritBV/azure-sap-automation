@@ -210,24 +210,24 @@ jobs:
       - name: Configure Web Application Authentication
         run: |
           echo "Configure the Web Application authentication using the following script." >> $GITHUB_STEP_SUMMARY
-          echo "  \`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "  az ad app update --id ${{ secrets.APP_REGISTRATION_APP_ID }} \" >> $GITHUB_STEP_SUMMARY
-          echo "    --web-home-page-url https://${{ env.webapp_url_base }}.azurewebsites.net \" >> $GITHUB_STEP_SUMMARY
-          echo "    --web-redirect-uris https://${{ env.webapp_url_base }}.azurewebsites.net/ https://${{ env.webapp_url_base }}.azurewebsites.net/.auth/login/aad/callback" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "  az role assignment create \" >> $GITHUB_STEP_SUMMARY
-          echo "    --assignee ${{ env.webapp_identity }} \" >> $GITHUB_STEP_SUMMARY
-          echo "    --role reader \" >> $GITHUB_STEP_SUMMARY
-          echo "    --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \" >> $GITHUB_STEP_SUMMARY
-          echo "    --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.resourcegroup_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "  az webapp restart \" >> $GITHUB_STEP_SUMMARY
-          echo "    --resource-group ${{ env.resourcegroup_name }} \" >> $GITHUB_STEP_SUMMARY
-          echo "    --name ${{ env.webapp_url_base }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "  echo \"[Access the Web App](https://${{ env.webapp_url_base }}.azurewebsites.net)\"" >> $GITHUB_STEP_SUMMARY
-          echo "  \`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\n  \`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "\n  az ad app update --id ${{ secrets.APP_REGISTRATION_APP_ID }} \\" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --web-home-page-url https://${{ env.webapp_url_base }}.azurewebsites.net \\" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --web-redirect-uris https://${{ env.webapp_url_base }}.azurewebsites.net/ https://${{ env.webapp_url_base }}.azurewebsites.net/.auth/login/aad/callback" >> $GITHUB_STEP_SUMMARY
+          echo "\n" >> $GITHUB_STEP_SUMMARY
+          echo "\n  az role assignment create \\" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --assignee ${{ env.webapp_identity }} \\" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --role reader \\" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} \" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --scope /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ env.resourcegroup_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "\n" >> $GITHUB_STEP_SUMMARY
+          echo "\n  az webapp restart \\" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --resource-group ${{ env.resourcegroup_name }} \\" >> $GITHUB_STEP_SUMMARY
+          echo "\n    --name ${{ env.webapp_url_base }}" >> $GITHUB_STEP_SUMMARY
+          echo "\n" >> $GITHUB_STEP_SUMMARY
+          echo "\n  echo \"[Access the Web App](https://${{ env.webapp_url_base }}.azurewebsites.net)\"" >> $GITHUB_STEP_SUMMARY
+          echo "\n  \`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "\n" >> $GITHUB_STEP_SUMMARY
           echo $(cat $GITHUB_STEP_SUMMARY) > "Web Application Configuration.md"
 
       - uses: actions/upload-artifact@v4
