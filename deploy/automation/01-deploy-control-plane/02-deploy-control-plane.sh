@@ -282,13 +282,13 @@ if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip ]; then
     unzip -qq -o -P "${pass}" ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.zip -d ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}
 fi
 
-if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${libraryfolder}/state.gpg ]; then
+if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
     echo "Decrypting library state file"
     echo ${CP_ARM_CLIENT_SECRET} | \
         gpg --batch \
         --passphrase-fd 0 \
-        --output ${CONFIG_REPO_PATH}/DEPLOYER/${libraryfolder}/terraform.tfstate \
-        --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${libraryfolder}/state.gpg
+        --output ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate \
+        --decrypt ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg
 fi
 
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.zip ]; then
