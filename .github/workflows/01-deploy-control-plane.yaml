@@ -160,7 +160,7 @@ jobs:
     steps:
        # The "Cleanup old checkout" step is needed because of this bug: https://github.com/actions/checkout/issues/1014
       - name: Cleanup old checkout
-        run: shopt -s dotglob; rm -rf ${{ github.workspace }}/*; shopt -u dotglob;
+        run: shopt -s dotglob; sudo rm -rf ${{ github.workspace }}/*; shopt -u dotglob;
       - name: Checkout the code
         uses: actions/checkout@v4
 
