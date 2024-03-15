@@ -188,24 +188,38 @@ jobs:
         with:
           app-name: ${{ env.webapp_url_base }}
           package: WebApp
-          #publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 
-      # - uses: azure/appservice-settings@v1
-      #   with:
-      #     app-name: "my-app"
-      #     slot-name: "staging" # Optional and needed only if the settings have to be configured on the specific deployment slot
-      #     app-settings-json: "${{ secrets.APP_SETTINGS }}"
-      # appSettings: '-CollectionUri $(System.CollectionUri)
-      #                 -ProjectName "$(System.TeamProject)"
-      #                 -RepositoryId $(Build.Repository.ID)
-      #                 -SourceBranch "$(Build.SourceBranchName)"
-      #                 -WORKLOADZONE_PIPELINE_ID $(WORKLOADZONE_PIPELINE_ID)
-      #                 -SYSTEM_PIPELINE_ID $(SYSTEM_PIPELINE_ID)
-      #                 -SAP_INSTALL_PIPELINE_ID $(SAP_INSTALL_PIPELINE_ID)
-      #                 -SDAF_GENERAL_GROUP_ID $(SDAF_GENERAL_GROUP_ID)
-      #                 -IS_PIPELINE_DEPLOYMENT true
-      #                 -CONTROLPLANE_ENV $(ControlPlaneEnvironment)
-      #                 -CONTROLPLANE_LOC $(ControlPlaneLocation)'
+      - uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ env.webapp_url_base }}
+          app-settings-json: |
+            [
+             {
+                 "name": "CONTROLPLANE_ENV",
+                 "value": "${{ env.ControlPlaneEnvironment }}",
+                 "slotSetting": false
+             },
+             {
+                 "name": "CONTROLPLANE_LOC",
+                 "value": "${{ env.ControlPlaneLocation }}",
+                 "slotSetting": false
+             },
+             {
+                 "name": "IS_PIPELINE_DEPLOYMENT",
+                 "value": "true",
+                 "slotSetting": false
+             },
+             {
+                 "name": "RepositoryId",
+                 "value": "${{ github.repository }}",
+                 "slotSetting": false
+             },
+             {
+                 "name": "SourceBranch",
+                 "value": "${{ github.ref }}",
+                 "slotSetting": false
+             }
+            ]
 
       - name: Configure Web Application Authentication
         run: |
@@ -241,4 +255,4 @@ jobs:
         run: |
           git config --global --add safe.directory ${GITHUB_WORKSPACE}
           gh label create setup-webapp -c 00FF00 -d "Label for issues related to the setup of the configuration web application" --force
-          gh issue create -t "Configure the Web Application authentication" -F "Web Application Configuration.md" -l "setup-webapp"
+          gh issue create -t "Configure the Web Application authentication" -F "Web Application Configuration.md" -l "setup-webapp" > $GITHUB_STEP_SUMMARY
