@@ -232,10 +232,10 @@ variable "deployer_image"                       {
                                                                   os_type         = "LINUX"
                                                                   source_image_id = ""
                                                                   type            = "marketplace"
-                                                                  publisher       = "MicrosoftCBLMariner"
-                                                                  offer           = "cbl-mariner"
-                                                                  sku             = "cbl-mariner-2-gen2"
-                                                                  version         = "2.20240223.01"
+                                                                  publisher       = "Canonical"
+                                                                  offer           = "0001-com-ubuntu-server-jammy"
+                                                                  sku             = "22_04-lts-gen2"
+                                                                  version         = "latest"
                                                                   type            = "marketplace"
                                                                 }
                                                 }
@@ -548,7 +548,6 @@ variable "use_spn"                              {
                                                   description = "Log in using a service principal when performing the deployment"
                                                   default     = true
                                                 }
-
 
 variable "PLATFORM"                                 {
                                                        description = "Type of agent to be used"
