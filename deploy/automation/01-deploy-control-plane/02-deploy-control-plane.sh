@@ -404,12 +404,19 @@ end_group
 
 start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
+    echo "Storing Terraform state file storage account name in app configuration: ${file_REMOTE_STATE_SA}"
     set_value_with_key "Terraform_Remote_Storage_Account_Name" ${file_REMOTE_STATE_SA}
+    echo "Storing Terraform state file resource group name in app configuration: ${file_REMOTE_STATE_RG}"
     set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name" ${file_REMOTE_STATE_RG}
+    echo "Storing Terraform state file subscription in app configuration: ${CP_ARM_SUBSCRIPTION_ID}"
     set_value_with_key "Terraform_Remote_Storage_Subscription" ${CP_ARM_SUBSCRIPTION_ID}
+    echo "Storing Deployer state file name in app configuration: ${file_deployer_tfstate_key}"
     set_value_with_key "Deployer_State_FileName" ${file_deployer_tfstate_key}
+    echo "Storing Deployer Key Vault in app configuration: ${file_key_vault}"
     set_value_with_key "Deployer_Key_Vault" ${file_key_vault}
+    echo "Storing Control Plane environment in app configuration: ${ENVIRONMENT}"
     set_value_with_key "ControlPlaneEnvironment" ${ENVIRONMENT}
+    echo "Storing Control Plane location in app configuration: ${LOCATION}"
     set_value_with_key "ControlPlaneLocation" ${LOCATION}
 fi
 end_group
