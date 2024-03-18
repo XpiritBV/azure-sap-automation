@@ -82,11 +82,6 @@ function __get_repository_id() {
     echo $repository_id
 }
 
-function __create_environment() {
-    return 0
-    # Nothing here yet.
-}
-
 function __get_value_with_key() {
     key=$1
 
