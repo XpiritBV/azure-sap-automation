@@ -94,15 +94,6 @@ data "azurerm_user_assigned_identity" "deployer" {
   resource_group_name                  = split("/", var.deployer.user_assigned_identity_id)[4]
 }
 
-
-// User defined identity for all Deployers, assign contributor to the current subscription
-data "azurerm_user_assigned_identity" "deployer" {
-  count                                = length(var.deployer.user_assigned_identity_id) > 0 ? 1 : 0
-  name                                 = split("/", var.deployer.user_assigned_identity_id)[8]
-  resource_group_name                  = split("/", var.deployer.user_assigned_identity_id)[4]
-}
-
-
 // Add role to be able to deploy resources
 resource "azurerm_role_assignment" "sub_contributor" {
   provider                             = azurerm.main
@@ -266,6 +257,6 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                          )
 
   lifecycle {
-    ignore_changes = [ protected_settings ]
+    ignore_changes                     = [ protected_settings ]
   }
 }
