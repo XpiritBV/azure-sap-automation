@@ -108,8 +108,8 @@ function __set_value_with_key() {
 
     api_url=$(__get_value_from_context_with_key "api_url")
     repository_id=$(__get_repository_id)
+    old_value=$(__get_value_with_key ${key})
 
-    old_value = $(__get_value_with_key ${key})
     if [[ -z "${old_value}" ]]; then
         curl -Ss -o /dev/null \
             -X POST \
