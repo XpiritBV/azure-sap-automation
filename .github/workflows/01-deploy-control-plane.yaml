@@ -59,6 +59,7 @@ jobs:
       - name: Setup deployer
         run: |
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
+          cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
         # TODO: working-directory: /source
         env:
@@ -113,6 +114,7 @@ jobs:
       - name: Deploy control plane
         run: |
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
+          cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
         # TODO: working-directory: /source
         env:
