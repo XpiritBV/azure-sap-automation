@@ -11,10 +11,10 @@ function check_required_inputs() {
         "libraryconfig"
         "libraryfolder"
         "SAP_AUTOMATION_REPO_PATH"
-        "CP_ARM_SUBSCRIPTION_ID"
-        "CP_ARM_CLIENT_ID"
-        "CP_ARM_CLIENT_SECRET"
-        "CP_ARM_TENANT_ID"
+        "ARM_SUBSCRIPTION_ID"
+        "ARM_CLIENT_ID"
+        "ARM_CLIENT_SECRET"
+        "ARM_TENANT_ID"
     )
 
     case get_platform in
@@ -150,7 +150,7 @@ if [ ! -f $deployer_environment_file_name ]; then
     if [[ ${#var} -ne 0 ]]; then
         echo "REMOTE_STATE_SA="${var}
         set_config_key_with_value "REMOTE_STATE_SA" "${var}"
-        set_config_key_with_value "STATE_SUBSCRIPTION" "${CP_ARM_SUBSCRIPTION_ID}"
+        set_config_key_with_value "STATE_SUBSCRIPTION" "${ARM_SUBSCRIPTION_ID}"
         set_config_key_with_value "step" "3"
     fi
 
@@ -191,18 +191,18 @@ fi
 # Check if running on deployer
 if [[ ! -f /etc/profile.d/deploy_server.sh ]]; then
     echo -e "$green--- az login ---$reset"
-    az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
+    az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
     return_code=$?
     if [ 0 != $return_code ]; then
         echo -e "$boldred--- Login failed ---$reset"
         exit_error "az login failed." $return_code
     fi
-    az account set --subscription $CP_ARM_SUBSCRIPTION_ID
+    az account set --subscription $ARM_SUBSCRIPTION_ID
 else
     if [ $USE_MSI != "true" ]; then
         echo -e "$cyan--- Using SPN ---$reset"
         export ARM_USE_MSI=false
-        az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
+        az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
 
         return_code=$?
         if [ 0 != $return_code ]; then
@@ -210,7 +210,7 @@ else
             exit_error "az login failed." $return_code
             exit $return_code
         fi
-        az account set --subscription $CP_ARM_SUBSCRIPTION_ID
+        az account set --subscription $ARM_SUBSCRIPTION_ID
     else
         echo -e "$cyan--- Using MSI ---$reset"
         source /etc/profile.d/deploy_server.sh
@@ -269,7 +269,7 @@ fi
 
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
     echo "Decrypting deployer state file"
-    echo ${CP_ARM_CLIENT_SECRET} | \
+    echo ${ARM_CLIENT_SECRET} | \
         gpg --batch \
         --passphrase-fd 0 \
         --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate \
@@ -278,7 +278,7 @@ fi
 
 if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
     echo "Decrypting library state file"
-    echo ${CP_ARM_CLIENT_SECRET} | \
+    echo ${ARM_CLIENT_SECRET} | \
         gpg --batch \
         --passphrase-fd 0 \
         --output ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate \
@@ -310,9 +310,9 @@ else
         --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
         --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
         --subscription $STATE_SUBSCRIPTION \
-        --spn_id $CP_ARM_CLIENT_ID \
-        --spn_secret $CP_ARM_CLIENT_SECRET \
-        --tenant_id $CP_ARM_TENANT_ID \
+        --spn_id $ARM_CLIENT_ID \
+        --spn_secret $ARM_CLIENT_SECRET \
+        --tenant_id $ARM_TENANT_ID \
         --auto-approve \
         ${storage_account_parameter} ${keyvault_parameter} # TODO: --ado
 fi
@@ -428,8 +428,8 @@ if [ 0 == $return_code ]; then
     if [[ -n "${file_REMOTE_STATE_RG}" ]]; then
         set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name" ${file_REMOTE_STATE_RG} fi
     fi
-    if [[ -n "${CP_ARM_SUBSCRIPTION_ID}" ]]; then
-        set_value_with_key "Terraform_Remote_Storage_Subscription" ${CP_ARM_SUBSCRIPTION_ID} fi
+    if [[ -n "${ARM_SUBSCRIPTION_ID}" ]]; then
+        set_value_with_key "Terraform_Remote_Storage_Subscription" ${ARM_SUBSCRIPTION_ID} fi
     fi
     if [[ -n "${file_deployer_tfstate_key}" ]]; then
         set_value_with_key "Deployer_State_FileName" ${file_deployer_tfstate_key} fi
