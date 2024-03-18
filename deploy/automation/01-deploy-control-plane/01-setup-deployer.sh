@@ -236,8 +236,8 @@ if [ "$USE_MSI" = "true" ]; then
     export ARM_CLIENT_SECRET=$servicePrincipalKey
 
     ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
-        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
-        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig)     \
+        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
+        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}     \
         --subscription $ARM_SUBSCRIPTION_ID \
         --auto-approve \
         --only_deployer \
@@ -245,8 +245,8 @@ if [ "$USE_MSI" = "true" ]; then
         # TODO: --ado \
 else
     ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
-        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
-        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig) \
+        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
+        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
         --subscription $ARM_SUBSCRIPTION_ID \
         --spn_id $ARM_CLIENT_ID \
         --spn_secret $ARM_CLIENT_SECRET \
