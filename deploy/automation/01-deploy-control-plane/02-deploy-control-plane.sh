@@ -150,7 +150,7 @@ if [ ! -f $deployer_environment_file_name ]; then
     if [[ ${#var} -ne 0 ]]; then
         echo "REMOTE_STATE_SA="${var}
         set_config_key_with_value "REMOTE_STATE_SA" "${var}"
-        set_config_key_with_value "STATE_SUBSCRIPTION" "${ARM_SUBSCRIPTION_ID}"
+        set_config_key_with_value "STATE_SUBSCRIPTION" "${CP_ARM_SUBSCRIPTION_ID}"
         set_config_key_with_value "step" "3"
     fi
 
