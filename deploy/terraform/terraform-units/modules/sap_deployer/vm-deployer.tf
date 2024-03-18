@@ -97,10 +97,10 @@ data "azurerm_user_assigned_identity" "deployer" {
 // Add role to be able to deploy resources
 resource "azurerm_role_assignment" "sub_contributor" {
   provider                             = azurerm.main
-  count                                = var.assign_subscription_permissions ? 1 : 0
+  count                                = var.assign_subscription_permissions && length(var.deployer.user_assigned_identity_id) == 0 ? 1 : 0
   scope                                = data.azurerm_subscription.primary.id
   role_definition_name                 = "Reader"
-  principal_id                         = azurerm_user_assigned_identity.deployer.principal_id
+  principal_id                         = length(var.deployer.user_assigned_identity_id) == 0 ? azurerm_user_assigned_identity.deployer[0].principal_id : data.azurerm_user_assigned_identity.deployer[0].principal_id
 }
 
 // Linux Virtual Machine for Deployer
@@ -166,7 +166,7 @@ resource "azurerm_linux_virtual_machine" "deployer" {
 
   identity                                {
                                             type         = var.deployer.add_system_assigned_identity ? "SystemAssigned, UserAssigned" : "UserAssigned"
-                                            identity_ids = [azurerm_user_assigned_identity.deployer.id]
+                                            identity_ids = [length(var.deployer.user_assigned_identity_id) == 0 ? azurerm_user_assigned_identity.deployer[0].id : data.azurerm_user_assigned_identity.deployer[0].id ]
                                           }
 
   dynamic "admin_ssh_key"                 {
@@ -237,19 +237,15 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                  format(
                                                  "%s/templates/configure_deployer.sh.tmpl", path.module),
                                                  {
-                                                   client_id            = length(var.deployer.user_assigned_identity_id) == 0 ? azurerm_user_assigned_identity.deployer[0].client_id : data.azurerm_user_assigned_identity.deployer[0].client_id,
-                                                   subscription_id      = data.azurerm_subscription.primary.subscription_id,
-                                                   tenant_id            = data.azurerm_subscription.primary.tenant_id,
-                                                   local_user           = local.username
-                                                   agent_pool           = var.agent_pool
-                                                   agent_pat            = var.agent_pat
                                                    agent_ado_url        = var.agent_ado_url
-                                                   platform             = var.platform
+                                                   agent_pat            = var.agent_pat
+                                                   agent_pool           = var.agent_pool
+                                                   api_url              = var.api_url
                                                    app_token            = var.app_token
+                                                   local_user           = local.username
+                                                   platform             = var.platform
                                                    repository           = var.repository
                                                    server_url           = var.server_url
-                                                   api_url              = var.api_url
-                                                   use_webapp           = var.use_webapp
                                                  }
                                                )
                                              )

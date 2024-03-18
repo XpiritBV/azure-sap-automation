@@ -40,7 +40,9 @@ output "naming" {
 
                          resource_prefixes = var.resource_prefixes
                          resource_suffixes = var.resource_suffixes
-
+                         DEPLOYER = {
+                           location_short = local.deployer_location_short
+                         }
                          separator = length(var.custom_prefix) > 0 ? "" : local.separator
 
                          storageaccount_names = {
