@@ -1,10 +1,10 @@
 sshsecret=MGMT-WEEU-DEP88-sshkey
 deployer_app_config_name=mgmtweeuapcdaf
+created_resource_group_name=MGMT-WEEU-DEP88-INFRASTRUCTURE
 environment=MGMT
 subscription=d6c8e3b6-467e-452e-97c9-49d9de9e37da
 client_id=ef6134f6-3912-41f7-b684-63fe90ae4100
 tenant_id=c01abe72-ffef-4ecc-bda0-937975b49e6b
-created_resource_group_name=MGMT-WEEU-DEP88-INFRASTRUCTURE
 deployer_tfstate_key=MGMT-WEEU-DEP88-INFRASTRUCTURE.terraform.tfstate
 deployer_random_id=
 keyvault=MGMTWEEUDEP88userDAF
