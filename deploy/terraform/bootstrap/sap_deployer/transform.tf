@@ -1,5 +1,8 @@
 
 locals {
+
+  use_webapp     = lower(var.use_webapp)
+
   infrastructure = {
     environment                        = coalesce(
                                           var.environment,
@@ -181,6 +184,12 @@ locals {
                                                                   var.deployer_private_ip_address,
                                                                   try(var.deployers[0].private_ip_address, "")
                                                                 ), "")
+
+                                           deployer_diagnostics_account_arm_id = var.deployer_diagnostics_account_arm_id
+                                           app_service_SKU                     = var.app_service_SKU_name
+                                           user_assigned_identity_id           = var.user_assigned_identity_id
+                                           shared_access_key_enabled           = var.shared_access_key_enabled
+
 
                                            deployer_diagnostics_account_arm_id  = var.deployer_diagnostics_account_arm_id
                                            app_service_SKU                      = var.app_service_SKU_name

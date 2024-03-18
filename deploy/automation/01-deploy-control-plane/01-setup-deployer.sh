@@ -61,6 +61,8 @@ set -euo pipefail
 export TF_VAR_PLATFORM=$(get_platform)
 
 export TF_VAR_use_webapp=${use_webapp}
+export USE_MSI=false
+
 storage_account_parameter=""
 
 start_group "Setup deployer and library folders"
@@ -230,12 +232,30 @@ fi
 
 set +eu
 
-${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
-    --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
-    --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
-    --subscription $ARM_SUBSCRIPTION_ID --spn_id $ARM_CLIENT_ID \
-    --spn_secret $ARM_CLIENT_SECRET --tenant_id $ARM_TENANT_ID \
-    --auto-approve --only_deployer # TODO: --ado
+if [ "$USE_MSI" = "true" ]; then
+    export ARM_CLIENT_SECRET=$servicePrincipalKey
+
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
+        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
+        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig)     \
+        --subscription $ARM_SUBSCRIPTION_ID \
+        --auto-approve \
+        --only_deployer \
+        --msi \
+        # TODO: --ado \
+else
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
+        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
+        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig) \
+        --subscription $ARM_SUBSCRIPTION_ID \
+        --spn_id $ARM_CLIENT_ID \
+        --spn_secret $ARM_CLIENT_SECRET \
+        --tenant_id $ARM_TENANT_ID \
+        --auto-approve \
+        --only_deployer \
+         # TODO: --ado \
+fi
+
 return_code=$?
 echo "Return code from deploy_controlplane $return_code."
 

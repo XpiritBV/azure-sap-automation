@@ -1,5 +1,33 @@
 #!/usr/bin/env bash
 
+#
+# configure_deployer.sh
+#
+# This script is intended to perform all the necessary initial
+# setup of a node so that it can act as a deployer for use with
+# Azure SAP Automated Deployment.
+#
+
+#
+# Setup some useful shell options
+#
+
+# Print expanded commands as they are about to be executed
+set -o xtrace
+
+# Print shell input lines as they are read in
+set -o verbose
+
+# Fail if any command exits with a non-zero exit status
+set -o errexit
+
+# Ensure that the exit status of a pipeline command is non-zero if any
+# stage of the pipefile has a non-zero exit status.
+set -o pipefail
+
+# Fail if attempting to access and unset variable or parameter
+set -o nounset
+
 local_user="${local_user}"
 platform="${platform}"
 app_token="${app_token}"

@@ -9,6 +9,8 @@ module "sap_library" {
                                        azurerm.deployer      = azurerm.deployer
                                        azurerm.dnsmanagement = azurerm.dnsmanagement
                                      }
+
+  Agent_IP                          = var.add_Agent_IP ? var.Agent_IP : ""
   bootstrap                         = true
   deployer                          = local.deployer
   deployer_tfstate                  = try(data.terraform_remote_state.deployer[0].outputs, [])

@@ -21,6 +21,9 @@ resource "null_resource" "prepare-deployer" {
 
   provisioner "file"                     {
                                            content = templatefile(format("%s/templates/configure_deployer.sh.tmpl", path.module), {
+                                             client_id            = length(var.deployer.user_assigned_identity_id) == 0 ? azurerm_user_assigned_identity.deployer[0].client_id : data.azurerm_user_assigned_identity.deployer[0].client_id ,
+                                             subscription_id      = data.azurerm_subscription.primary.subscription_id,
+                                             tenant_id            = data.azurerm_subscription.primary.tenant_id,
                                              local_user           = local.username
                                              agent_pool           = var.agent_pool
                                              agent_pat            = var.agent_pat
@@ -30,7 +33,8 @@ resource "null_resource" "prepare-deployer" {
                                              repository           = var.repository
                                              server_url           = var.server_url
                                              api_url              = var.api_url
-                                            }
+                                             use_webapp           = var.use_webapp
+                                             }
                                            )
 
                                            destination = "/tmp/configure_deployer.sh"
@@ -58,7 +62,9 @@ resource "null_resource" "prepare-deployer" {
 resource "local_file" "configure_deployer" {
   count                                = local.enable_deployer_public_ip ? 0 : 1
   content                              = templatefile(format("%s/templates/configure_deployer.sh.tmpl", path.module), {
-                                           local_user           = local.username
+                                           client_id            = length(var.deployer.user_assigned_identity_id) == 0 ? azurerm_user_assigned_identity.deployer[0].client_id : data.azurerm_user_assigned_identity.deployer[0].client_id,
+                                           subscription_id      = data.azurerm_subscription.primary.subscription_id,
+                                           tenant_id            = data.azurerm_subscription.primary.tenant_id,
                                            agent_pool           = var.agent_pool
                                            agent_pat            = var.agent_pat
                                            agent_ado_url        = var.agent_ado_url
@@ -67,6 +73,7 @@ resource "local_file" "configure_deployer" {
                                            repository           = var.repository
                                            server_url           = var.server_url
                                            api_url              = var.api_url
+                                           use_webapp           = var.use_webapp
                                            }
                                          )
   filename                             = format("%s/configure_deployer.sh", path.cwd)

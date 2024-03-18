@@ -160,12 +160,12 @@ if [ 1 == $called_from_ado ] ; then
     echo "Agent IP: $this_ip"
 fi
 
+
 #Plugins
-if [ ! -d "$HOME/.terraform.d/plugin-cache" ]
-then
-    mkdir "$HOME/.terraform.d/plugin-cache"
-fi
-export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+sudo mkdir -p /opt/terraform/.terraform.d/plugin-cache
+sudo chown -R $USER:$USER /opt/terraform
+
+export TF_PLUGIN_CACHE_DIR=/opt/terraform/.terraform.d/plugin-cache
 
 
 parallelism=10
@@ -255,6 +255,15 @@ else
 
 fi
 
+useSAS=$(az storage account show  --name  "${REMOTE_STATE_SA}"   --query allowSharedKeyAccess --subscription "${STATE_SUBSCRIPTION}" --out tsv)
+
+if [ "$useSAS" = "true" ] ; then
+  export ARM_USE_AZUREAD=false
+else
+  export ARM_USE_AZUREAD=true
+fi
+
+
 landscape_tfstate_key_parameter=''
 
 if [[ -z $landscape_tfstate_key ]];
@@ -342,6 +351,22 @@ then
     echo "#########################################################################################"
     echo ""
     az account set --sub "${STATE_SUBSCRIPTION}"
+
+    return_code=$?
+    if [ 0 != $return_code ]; then
+
+      echo "#########################################################################################"
+      echo "#                                                                                       #"
+      echo -e "#         $boldred  The deployment account (MSI or SPN) does not have access to $resetformatting                #"
+      echo -e "#                      $boldred ${STATE_SUBSCRIPTION} $resetformatting                           #"
+      echo "#                                                                                       #"
+      echo "#########################################################################################"
+
+      echo "##vso[task.logissue type=error]The deployment account (MSI or SPN) does not have access to ${STATE_SUBSCRIPTION}"
+      exit $return_code
+   fi
+
+    account_set=1
 fi
 
 load_config_vars "${system_config_information}" "STATE_SUBSCRIPTION"
@@ -598,8 +623,7 @@ terraform -chdir="$terraform_module_directory" plan -no-color -detailed-exitcode
 return_value=$?
 echo "Terraform Plan return code: " $return_value
 
-if [ 1 == $return_value ]
-then
+if [ 1 == $return_value ] ; then
     echo ""
     echo "#########################################################################################"
     echo "#                                                                                       #"
@@ -1129,6 +1153,12 @@ then
     echo ""
     echo ""
 
+    if [ -n "${ARM_CLIENT_SECRET}" ] ; then
+      az login --service-principal --username "${ARM_CLIENT_ID}" --password=$ARM_CLIENT_SECRET --tenant "${ARM_TENANT_ID}"  --output none
+    else
+      az login --identity --output none
+    fi
+
     az deployment group create --resource-group ${created_resource_group_name} --name "ControlPlane_Deployer_${created_resource_group_name}" --template-file "${script_directory}/templates/empty-deployment.json" --output none
     return_value=0
     if [ 1 == $called_from_ado ] ; then
@@ -1246,10 +1276,6 @@ then
     #     fi
     # fi
 
-    if [ -n ${ARM_CLIENT_SECRET} ] ; then
-      az login --service-principal --username "${ARM_CLIENT_ID}" --password=$ARM_CLIENT_SECRET --tenant "${ARM_TENANT_ID}"  --output none
-    fi
-
     rg_name=$(terraform -chdir="${terraform_module_directory}"  output -no-color -raw created_resource_group_name | tr -d \")
 
     echo ""
@@ -1354,21 +1380,43 @@ unset TF_DATA_DIR
 #                                                                               #
 #################################################################################
 
-az storage blob upload --file "${parameterfile}" --container-name tfvars/"${state_path}"/"${key}" --name "${parameterfile_name}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+useSAS=$(az storage account show  --name  "${REMOTE_STATE_SA}"   --query allowSharedKeyAccess --subscription "${STATE_SUBSCRIPTION}" --out tsv)
+
+if [ "$useSAS" = "true" ] ; then
+  az storage blob upload --file "${parameterfile}" --container-name tfvars/"${state_path}"/"${key}" --name "${parameterfile_name}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+else
+  az storage blob upload --file "${parameterfile}" --container-name tfvars/"${state_path}"/"${key}" --name "${parameterfile_name}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --auth-mode login --no-progress --overwrite --only-show-errors --output none
+fi
 
 if [ "${deployment_system}" == sap_system ] ; then
   echo "Uploading the yaml files from ${param_dirname} to the storage account"
-  az storage blob upload --file sap-parameters.yaml --container-name tfvars/"${state_path}"/"${key}" --name sap-parameters.yaml --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  if [ "$useSAS" = "true" ] ; then
+    az storage blob upload --file sap-parameters.yaml --container-name tfvars/"${state_path}"/"${key}" --name sap-parameters.yaml --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  else
+    az storage blob upload --file sap-parameters.yaml --container-name tfvars/"${state_path}"/"${key}" --name sap-parameters.yaml --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --auth-mode login --no-progress --overwrite --only-show-errors --output none
+  fi
   hosts_file=$(ls *_hosts.yaml)
-  az storage blob upload --file "${hosts_file}" --container-name tfvars/"${state_path}"/"${key}" --name "${hosts_file}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  if [ "$useSAS" = "true" ] ; then
+    az storage blob upload --file "${hosts_file}" --container-name tfvars/"${state_path}"/"${key}" --name "${hosts_file}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  else
+    az storage blob upload --file "${hosts_file}" --container-name tfvars/"${state_path}"/"${key}" --name "${hosts_file}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --auth-mode login --no-progress --overwrite --only-show-errors --output none
+  fi
 fi
 
 if [ "${deployment_system}" == sap_landscape ] ; then
-  az storage blob upload --file "${system_config_information}" --container-name tfvars/.sap_deployment_automation --name "${environment}${region_code}${network_logical_name}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  if [ "$useSAS" = "true" ] ; then
+    az storage blob upload --file "${system_config_information}" --container-name tfvars/.sap_deployment_automation --name "${environment}${region_code}${network_logical_name}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  else
+    az storage blob upload --file "${system_config_information}" --container-name tfvars/.sap_deployment_automation --name "${environment}${region_code}${network_logical_name}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --auth-mode login --no-progress --overwrite --only-show-errors --output none
+  fi
 fi
 if [ "${deployment_system}" == sap_library ] ; then
   deployer_config_information="${automation_config_directory}"/"${environment}""${region_code}"
-  az storage blob upload --file "${deployer_config_information}" --container-name tfvars/.sap_deployment_automation --name "${environment}${region_code}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  if [ "$useSAS" = "true" ] ; then
+    az storage blob upload --file "${deployer_config_information}" --container-name tfvars/.sap_deployment_automation --name "${environment}${region_code}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}"  --no-progress --overwrite --only-show-errors --output none
+  else
+    az storage blob upload --file "${deployer_config_information}" --container-name tfvars/.sap_deployment_automation --name "${environment}${region_code}" --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}" --auth-mode login  --no-progress --overwrite --only-show-errors --output none
+  fi
 fi
 
 

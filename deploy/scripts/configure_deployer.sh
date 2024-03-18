@@ -64,7 +64,7 @@ export local_user=$USER
 #
 
 if [ -z "${TF_VERSION}" ]; then
-  TF_VERSION="1.6.2"
+  TF_VERSION="1.7.0"
 fi
 
 #
@@ -617,11 +617,6 @@ esac
 
 az config set extension.use_dynamic_install=yes_without_prompt
 
-devops_extension_installed=$(az extension list --query "[?name=='azure-devops'].name | [0]")
-if [ -z "$devops_extension_installed" ]; then
-  az extension add --name azure-devops --output none
-fi
-
 # Fail if any command exits with a non-zero exit status
 set -o errexit
 
@@ -738,6 +733,7 @@ sudo -H "${ansible_venv_bin}/ansible-galaxy" collection install ansible.windows 
 sudo -H "${ansible_venv_bin}/ansible-galaxy" collection install ansible.posix --force --collections-path "${ansible_collections}"
 sudo -H "${ansible_venv_bin}/ansible-galaxy" collection install ansible.utils --force --collections-path "${ansible_collections}"
 sudo -H "${ansible_venv_bin}/ansible-galaxy" collection install community.windows --force --collections-path "${ansible_collections}"
+sudo -H "${ansible_venv_bin}/ansible-galaxy" collection install microsoft.ad --force --collections-path "${ansible_collections}"
 
 if [[ "${ansible_version}" == "2.11" ]]; then
   # ansible galaxy upstream has changed. Some collections are only available for install via old-galaxy.ansible.com
@@ -807,6 +803,12 @@ AGENT_DIR="/home/${USER}/agent"
 
 # Check if the .agent file exists
 if [ -f "$AGENT_DIR/.agent" ]; then
+
+    devops_extension_installed=$(az extension list --query "[?name=='azure-devops'].name | [0]")
+    if [ -z "$devops_extension_installed" ]; then
+      az extension add --name azure-devops --output none
+    fi
+
     echo "Azure DevOps Agent is configured."
     echo export "PATH=${ansible_bin}:${tf_bin}:${PATH}" | tee -a /tmp/deploy_server.sh
 else

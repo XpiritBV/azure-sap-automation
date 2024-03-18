@@ -39,60 +39,77 @@ resource "azurerm_public_ip" "deployer" {
 }
 
 resource "azurerm_network_interface" "deployer" {
-  count = var.deployer_vm_count
-  name = format("%s%s%s%s%s",
-    var.naming.resource_prefixes.nic,
-    local.prefix,
-    var.naming.separator,
-    var.naming.virtualmachine_names.DEPLOYER[count.index],
-    var.naming.resource_suffixes.nic
-  )
-  resource_group_name = local.resource_group_exists ? (
-    data.azurerm_resource_group.deployer[0].name) : (
-    azurerm_resource_group.deployer[0].name
-  )
-  location = local.resource_group_exists ? (
-    data.azurerm_resource_group.deployer[0].location) : (
-    azurerm_resource_group.deployer[0].location
-  )
+  count                                = var.deployer_vm_count
+  name                               = format("%s%s%s%s%s",
+                                         var.naming.resource_prefixes.nic,
+                                         local.prefix,
+                                         var.naming.separator,
+                                         var.naming.virtualmachine_names.DEPLOYER[count.index],
+                                         var.naming.resource_suffixes.nic
+                                       )
+  resource_group_name                  = local.resource_group_exists ? (
+                                           data.azurerm_resource_group.deployer[0].name) : (
+                                           azurerm_resource_group.deployer[0].name
+                                         )
+  location                             = local.resource_group_exists ? (
+                                           data.azurerm_resource_group.deployer[0].location) : (
+                                           azurerm_resource_group.deployer[0].location
+                                         )
 
-  ip_configuration {
-    name = "ipconfig1"
-    subnet_id = local.management_subnet_exists ? (
-      data.azurerm_subnet.subnet_mgmt[0].id) : (
-      azurerm_subnet.subnet_mgmt[0].id
-    )
-    private_ip_address = try(var.deployer.private_ip_address[count.index], var.deployer.use_DHCP ? (
-      null) : (
-      cidrhost(
-        local.management_subnet_deployed_prefixes[0],
-        tonumber(count.index) + 4
-      )
-      )
-    )
-    private_ip_address_allocation = length(try(var.deployer.private_ip_address[count.index], "")) > 0 ? (
-      "Static") : (
-      "Dynamic"
-    )
+  ip_configuration                       {
+                                           name                          = "ipconfig1"
+                                           subnet_id                     = local.management_subnet_exists ? (
+                                                                            data.azurerm_subnet.subnet_mgmt[0].id) : (
+                                                                            azurerm_subnet.subnet_mgmt[0].id
+                                                                          )
+                                           private_ip_address            = try(var.deployer.private_ip_address[count.index], var.deployer.use_DHCP ? (
+                                                                             null) : (
+                                                                             cidrhost(
+                                                                               local.management_subnet_deployed_prefixes[0],
+                                                                               tonumber(count.index) + 4
+                                                                             )
+                                                                             )
+                                                                           )
+                                           private_ip_address_allocation = length(try(var.deployer.private_ip_address[count.index], "")) > 0 ? (
+                                                                             "Static") : (
+                                                                             "Dynamic"
+                                                                           )
 
-    public_ip_address_id = local.enable_deployer_public_ip ? azurerm_public_ip.deployer[count.index].id : null
-  }
+                                                                                  public_ip_address_id          = local.enable_deployer_public_ip ? azurerm_public_ip.deployer[count.index].id : null
+                                         }
 }
 
 // User defined identity for all Deployers, assign contributor to the current subscription
 resource "azurerm_user_assigned_identity" "deployer" {
-  name                = format("%s%s%s", var.naming.resource_prefixes.msi, local.prefix, var.naming.resource_suffixes.msi)
-  resource_group_name = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].name : azurerm_resource_group.deployer[0].name
-  location            = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].location : azurerm_resource_group.deployer[0].location
+  count                                = length(var.deployer.user_assigned_identity_id) == 0 ? 1 : 0
+  name                                 = format("%s%s%s", var.naming.resource_prefixes.msi, local.prefix, var.naming.resource_suffixes.msi)
+  resource_group_name                  = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].name : azurerm_resource_group.deployer[0].name
+  location                             = local.resource_group_exists ? data.azurerm_resource_group.deployer[0].location : azurerm_resource_group.deployer[0].location
 }
+
+// User defined identity for all Deployers, assign contributor to the current subscription
+data "azurerm_user_assigned_identity" "deployer" {
+  count                                = length(var.deployer.user_assigned_identity_id) > 0 ? 1 : 0
+  name                                 = split("/", var.deployer.user_assigned_identity_id)[8]
+  resource_group_name                  = split("/", var.deployer.user_assigned_identity_id)[4]
+}
+
+
+// User defined identity for all Deployers, assign contributor to the current subscription
+data "azurerm_user_assigned_identity" "deployer" {
+  count                                = length(var.deployer.user_assigned_identity_id) > 0 ? 1 : 0
+  name                                 = split("/", var.deployer.user_assigned_identity_id)[8]
+  resource_group_name                  = split("/", var.deployer.user_assigned_identity_id)[4]
+}
+
 
 // Add role to be able to deploy resources
 resource "azurerm_role_assignment" "sub_contributor" {
-  provider             = azurerm.main
-  count                = var.assign_subscription_permissions ? 1 : 0
-  scope                = data.azurerm_subscription.primary.id
-  role_definition_name = "Reader"
-  principal_id         = azurerm_user_assigned_identity.deployer.principal_id
+  provider                             = azurerm.main
+  count                                = var.assign_subscription_permissions ? 1 : 0
+  scope                                = data.azurerm_subscription.primary.id
+  role_definition_name                 = "Reader"
+  principal_id                         = azurerm_user_assigned_identity.deployer.principal_id
 }
 
 // Linux Virtual Machine for Deployer
@@ -115,11 +132,11 @@ resource "azurerm_linux_virtual_machine" "deployer" {
     azurerm_resource_group.deployer[0].location
   )
 
-  network_interface_ids           = [azurerm_network_interface.deployer[count.index].id]
-  size                            = var.deployer.size
-  admin_username                  = local.username
-  admin_password                  = lookup(var.deployer.authentication, "password", null)
-  disable_password_authentication = var.deployer.authentication.type != "password" ? true : false
+  network_interface_ids                = [azurerm_network_interface.deployer[count.index].id]
+  size                                 = var.deployer.size
+  admin_username                       = local.username
+  admin_password                       = var.deployer.authentication.type != "password" ? null: local.password
+  disable_password_authentication      = var.deployer.authentication.type != "password" ? true : false
 
   source_image_id = var.deployer.os.source_image_id != "" ? var.deployer.os.source_image_id : null
 
@@ -156,10 +173,10 @@ resource "azurerm_linux_virtual_machine" "deployer" {
     }
   }
 
-  identity {
-    type         = var.deployer.add_system_assigned_identity ? "SystemAssigned, UserAssigned" : "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.deployer.id]
-  }
+  identity                                {
+                                            type         = var.deployer.add_system_assigned_identity ? "SystemAssigned, UserAssigned" : "UserAssigned"
+                                            identity_ids = [azurerm_user_assigned_identity.deployer.id]
+                                          }
 
   dynamic "admin_ssh_key" {
     for_each = range(local.public_key == null ? 0 : 1)
@@ -229,10 +246,10 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                  format(
                                                  "%s/templates/configure_deployer.sh.tmpl", path.module),
                                                  {
-                                                   rg_name              = local.resourcegroup_name
-                                                   client_id            = azurerm_user_assigned_identity.deployer.client_id
-                                                   subscription_id      = data.azurerm_subscription.primary.subscription_id
-                                                   tenant_id            = data.azurerm_subscription.primary.tenant_id
+                                                   rg_name              = local.resourcegroup_name,
+                                                   client_id            = length(var.deployer.user_assigned_identity_id) == 0 ? azurerm_user_assigned_identity.deployer[0].client_id : data.azurerm_user_assigned_identity.deployer[0].client_id,
+                                                   subscription_id      = data.azurerm_subscription.primary.subscription_id,
+                                                   tenant_id            = data.azurerm_subscription.primary.tenant_id,
                                                    local_user           = local.username
                                                    agent_pool           = var.agent_pool
                                                    agent_pat            = var.agent_pat

@@ -60,6 +60,7 @@ end_group
 set -euo pipefail
 
 export TF_VAR_PLATFORM=$(get_platform)
+export USE_MSI=false
 
 start_group "Setup deployer and library folders"
 echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
@@ -198,21 +199,23 @@ if [[ ! -f /etc/profile.d/deploy_server.sh ]]; then
     fi
     az account set --subscription $CP_ARM_SUBSCRIPTION_ID
 else
-    if [ $LOGON_USING_SPN == "true" ]; then
-        echo "Login using SPN"
-        export ARM_CLIENT_ID=$CP_ARM_CLIENT_ID
-        export ARM_CLIENT_SECRET=$CP_ARM_CLIENT_SECRET
-        export ARM_TENANT_ID=$CP_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$CP_ARM_SUBSCRIPTION_ID
+    if [ $USE_MSI != "true" ]; then
+        echo -e "$cyan--- Using SPN ---$reset"
         export ARM_USE_MSI=false
         az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
+
         return_code=$?
         if [ 0 != $return_code ]; then
             echo -e "$boldred--- Login failed ---$reset"
             exit_error "az login failed." $return_code
+            exit $return_code
         fi
+        az account set --subscription $CP_ARM_SUBSCRIPTION_ID
     else
+        echo -e "$cyan--- Using MSI ---$reset"
         source /etc/profile.d/deploy_server.sh
+        unset ARM_TENANT_ID
+        export ARM_USE_MSI=true
     fi
 fi
 
@@ -292,13 +295,28 @@ export TF_VAR_deployer_tf_state_filename=$(basename "${deployerconfig}")
 
 set +eu
 
-${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
-    --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
-    --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
-    --subscription $CP_ARM_SUBSCRIPTION_ID --spn_id $CP_ARM_CLIENT_ID \
-    --spn_secret $CP_ARM_CLIENT_SECRET --tenant_id $CP_ARM_TENANT_ID \
-    --auto-approve \
-    ${storage_account_parameter} ${keyvault_parameter} # TODO: --ado
+if [ "$USE_MSI" = "true" ]; then
+    echo -e "$cyan--- Using MSI ---$reset"
+    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh \
+        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
+        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig) \
+        --subscription $STATE_SUBSCRIPTION \
+        --auto-approve \
+        --msi \
+        ${storage_account_parameter} ${keyvault_parameter} # TODO: --ado
+else
+    echo -e "$cyan--- Using SPN ---$reset"
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
+        --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
+        --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
+        --subscription $CP_ARM_SUBSCRIPTION_ID \
+        --spn_id $CP_ARM_CLIENT_ID \
+        --spn_secret $CP_ARM_CLIENT_SECRET \
+        --tenant_id $CP_ARM_TENANT_ID \
+        --auto-approve \
+        ${storage_account_parameter} ${keyvault_parameter} # TODO: --ado
+fi
+
 return_code=$?
 echo "Return code from deploy_controlplane $return_code."
 
