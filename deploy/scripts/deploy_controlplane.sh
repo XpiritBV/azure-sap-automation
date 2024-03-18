@@ -598,7 +598,6 @@ if [ 3 == $step ]; then
     if [ "${secret}" == "${secretname}"  ]; then
       TF_VAR_sa_connection_string=$(az keyvault secret show --name "${secretname}" --vault-name "${keyvault}" --query value | tr -d \")
       export TF_VAR_sa_connection_string
-
     fi
 
     if [[ -z $REMOTE_STATE_SA ]];
