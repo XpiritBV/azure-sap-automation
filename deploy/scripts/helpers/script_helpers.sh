@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #colors for terminal
 boldreduscore="\e[1;4;31m"
 boldred="\e[1;31m"

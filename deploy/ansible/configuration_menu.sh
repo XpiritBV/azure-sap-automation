@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export PATH=/opt/terraform/bin:/opt/ansible/bin:${PATH}
 

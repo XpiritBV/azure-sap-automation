@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # https://github.com/Microsoft/azure-pipelines-agent/releases
 
 devops_extension_installed=$(az extension list --query "[?name=='azure-devops'].name | [0]")
