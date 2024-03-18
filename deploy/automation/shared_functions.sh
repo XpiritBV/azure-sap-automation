@@ -86,8 +86,6 @@ function set_value_with_key() {
         exit_error "Cannot set value with an empty key" 1
     fi
 
-    echo "Setting value for key: $key"
-
     if [[ -v appconfig_name ]]; then
         __appconfig_set_value_with_key $key $value
     else
