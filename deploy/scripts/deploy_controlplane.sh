@@ -207,8 +207,6 @@ if [ -n "${subscription}" ]; then
     fi
 
     if [ -n "${keyvault}" ] ; then
-
-
       kv_found=$(az keyvault list --subscription "${subscription}" --query [].name | grep  "${keyvault}")
 
       if [ -z "${kv_found}" ] ; then
