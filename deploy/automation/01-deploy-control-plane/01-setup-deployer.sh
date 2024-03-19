@@ -63,6 +63,8 @@ export TF_VAR_PLATFORM=$(get_platform)
 export TF_VAR_use_webapp=${use_webapp}
 export USE_MSI=false
 
+cd ${CONFIG_REPO_PATH}
+
 storage_account_parameter=""
 
 start_group "Setup deployer and library folders"
@@ -165,8 +167,6 @@ start_group "Configure parameters"
 echo -e "$green--- Convert config files to UX format ---$reset"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
-echo -e "$green--- Configuring variables ---$reset"
-deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 end_group
 
 echo -e "$green--- az login ---$reset"
@@ -191,6 +191,8 @@ if [[ -v POOL ]]; then
     export TF_VAR_agent_pool=${POOL}
     export TF_VAR_agent_pat=${PAT}
 fi
+
+git pull -q
 
 start_group "Decrypting state files"
 # Import PGP key if it exists, otherwise generate it
@@ -263,8 +265,6 @@ set -euo pipefail
 end_group
 
 start_group "Update deployment configuration to repo"
-cd $CONFIG_REPO_PATH
-git pull -q
 
 # Not needed anymore???
 # if [ -f ${deployer_environment_file_name} ]; then
