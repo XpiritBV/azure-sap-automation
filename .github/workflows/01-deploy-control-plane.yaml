@@ -40,7 +40,7 @@ jobs:
     environment: ${{ inputs.deployer }}
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+      image: ghcr.io/xpiritbv/azure-sap-automation:tmp-github_context
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -81,6 +81,10 @@ jobs:
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
           use_webapp: ${{ inputs.use_webapp }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_WORKFLOW: "${{ github.workflow }}:${{ github.run_number }}-${{ github.run_attempt }}"
 
   deploy_controlplane:
     name: Deploy the control plane
@@ -88,7 +92,7 @@ jobs:
     needs: setup_deployer
     runs-on: self-hosted
     container:
-      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+      image: ghcr.io/xpiritbv/azure-sap-automation:tmp-github_context
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -135,6 +139,10 @@ jobs:
           libraryconfig: ${{ inputs.library }}.tfvars
           libraryfolder: ${{ inputs.library }}
           use_webapp: ${{ inputs.use_webapp }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_WORKFLOW: "${{ github.workflow }}:${{ github.run_number }}-${{ github.run_attempt }}"
 
   web_app_deployment:
     if: ${{ inputs.use_webapp }}
@@ -143,7 +151,7 @@ jobs:
     needs: deploy_controlplane
     runs-on: self-hosted
     container:
-      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+      image: ghcr.io/xpiritbv/azure-sap-automation:tmp-github_context
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
