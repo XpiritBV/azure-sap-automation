@@ -105,6 +105,8 @@ function __set_value_with_key() {
     repository_id=$(__get_repository_id)
     old_value=$(__get_value_with_key ${key})
 
+    echo "Saving value for key in environment ${deployerfolder}: ${key}"
+
     if [[ -z "${old_value}" ]]; then
         curl -Ss -o /dev/null \
             -X POST \

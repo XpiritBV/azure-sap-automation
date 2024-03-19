@@ -272,8 +272,8 @@ if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
     echo ${ARM_CLIENT_SECRET} | \
         gpg --batch \
         --passphrase-fd 0 \
-        --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate \
-        --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg
+        --decrypt ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg \
+        --output ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/terraform.tfstate
 fi
 
 if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
@@ -281,8 +281,8 @@ if [ -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg ]; then
     echo ${ARM_CLIENT_SECRET} | \
         gpg --batch \
         --passphrase-fd 0 \
-        --output ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate \
-        --decrypt ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg
+        --decrypt ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/state.gpg \
+        --output ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/terraform.tfstate
 fi
 end_group
 

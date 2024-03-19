@@ -57,6 +57,7 @@ function __appconfig_set_value_with_key() {
     key=$1
     value=$2
 
+    echo "Saving value for key in ${appconfig_name}: ${key}"
     var=$(az appconfig kv set -n ${appconfig_name} --key ${key} --label ${variable_group} --value $value --content-type text/plain --yes)
 
     echo $var
