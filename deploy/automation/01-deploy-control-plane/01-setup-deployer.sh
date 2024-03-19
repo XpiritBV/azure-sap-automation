@@ -290,7 +290,7 @@ if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
 fi
 
 if [ -f DEPLOYER/${deployerfolder}/terraform.tfstate ]; then
-    rm DEPLOYER/${deployerfolder}/state.gpg || true
+    rm DEPLOYER/${deployerfolder}/state.gpg > /dev/null 2>&1 || true
 
     gpg --batch \
         --output DEPLOYER/${deployerfolder}/state.gpg \
