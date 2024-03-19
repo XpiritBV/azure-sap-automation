@@ -114,6 +114,8 @@ else
     if [ -f ${deployer_environment_file_name} ]; then
         REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA")
         echo 'Terraform state file storage account: ' $REMOTE_STATE_SA
+    else
+        REMOTE_STATE_SA=""
     fi
 fi
 
