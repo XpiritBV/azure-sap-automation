@@ -3,7 +3,7 @@
 function setup_dependencies() {
     az config set extension.use_dynamic_install=yes_without_prompt > /dev/null 2>&1
 
-    az extension add --name azure-devops --output none > /dev/null 2>&1
+    az extension add -upgrade --name azure-devops --output none > /dev/null 2>&1
 
     az devops configure --defaults organization=${System.CollectionUri} project='${System.TeamProject}' --output none > /dev/null 2>&1
     export VARIABLE_GROUP_ID=$(az pipelines variable-group list --q uery "[?name=='${variable_group}'].id | [0]")

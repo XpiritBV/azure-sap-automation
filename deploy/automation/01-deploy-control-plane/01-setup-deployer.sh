@@ -109,12 +109,12 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
         echo 'Deployer Key Vault' ${key_vault}
     fi
 
-    az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
-    return_code=$?
-    if [ 0 != $return_code ]; then
-        echo -e "$boldred--- Login failed ---$reset"
-        exit_error "az login failed." $return_code
-    fi
+    # az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
+    # return_code=$?
+    # if [ 0 != $return_code ]; then
+    #     echo -e "$boldred--- Login failed ---$reset"
+    #     exit_error "az login failed." $return_code
+    # fi
 
     set +e
     key_vault_id=$(az resource list --name "${key_vault}" --resource-type Microsoft.KeyVault/vaults --query "[].id | [0]" -o tsv)
@@ -169,14 +169,14 @@ dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
 end_group
 
-echo -e "$green--- az login ---$reset"
-az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
-return_code=$?
-if [ 0 != $return_code ]; then
-    echo -e "$boldred--- Login failed ---$reset"
-    exit_error "az login failed." $return_code
-fi
-az account set --subscription $ARM_SUBSCRIPTION_ID
+# echo -e "$green--- az login ---$reset"
+# az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
+# return_code=$?
+# if [ 0 != $return_code ]; then
+#     echo -e "$boldred--- Login failed ---$reset"
+#     exit_error "az login failed." $return_code
+# fi
+# az account set --subscription $ARM_SUBSCRIPTION_ID
 
 if [[ -v PAT ]]; then
     echo 'Deployer Agent PAT is defined'
