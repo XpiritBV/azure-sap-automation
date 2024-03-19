@@ -66,7 +66,6 @@ jobs:
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
           cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
-        # TODO: working-directory: /source
         env:
           APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
@@ -74,8 +73,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          CONFIG_REPO_PATH: ${{ inputs.config-repo-path }}
-          SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
+          SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the scripts from the container
           WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
           deployerconfig: ${{ inputs.deployer }}.tfvars
           deployerfolder: ${{ inputs.deployer }}
@@ -123,11 +121,9 @@ jobs:
           echo '${{ toJSON(github) }}' > /tmp/github_context.json
           cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
-        # TODO: working-directory: /source
         env:
           APP_REGISTRATION_APP_ID: ${{ secrets.APP_REGISTRATION_APP_ID }}
           APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
-          CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
