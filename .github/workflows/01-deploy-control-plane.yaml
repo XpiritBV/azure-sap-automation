@@ -74,7 +74,7 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          CONFIG_REPO_PATH: ${{ github.workspace }}/WORKSPACES
+          CONFIG_REPO_PATH: ${{ inputs.config-repo-path }}
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the sccripts from the container
           WEB_APP_CLIENT_SECRET: ${{ secrets.WEB_APP_CLIENT_SECRET }}
           deployerconfig: ${{ inputs.deployer }}.tfvars

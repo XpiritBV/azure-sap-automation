@@ -5,7 +5,6 @@
 
 function check_required_inputs() {
     REQUIRED_VARS=(
-        "CONFIG_REPO_PATH"
         "deployerconfig"
         "deployerfolder"
         "libraryconfig"
@@ -22,12 +21,13 @@ function check_required_inputs() {
         REQUIRED_VARS+=("APP_TOKEN")
         ;;
 
-    # devops)
-    #     REQUIRED_VARS+=("this_agent")
-    #     REQUIRED_VARS+=("PAT")
-    #     REQUIRED_VARS+=("POOL")
-    #     REQUIRED_VARS+=("VARIABLE_GROUP_ID")
-    #     ;;
+    devops)
+        REQUIRED_VARS+=("CONFIG_REPO_PATH")
+        # REQUIRED_VARS+=("this_agent")
+        # REQUIRED_VARS+=("PAT")
+        # REQUIRED_VARS+=("POOL")
+        # REQUIRED_VARS+=("VARIABLE_GROUP_ID")
+        ;;
 
     *) ;;
     esac
@@ -47,6 +47,10 @@ function check_required_inputs() {
 
     return $success
 }
+
+if get_platform == "github"; then
+    export CONFIG_REPO_PATH=${GITHUB_WORKSPACE}/WORKSPACES
+fi
 
 start_group "Check all required inputs are set"
 check_required_inputs

@@ -6,7 +6,6 @@
 function check_deploy_inputs() {
 
     REQUIRED_VARS=(
-        "CONFIG_REPO_PATH"
         "deployerfolder"
         "libraryfolder"
         "SAP_AUTOMATION_REPO_PATH"
@@ -22,6 +21,7 @@ function check_deploy_inputs() {
         ;;
 
     devops)
+        REQUIRED_VARS+=("CONFIG_REPO_PATH")
         REQUIRED_VARS+=("this_agent")
         REQUIRED_VARS+=("PAT")
         REQUIRED_VARS+=("POOL")
@@ -62,6 +62,10 @@ export TF_VAR_PLATFORM=$(get_platform)
 
 export TF_VAR_use_webapp=${use_webapp}
 export USE_MSI=false
+
+if get_platform == "github"; then
+    export CONFIG_REPO_PATH=${GITHUB_WORKSPACE}/WORKSPACES
+fi
 
 cd ${CONFIG_REPO_PATH}
 
