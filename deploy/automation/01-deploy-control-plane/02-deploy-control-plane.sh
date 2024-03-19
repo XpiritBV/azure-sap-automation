@@ -302,11 +302,6 @@ fi
 end_group
 
 start_group "Deploy the Control Plane"
-# TODO: Needs to be set to group the values in the app configuration
-# TODO: export TF_VAR_deployer_parameter_group_name=$(variable_group)
-export TF_VAR_deployer_parameter_environment=${ENVIRONMENT}
-export TF_VAR_deployer_parameter_location=${LOCATION}
-export TF_VAR_deployer_tf_state_filename=$(basename "${deployerconfig}")
 
 set +eu
 
