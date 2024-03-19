@@ -125,6 +125,6 @@ function set_config_key_with_value() {
     if grep -q "^$key=" "$deployer_environment_file_name"; then
         sed -i "s/^$key=.*/$key=$value/" "$deployer_environment_file_name"
     else
-        echo "$key=$value" >>"$config_file"
+        echo "$key=$value" >>"$deployer_environment_file_name"
     fi
 }
