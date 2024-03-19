@@ -265,7 +265,16 @@ if [[ -v POOL ]]; then
 fi
 
 start_group "Decrypting state files"
-if [ ! -f ${CONFIG_REPO_PATH}/private.pgp ]; then
+if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then
+    set +e
+    gpg --list-keys sap-azure-deployer@example.com
+    return_code=$?
+    set -e
+
+    if [ ${return_code} != 0 ]; then
+        echo ${ARM_CLIENT_SECRET} | gpg --batch --passphrase-fd 0 --import ${CONFIG_REPO_PATH}/private.pgp
+    fi
+else
     exit_error "Private PGP key not found." 3
 fi
 
