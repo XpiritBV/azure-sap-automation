@@ -58,3 +58,22 @@ This app needs the following repository permissions only for **this** repository
 When this is done, you can close this issue and new issues using the issue template **create a new environment**.
 
 ## Create a new environment issue
+
+
+
+
+# GitHub runner troubleshooting
+
+The GitHub runner is a self-hosted runner that runs the GitHub Actions. If you encounter issues with the runner, you can troubleshoot the runner by following these steps.
+
+- Validate the runner is registered in your repository and is **Online** or **Active** in the `Settings` - `Actions` - `Runners` in the GitHub repository.
+- Validate the runner is installed on the VM by validating the output of the VM extension Custom Script named `configure_deployer` in the Azure Portal.
+- Validate the
+
+
+# Cleanup
+Delete Azure Resources
+Delete GitHub runner
+Delete GitHub App
+Delete GitHub repository
+Delete Entra ID App registration(s)
