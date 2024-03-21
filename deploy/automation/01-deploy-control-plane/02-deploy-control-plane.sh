@@ -66,6 +66,8 @@ set -euo pipefail
 export TF_VAR_PLATFORM=$(get_platform)
 export USE_MSI=false
 
+cd ${CONFIG_REPO_PATH}
+
 start_group "Setup deployer and library folders"
 echo "Deploying the control plane defined in: ${deployerfolder} and ${libraryfolder}"
 
@@ -179,7 +181,6 @@ if [ ! -f $deployer_environment_file_name ]; then
 fi
 
 echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
-cd ${CONFIG_REPO_PATH}
 mkdir -p .sap_deployment_automation
 echo SAP_AUTOMATION_REPO_PATH=${SAP_AUTOMATION_REPO_PATH} > .sap_deployment_automation/config
 
@@ -282,6 +283,8 @@ else
     exit_error "Private PGP key not found." 3
 fi
 
+git pull -q
+
 if [ -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/state.gpg ]; then
     echo "Decrypting deployer state file"
     echo ${ARM_CLIENT_SECRET} | \
@@ -307,7 +310,7 @@ set +eu
 
 if [ "$USE_MSI" = "true" ]; then
     echo -e "$cyan--- Using MSI ---$reset"
-    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/deploy_controlplane.sh \
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
         --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
         --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig) \
         --subscription $STATE_SUBSCRIPTION \
@@ -341,10 +344,6 @@ fi
 end_group
 
 start_group "Adding deployment automation configuration to git repository"
-
-cd ${CONFIG_REPO_PATH}
-git fetch -q --all
-git pull -q
 
 echo -e "$green--- Update repo ---$reset"
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then

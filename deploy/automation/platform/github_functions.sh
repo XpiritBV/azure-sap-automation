@@ -3,14 +3,9 @@
 function setup_dependencies() {
     git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
-    server_url="$(__get_value_from_context_with_key "server_url")"
-    api_url="$(__get_value_from_context_with_key "api_url")"
-    repository="$(__get_value_from_context_with_key "repository")"
-
-    echo "TF_VAR_SERVER_URL=${server_url}"
-    echo "TF_VAR_API_URL=${api_url}"
-    echo "TF_VAR_REPOSITORY=${repository}"
-
+    echo "TF_VAR_SERVER_URL=${GITHUB_SERVER_UR}"
+    echo "TF_VAR_API_URL=${GITHUB_API_URL}"
+    echo "TF_VAR_REPOSITORY=${GITHUB_REPOSITORY}"
     echo "TF_VAR_APP_TOKEN=${APP_TOKEN}"
 }
 
@@ -38,18 +33,6 @@ function end_group() {
     echo "::endgroup::"
 }
 
-function __get_value_from_context_with_key() {
-    key=$1
-
-    if [[ ${key} == "" ]]; then
-        exit_error "Cannot get a value by using an empty key"
-    fi
-
-    value=$(jq ".${key}" -r /tmp/github_context.json)
-
-    echo $value
-}
-
 function commit_changes() {
     message=$1
     is_custom_message=${2:-false}
@@ -60,39 +43,20 @@ function commit_changes() {
     if [[ $is_custom_message == "true" ]]; then
         git commit -m "${message}"
     else
-        workflow=$(__get_value_from_context_with_key "workflow")
-        run_number=$(__get_value_from_context_with_key "run_number")
-        run_attempt=$(__get_value_from_context_with_key "run_attempt")
-        git commit -m "${message} - Workflow: ${workflow}:${run_number}-${run_attempt} [skip ci]"
+        git commit -m "${message} - Workflow: ${GITHUB_WORKFLOW}:${RUN_NUMBER}-${RUN_ATTEMPT} [skip ci]"
     fi
 
     git push
 }
 
-function __get_repository_id() {
-    api_url=$(__get_value_from_context_with_key "api_url")
-    repository=$(__get_value_from_context_with_key "repository")
-
-    repository_id=$(curl -Ssf \
-        -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${APP_TOKEN}" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -L "${api_url}/repos/${repository}" | jq -r '.id')
-
-    echo $repository_id
-}
-
 function __get_value_with_key() {
     key=$1
-
-    api_url=$(__get_value_from_context_with_key "api_url")
-    repository_id=$(__get_repository_id)
 
     value=$(curl -Ss \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${APP_TOKEN}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}" | jq -r '.value // empty')
+        -L "${GITHUB_API_URL}/repositories/${GITHUB_REPOSITORY_ID}/environments/${deployerfolder}/variables/${key}" | jq -r '.value // empty')
 
     echo $value
 }
@@ -101,8 +65,6 @@ function __set_value_with_key() {
     key=$1
     new_value=$2
 
-    api_url=$(__get_value_from_context_with_key "api_url")
-    repository_id=$(__get_repository_id)
     old_value=$(__get_value_with_key ${key})
 
     echo "Saving value for key in environment ${deployerfolder}: ${key}"
@@ -113,7 +75,7 @@ function __set_value_with_key() {
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${APP_TOKEN}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables" \
+            -L "${GITHUB_API_URL}/repositories/${GITHUB_REPOSITORY_ID}/environments/${deployerfolder}/variables" \
             -d "{\"name\":\"${key}\", \"value\":\"${new_value}\"}"
     elif [[ "${old_value}" != "${new_value}" ]]; then
         curl -Ss -o /dev/null \
@@ -121,7 +83,7 @@ function __set_value_with_key() {
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${APP_TOKEN}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            -L "${api_url}/repositories/${repository_id}/environments/${deployerfolder}/variables/${key}" \
+            -L "${GITHUB_API_URL}/repositories/${GITHUB_REPOSITORY_ID}/environments/${deployerfolder}/variables/${key}" \
             -d "{\"name\":\"${key}\", \"value\":\"${new_value}\"}"
     fi
 }
@@ -133,16 +95,4 @@ function upload_summary() {
     else
         echo $summary >> $GITHUB_STEP_SUMMARY
     fi
-}
-
-function get_runner_registration_token() {
-    api_url=$(__get_value_from_context_with_key "api_url")
-    repository=$(__get_value_from_context_with_key "repository")
-
-    curl -Ssf \
-        -X POST \
-        -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${APP_TOKEN}" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -L "${api_url}/repos/${repository}/actions/runners/registration-token"
 }
