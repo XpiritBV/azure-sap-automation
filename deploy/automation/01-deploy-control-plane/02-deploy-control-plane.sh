@@ -16,7 +16,7 @@ function check_required_inputs() {
         "ARM_TENANT_ID"
     )
 
-    case get_platform in
+    case $(get_platform) in
     github)
         REQUIRED_VARS+=("APP_TOKEN")
         ;;
@@ -48,7 +48,7 @@ function check_required_inputs() {
     return $success
 }
 
-if get_platform == "github"; then
+if [[ $(get_platform) = github ]]; then
     export CONFIG_REPO_PATH=${GITHUB_WORKSPACE}/WORKSPACES
 fi
 
@@ -257,22 +257,21 @@ if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
     export TF_VAR_use_webapp=true
 fi
 
-if get_platform == "devops"; then
+if [[ $(get_platform) = devops ]]; then
     if [[ -v PAT ]]; then
-        echo 'Deployer Agent PAT is defined'
+        echo "Deployer Agent PAT is defined"
     fi
     if [[ -v POOL ]]; then
-        echo 'Deployer Agent Pool' $(POOL)
-        POOL_NAME=$(az pipelines pool list --organization ${System_CollectionUri} --query "[?name=='$(POOL)'].name | [0]")
+        echo "Deployer Agent Pool: " ${POOL}
+        POOL_NAME=$(az pipelines pool list --organization ${System_CollectionUri} --query "[?name=='${POOL}'].name | [0]")
         if [ ${#POOL_NAME} -eq 0 ]; then
             log_warning "Agent Pool ${POOL} does not exist."
         fi
-        echo "Deployer Agent Pool found: $POOL_NAME"
-        export TF_VAR_agent_pool=$(POOL)
-        export TF_VAR_agent_pat=$(PAT)
+        echo "Deployer Agent Pool found: ${POOL_NAME}"
+        export TF_VAR_agent_pool=${POOL}
+        export TF_VAR_agent_pat=${PAT}
     fi
-elif get_platform == "github"; then
-    export CONFIG_REPO_PATH=${GITHUB_WORKSPACE}/WORKSPACES
+elif [[ $(get_platform) = github ]]; then
     export TF_VAR_SERVER_URL=${GITHUB_SERVER_URL}
     export TF_VAR_API_URL=${GITHUB_API_URL}
     export TF_VAR_REPOSITORY=${GITHUB_REPOSITORY}
