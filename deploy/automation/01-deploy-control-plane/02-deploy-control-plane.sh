@@ -63,7 +63,6 @@ end_group
 
 set -euo pipefail
 
-export TF_VAR_PLATFORM=$(get_platform)
 export USE_MSI=false
 
 cd ${CONFIG_REPO_PATH}
@@ -142,14 +141,6 @@ fi
 end_group
 
 start_group "Validations"
-
-if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
-    echo "Use WebApp is selected"
-    export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}
-    echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
-    export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
-    export TF_VAR_use_webapp=true
-fi
 
 bootstrapped=0
 
@@ -255,19 +246,39 @@ if [ -f ${deployer_environment_file_name} ]; then
     fi
 fi
 
-if [[ -v PAT ]]; then
-    echo 'Deployer Agent PAT is defined'
+start_group "Set Terraform variables"
+export TF_VAR_PLATFORM=$(get_platform)
+
+if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
+    echo "Use WebApp is selected"
+    export TF_VAR_app_registration_app_id=${APP_REGISTRATION_APP_ID}
+    echo 'App Registration App ID' ${TF_VAR_app_registration_app_id}
+    export TF_VAR_webapp_client_secret=${WEB_APP_CLIENT_SECRET}
+    export TF_VAR_use_webapp=true
 fi
-if [[ -v POOL ]]; then
-    echo 'Deployer Agent Pool' $(POOL)
-    POOL_NAME=$(az pipelines pool list --query "[?name=='$(POOL)'].name | [0]")
-    if [ ${#POOL_NAME} -eq 0 ]; then
-        log_warning "Agent Pool ${POOL} does not exist."
+
+if get_platform == "devops"; then
+    if [[ -v PAT ]]; then
+        echo 'Deployer Agent PAT is defined'
     fi
-    echo "Deployer Agent Pool found: $POOL_NAME"
-    export TF_VAR_agent_pool=$(POOL)
-    export TF_VAR_agent_pat=$(PAT)
+    if [[ -v POOL ]]; then
+        echo 'Deployer Agent Pool' $(POOL)
+        POOL_NAME=$(az pipelines pool list --organization ${System_CollectionUri} --query "[?name=='$(POOL)'].name | [0]")
+        if [ ${#POOL_NAME} -eq 0 ]; then
+            log_warning "Agent Pool ${POOL} does not exist."
+        fi
+        echo "Deployer Agent Pool found: $POOL_NAME"
+        export TF_VAR_agent_pool=$(POOL)
+        export TF_VAR_agent_pat=$(PAT)
+    fi
+elif get_platform == "github"; then
+    export CONFIG_REPO_PATH=${GITHUB_WORKSPACE}/WORKSPACES
+    export TF_VAR_SERVER_URL=${GITHUB_SERVER_URL}
+    export TF_VAR_API_URL=${GITHUB_API_URL}
+    export TF_VAR_REPOSITORY=${GITHUB_REPOSITORY}
+    export TF_VAR_APP_TOKEN=${APP_TOKEN}
 fi
+end_group
 
 start_group "Decrypting state files"
 if [ -f ${CONFIG_REPO_PATH}/private.pgp ]; then

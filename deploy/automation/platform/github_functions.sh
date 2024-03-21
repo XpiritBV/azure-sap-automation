@@ -2,11 +2,6 @@
 
 function setup_dependencies() {
     git config --global --add safe.directory ${GITHUB_WORKSPACE}
-
-    echo "TF_VAR_SERVER_URL=${GITHUB_SERVER_URL}"
-    echo "TF_VAR_API_URL=${GITHUB_API_URL}"
-    echo "TF_VAR_REPOSITORY=${GITHUB_REPOSITORY}"
-    echo "TF_VAR_APP_TOKEN=${APP_TOKEN}"
 }
 
 function exit_error() {
