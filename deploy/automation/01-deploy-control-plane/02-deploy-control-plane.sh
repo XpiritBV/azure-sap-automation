@@ -355,13 +355,16 @@ end_group
 
 start_group "Adding deployment automation configuration to git repository"
 
-echo -e "$green--- Update repo ---$resetformatting"
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 fi
 
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
+fi
+
+if [ -f DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate ]; then
+    git add -f DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate
 fi
 
 backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
@@ -395,6 +398,9 @@ else
     exit_error "Unknown backend type: ${backend}" 4
 fi
 
+if [ -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate ]; then
+    git add -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate
+fi
 backend=$(jq '.backend.type' -r LIBRARY/${libraryfolder}/.terraform/terraform.tfstate)
 if [ "local" == "${backend}" ]; then
     echo "Local library Terraform state"
@@ -409,9 +415,6 @@ if [ "local" == "${backend}" ]; then
             --trust-model always \
             LIBRARY/${libraryfolder}/terraform.tfstate
         git add -f LIBRARY/${libraryfolder}/state.gpg
-        if [ -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate ]; then
-            git add -f LIBRARY/${libraryfolder}/.terraform/terraform.tfstate
-        fi
     fi
 elif [ "azurerm" == "${backend}" ]; then
     echo "Remote library Terraform state"
