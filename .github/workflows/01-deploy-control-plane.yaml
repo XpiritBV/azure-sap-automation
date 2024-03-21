@@ -40,7 +40,7 @@ jobs:
     environment: ${{ inputs.deployer }}
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/xpiritbv/azure-sap-automation:tmp-github_context
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -63,7 +63,6 @@ jobs:
 
       - name: Setup deployer
         run: |
-          printenv
           cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/01-deploy-control-plane/01-setup-deployer.sh
         env:
@@ -88,7 +87,7 @@ jobs:
     needs: setup_deployer
     runs-on: self-hosted
     container:
-      image: ghcr.io/xpiritbv/azure-sap-automation:tmp-github_context
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -118,7 +117,6 @@ jobs:
 
       - name: Deploy control plane
         run: |
-          printenv
           cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/01-deploy-control-plane/02-deploy-control-plane.sh
         env:
@@ -143,7 +141,7 @@ jobs:
     needs: deploy_controlplane
     runs-on: self-hosted
     container:
-      image: ghcr.io/xpiritbv/azure-sap-automation:tmp-github_context
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
