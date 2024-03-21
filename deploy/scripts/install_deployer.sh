@@ -214,7 +214,6 @@ fi
 
 terraform -chdir="${terraform_module_directory}"  refresh -var-file="${var_file}" $extra_vars
 
-
 echo ""
 echo "#########################################################################################"
 echo "#                                                                                       #"
@@ -223,7 +222,7 @@ echo "#                                                                         
 echo "#########################################################################################"
 echo ""
 
-terraform -chdir="${terraform_module_directory}"  plan  -detailed-exitcode -var-file="${var_file}" $extra_vars | tee -a plan_output.log
+terraform -chdir="${terraform_module_directory}"  plan  -detailed-exitcode -var-file="${var_file}" $extra_vars >> plan_output.log
 return_value=${PIPESTATUS[0]}
 
 if [ 1 == $return_value ]
@@ -264,7 +263,7 @@ if [[ -n "${TF_PARALLELLISM}" ]]; then
 fi
 if [ -n "${approve}" ]
 then
-  terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a apply_output.json
+  terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json >> apply_output.json
 else
   terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars
 fi
@@ -303,7 +302,7 @@ then
         echo "#                                                                                       #"
         echo "#########################################################################################"
         echo ""
-        terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
+        terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json >> apply_output.json
         return_value=${PIPESTATUS[0]}
         rerun_apply=0
     fi
@@ -316,7 +315,6 @@ then
         existing=$(jq 'select(."@level" == "error") | {address: .diagnostic.address, summary: .diagnostic.summary}  | select(.summary | startswith("A resource with the ID"))' apply_output.json)
         if [[ -n ${existing} ]]
         then
-
             readarray -t existing_resources < <(echo ${existing} | jq -c '.' )
             for item in "${existing_resources[@]}"; do
               moduleID=$(jq -c -r '.address '  <<< "$item")
@@ -341,7 +339,7 @@ then
             echo "#                                                                                       #"
             echo "#########################################################################################"
             echo ""
-            terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json >> apply_output.json
             return_value=${PIPESTATUS[0]}
         fi
 

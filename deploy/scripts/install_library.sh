@@ -391,14 +391,14 @@ then
     echo "Deployer folder specified:" "${deployer_statefile_foldername}"
     if [ -n "${approve}" ]
     then
-        terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json | tee -a  apply_output.json
+        terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json >> apply_output.json
     else
         terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}"
     fi
 else
     if [ -n "${approve}" ]
     then
-      terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json | tee -a  apply_output.json
+      terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json >> apply_output.json
     else
       terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}"
     fi
@@ -443,9 +443,9 @@ then
         if [ -n "${deployer_statefile_foldername}" ];
         then
             echo "Deployer folder specified:" "${deployer_statefile_foldername}"
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json >> apply_output.json
         else
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json >> apply_output.json
         fi
         return_value=$?
         rerun_apply=0
@@ -486,9 +486,9 @@ then
         if [ -n "${deployer_statefile_foldername}" ];
         then
             echo "Deployer folder specified:" "${deployer_statefile_foldername}"
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json >> apply_output.json
         else
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json >> apply_output.json
         fi
         return_value=$?
         rerun_apply=0
