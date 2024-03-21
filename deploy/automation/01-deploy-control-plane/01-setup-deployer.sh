@@ -40,7 +40,7 @@ function check_deploy_inputs() {
     for var in "${REQUIRED_VARS[@]}"; do
         if [[ -z "${!var}" ]]; then
             success=1
-            echo "Missing required variable: ${var}"
+            log_warning "Missing required variable: ${var}"
         fi
     done
 

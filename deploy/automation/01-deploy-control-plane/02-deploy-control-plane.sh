@@ -41,7 +41,7 @@ function check_required_inputs() {
     for var in "${REQUIRED_VARS[@]}"; do
         if [[ -z "${!var}" ]]; then
             success=1
-            echo "Missing required variable: ${var}"
+            log_warning "Missing required variable: ${var}"
         fi
     done
 
@@ -394,7 +394,6 @@ elif [ "azurerm" == "${backend}" ]; then
         git rm -q --ignore-unmatch -f DEPLOYER/${deployerfolder}/state.gpg
     fi
 else
-    echo "Unknown backend type: ${backend}"
     exit_error "Unknown backend type: ${backend}" 4
 fi
 
@@ -425,7 +424,6 @@ elif [ "azurerm" == "${backend}" ]; then
         git rm -q --ignore-unmatch -f LIBRARY/${libraryfolder}/state.gpg
     fi
 else
-    echo "Unknown backend type: ${backend}"
     exit_error "Unknown backend type: ${backend}" 4
 fi
 
