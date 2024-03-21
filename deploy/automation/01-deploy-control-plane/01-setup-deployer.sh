@@ -113,7 +113,7 @@ if [[ ${force_reset,,} == "true" ]]; then # ,, = tolowercase
     # az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
     # return_code=$?
     # if [ 0 != $return_code ]; then
-    #     echo -e "$boldred--- Login failed ---$reset"
+    #     echo -e "$boldred--- Login failed ---$resetformatting"
     #     exit_error "az login failed." $return_code
     # fi
 
@@ -165,16 +165,16 @@ fi
 end_group
 
 start_group "Configure parameters"
-echo -e "$green--- Convert config files to UX format ---$reset"
+echo -e "$green--- Convert config files to UX format ---$resetformatting"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
 end_group
 
-# echo -e "$green--- az login ---$reset"
+# echo -e "$green--- az login ---$resetformatting"
 # az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
 # return_code=$?
 # if [ 0 != $return_code ]; then
-#     echo -e "$boldred--- Login failed ---$reset"
+#     echo -e "$boldred--- Login failed ---$resetformatting"
 #     exit_error "az login failed." $return_code
 # fi
 # az account set --subscription $ARM_SUBSCRIPTION_ID

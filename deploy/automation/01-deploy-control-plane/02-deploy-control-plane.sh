@@ -171,46 +171,46 @@ if [ ! -f $deployer_environment_file_name ]; then
     fi
 fi
 
-echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$reset"
+echo -e "$green--- Update .sap_deployment_automation/config as SAP_AUTOMATION_REPO_PATH can change on devops agent ---$resetformatting"
 mkdir -p .sap_deployment_automation
 echo SAP_AUTOMATION_REPO_PATH=${SAP_AUTOMATION_REPO_PATH} > .sap_deployment_automation/config
 
-echo -e "$green--- File Validations ---$reset"
+echo -e "$green--- File Validations ---$resetformatting"
 if [ ! -f ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} ]; then
-    echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$reset"
+    echo -e "$boldred--- File ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found ---$resetformatting"
     exit_error "File ${CONFIG_REPO_PATH}/${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} was not found." 2
 fi
 
 if [ ! -f ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} ]; then
-    echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$reset"
+    echo -e "$boldred--- File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}  was not found ---$resetformatting"
     exit_error "File ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} was not found." 2
 fi
 
 # Check if running on deployer
 if [[ ! -f /etc/profile.d/deploy_server.sh ]]; then
-    echo -e "$green--- az login ---$reset"
+    echo -e "$green--- az login ---$resetformatting"
     az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
     return_code=$?
     if [ 0 != $return_code ]; then
-        echo -e "$boldred--- Login failed ---$reset"
+        echo -e "$boldred--- Login failed ---$resetformatting"
         exit_error "az login failed." $return_code
     fi
     az account set --subscription $ARM_SUBSCRIPTION_ID
 else
     if [ $USE_MSI != "true" ]; then
-        echo -e "$cyan--- Using SPN ---$reset"
+        echo -e "$cyan--- Using SPN ---$resetformatting"
         export ARM_USE_MSI=false
         az login --service-principal --username $ARM_CLIENT_ID --password=$ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID --output none
 
         return_code=$?
         if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---$reset"
+            echo -e "$boldred--- Login failed ---$resetformatting"
             exit_error "az login failed." $return_code
             exit $return_code
         fi
         az account set --subscription $ARM_SUBSCRIPTION_ID
     else
-        echo -e "$cyan--- Using MSI ---$reset"
+        echo -e "$cyan--- Using MSI ---$resetformatting"
         source /etc/profile.d/deploy_server.sh
         unset ARM_TENANT_ID
         export ARM_USE_MSI=true
@@ -218,10 +218,10 @@ else
 fi
 
 start_group "Configure parameters"
-echo -e "$green--- Convert config files to UX format ---$reset"
+echo -e "$green--- Convert config files to UX format ---$resetformatting"
 dos2unix -q ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig}
 dos2unix -q ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig}
-echo -e "$green--- Configuring variables ---$reset"
+echo -e "$green--- Configuring variables ---$resetformatting"
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}$LOCATION
 end_group
 
@@ -320,7 +320,7 @@ start_group "Deploy the Control Plane"
 set +eu
 
 if [ "$USE_MSI" = "true" ]; then
-    echo -e "$cyan--- Using MSI ---$reset"
+    echo -e "$cyan--- Using MSI ---$resetformatting"
     ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
         --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/$(deployerfolder)/$(deployerconfig) \
         --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/$(libraryfolder)/$(libraryconfig) \
@@ -329,7 +329,7 @@ if [ "$USE_MSI" = "true" ]; then
         --msi \
         ${storage_account_parameter} ${keyvault_parameter} # TODO: --ado
 else
-    echo -e "$cyan--- Using SPN ---$reset"
+    echo -e "$cyan--- Using SPN ---$resetformatting"
     ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/deploy_controlplane.sh \
         --deployer_parameter_file ${CONFIG_REPO_PATH}/DEPLOYER/${deployerfolder}/${deployerconfig} \
         --library_parameter_file ${CONFIG_REPO_PATH}/LIBRARY/${libraryfolder}/${libraryconfig} \
@@ -356,7 +356,7 @@ end_group
 
 start_group "Adding deployment automation configuration to git repository"
 
-echo -e "$green--- Update repo ---$reset"
+echo -e "$green--- Update repo ---$resetformatting"
 if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION} ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}
 fi
