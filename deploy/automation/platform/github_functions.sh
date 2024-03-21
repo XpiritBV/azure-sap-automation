@@ -43,7 +43,7 @@ function commit_changes() {
     if [[ $is_custom_message == "true" ]]; then
         git commit -m "${message}"
     else
-        git commit -m "${message} - Workflow: ${GITHUB_WORKFLOW}:${RUN_NUMBER}-${RUN_ATTEMPT} [skip ci]"
+        git commit -m "${message} - Workflow: ${GITHUB_WORKFLOW}:${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT} [skip ci]"
     fi
 
     git push
