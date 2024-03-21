@@ -192,6 +192,7 @@ if [[ ${use_webapp,,} == "true" ]]; then # ,, = tolowercase
 fi
 
 if get_platform == "devops"; then
+    echo "Azure DevOps FTW!"
     if [[ -v PAT ]]; then
         echo 'Deployer Agent PAT is defined'
     fi
@@ -206,6 +207,7 @@ if get_platform == "devops"; then
         export TF_VAR_agent_pat=${PAT}
     fi
 elif get_platform == "github"; then
+    echo "GitHub FTW!"
     export TF_VAR_SERVER_URL=${GITHUB_SERVER_URL}
     export TF_VAR_API_URL=${GITHUB_API_URL}
     export TF_VAR_REPOSITORY=${GITHUB_REPOSITORY}
