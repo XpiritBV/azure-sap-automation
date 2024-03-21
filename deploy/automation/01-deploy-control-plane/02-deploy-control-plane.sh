@@ -363,8 +363,8 @@ if [ -f .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md ]; then
     git add .sap_deployment_automation/${ENVIRONMENT}${LOCATION}.md
 fi
 
-if [ -f DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate ]; then
-    git add -f DEPLOYER/$(deployerfolder)/.terraform/terraform.tfstate
+if [ -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate ]; then
+    git add -f DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate
 fi
 
 backend=$(jq '.backend.type' -r DEPLOYER/${deployerfolder}/.terraform/terraform.tfstate)
