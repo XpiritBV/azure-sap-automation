@@ -1,0 +1,12 @@
+ARM_SUBSCRIPTION_ID=d6c8e3b6-467e-452e-97c9-49d9de9e37da
+keyvault=DVDWEEUDVD05user1F6
+sshsecret=DVD-WEEU-DVD05-sshkey
+deployer_random_id=H23tqA
+deployer_public_ip_address=172.201.49.122
+deployer_app_config_name=dvdweeuapc1f6
+created_resource_group_name=DVD-WEEU-DVD05-INFRASTRUCTURE
+subscription=d6c8e3b6-467e-452e-97c9-49d9de9e37da
+STATE_SUBSCRIPTION=d6c8e3b6-467e-452e-97c9-49d9de9e37da
+client_id=ef6134f6-3912-41f7-b684-63fe90ae4100
+tenant_id=c01abe72-ffef-4ecc-bda0-937975b49e6b
+step=1
