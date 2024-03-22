@@ -14,12 +14,19 @@ on:
         description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
         required: true
         type: environment
-      library:
-        default: MGMT-NOEU-SAP_LIBRARY
-        description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
-        type: choice
-        options:
-          - MGMT-NOEU-SAP_LIBRARY
+      workload_environment:
+        description: "Workload environment (DEV, QA, PRD, ...)"
+        required: true
+        type: string
+        default: DEV
+      inherit_settings:
+        description: "Inherit Terraform state file information from control plane"
+        type: boolean
+        default: true
+      test:
+        description: "Test the deployment without actually deploying the resources"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -27,10 +34,10 @@ permissions:
   issues: write
 
 jobs:
-  setup_deployer:
-    name: Prepare the self hosted runners(s)
+  deploy_sap_workload_zone:
+    name: Deploy SAP workload zone
     environment: ${{ inputs.deployer }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
@@ -38,3 +45,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Azure Login
+        uses: Azure/Login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - name: Deploy SAP Workload Zone
+        run: |
+          cd ${SAP_AUTOMATION_REPO_PATH}
+          deploy/automation/02-sap-workflow-zone/02-sap-workflow-zone.sh
+        env:
+          SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the scripts from the container
+          TEST_ONLY: ${{ inputs.test }}
+          inherit: ${{ inputs.inherit_settings }}
+          workload_environment: ${{ inputs.workload_environment }}
