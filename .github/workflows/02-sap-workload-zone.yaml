@@ -56,7 +56,19 @@ jobs:
           cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/02-sap-workflow-zone/02-sap-workflow-zone.sh
         env:
+          CP_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          CP_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          CP_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          CP_ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          #CP_ARM_OBJECT_ID: ${{ secrets.AZURE_OBJECT_ID }}
+          WL_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          WL_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          WL_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          WL_ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          #WL_ARM_OBJECT_ID: ${{ secrets.AZURE_OBJECT_ID }}
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the scripts from the container
           TEST_ONLY: ${{ inputs.test }}
+          deployerconfig: ${{ inputs.deployer }}.tfvars
+          deployerfolder: ${{ inputs.deployer }}
           inherit: ${{ inputs.inherit_settings }}
           workload_environment: ${{ inputs.workload_environment }}
