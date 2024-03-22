@@ -28,7 +28,7 @@ Use the `https://github.com/XpiritBV/azure-sap-automation-deployer` repository t
 > [!NOTE]
 >  The GitHub Actions is using Environments to store secrets and variables. Make sure your repository can use the [environments feature](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment) and the Issues feature is enabled.
 
-After you created the repository, there will be an Issue created with the title "Create GitHub App". This issue contains the steps to configure a GitHub App for the repository.
+After you created the repository, there will be an Issue created with the title "**Create GitHub App**". This issue contains the steps to configure a GitHub App for the repository.
 
 ## Create a GitHub App issue
 
@@ -59,6 +59,46 @@ When this is done, you can close this issue and new issues using the issue templ
 
 ## Create a new environment issue
 
+
+
+## Set up the web app
+
+The automation framework optionally provisions a web app as a part of the control plane to assist with the SAP workload zone and system configuration files. If you want to use the web app, you must first create an app registration for authentication purposes. Open Azure Cloud Shell and run the following commands.
+
+# [Linux](#tab/linux)
+
+Replace `MGMT` with your environment, as necessary.
+
+```bash
+echo '[{"resourceAppId":"00000003-0000-0000-c000-000000000000","resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}]}]' >> manifest.json
+
+TF_VAR_app_registration_app_id=$(az ad app create --display-name MGMT-webapp-registration --enable-id-token-issuance true --sign-in-audience AzureADMyOrg --required-resource-access @manifest.json --query "appId" | tr -d '"')
+
+echo $TF_VAR_app_registration_app_id
+
+az ad app credential reset --id $TF_VAR_app_registration_app_id --append --query "password"
+
+rm manifest.json
+```
+
+# [Windows](#tab/windows)
+
+Replace `MGMT` with your environment, as necessary.
+
+```powershell
+Add-Content -Path manifest.json -Value '[{"resourceAppId":"00000003-0000-0000-c000-000000000000","resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}]}]'
+
+$TF_VAR_app_registration_app_id=(az ad app create --display-name MGMT-webapp-registration --enable-id-token-issuance true --sign-in-audience AzureADMyOrg --required-resource-access .\manifest.json --query "appId").Replace('"',"")
+
+echo $TF_VAR_app_registration_app_id
+
+az ad app credential reset --id $TF_VAR_app_registration_app_id --append --query "password"
+
+del manifest.json
+```
+---
+
+Save the app registration ID and password values for later use.
 
 
 
