@@ -128,7 +128,6 @@ The GitHub runner is a self-hosted runner that runs the GitHub Actions. If you e
 - Validate the runner is installed on the VM by validating the output of the VM extension Custom Script named `configure_deployer` in the Azure Portal.
 - Validate the
 
-
 # Cleanup
 1. Delete Azure Resources
 1. Delete GitHub runner
