@@ -54,7 +54,7 @@ jobs:
       - name: Deploy SAP Workload Zone
         run: |
           cd ${SAP_AUTOMATION_REPO_PATH}
-          deploy/automation/02-sap-workflow-zone/02-sap-workflow-zone.sh
+          deploy/automation/02-sap-workflow-zone/01-sap-workflow-zone.sh
         env:
           CP_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           CP_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
