@@ -1,20 +1,7 @@
 #!/usr/bin/env bash
-green="\e[1;32m"
-reset="\e[0m"
-boldred="\e[1;31m"
-cyan="\e[1;36m"
 
-echo "##vso[build.updatebuildnumber]Deploying the SAP Workload zone defined in $(workload_zone_folder)"
-
-# Check if running on deployer
-if [ ! -f /etc/profile.d/deploy_server.sh ]; then
-    echo -e "$green --- Install dos2unix ---$reset"
-    sudo apt-get -qq install dos2unix
-    export AZURE_DEVOPS_EXT_PAT=$PAT
-else
-    source /etc/profile.d/deploy_server.sh
-    export AZURE_DEVOPS_EXT_PAT=$PAT
-fi
+. ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/shared_functions.sh
+. ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
 if [ ! -f $CONFIG_REPO_PATH/LANDSCAPE/$(workload_zone_folder)/$(workload_zone_configuration_file) ]; then
     echo -e "$boldred--- $(workload_zone_configuration_file) was not found ---$reset"
@@ -22,7 +9,7 @@ if [ ! -f $CONFIG_REPO_PATH/LANDSCAPE/$(workload_zone_folder)/$(workload_zone_co
     exit 2
 fi
 
-echo -e "$green--- Checkout $(Build.SourceBranchName) ---$reset"
+echo -e "$green--- Checkout $(Build.SourceBranchName) ---${resetformatting}"
 
 cd $CONFIG_REPO_PATH
 mkdir -p .sap_deployment_automation
@@ -107,7 +94,7 @@ if [ $NETWORK != $NETWORK_IN_FILENAME ]; then
     exit 2
 fi
 
-echo -e "$green--- Configure devops CLI extension ---$reset"
+echo -e "$green--- Configure devops CLI extension ---${resetformatting}"
 az config set extension.use_dynamic_install=yes_without_prompt --output none
 
 az extension add --name azure-devops --output none
@@ -130,7 +117,7 @@ fi
 
 echo "Agent Pool: " $(this_agent)
 
-echo -e "$green--- Set CONFIG_REPO_PATH variable ---$reset"
+echo -e "$green--- Set CONFIG_REPO_PATH variable ---${resetformatting}"
 
 deployer_environment_file_name=$CONFIG_REPO_PATH/.sap_deployment_automation/$(deployer_environment)$(deployer_region)
 echo 'Deployer Environment File' $deployer_environment_file_name
@@ -140,12 +127,12 @@ dos2unix -q ${deployer_environment_file_name}
 dos2unix -q ${workload_environment_file_name}
 
 if [ ! -f ${deployer_environment_file_name} ]; then
-    echo -e "$boldred--- $(deployer_environment)$(deployer_region) was not found ---$reset"
+    echo -e "$boldred--- $(deployer_environment)$(deployer_region) was not found ---${resetformatting}"
     echo "##vso[task.logissue type=error]Control plane configuration file $(deployer_environment)$(deployer_region) was not found."
     exit 2
 fi
 
-echo -e "$green--- Read parameter values ---$reset"
+echo -e "$green--- Read parameter values ---${resetformatting}"
 
 if [ "true" == $(inherit) ]; then
 
@@ -216,7 +203,7 @@ fi
 
 secrets_set=1
 if [ ! -f /etc/profile.d/deploy_server.sh ]; then
-    echo -e "$green --- Install terraform ---$reset"
+    echo -e "$green --- Install terraform ---${resetformatting}"
 
     wget -q $(tf_url)
     return_code=$?
@@ -235,18 +222,18 @@ if [ ! -f /etc/profile.d/deploy_server.sh ]; then
         export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
         export ARM_USE_MSI=false
 
-        echo -e "$green--- az login ---$reset"
+        echo -e "$green--- az login ---${resetformatting}"
         az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
         return_code=$?
         if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---$reset"
+            echo -e "$boldred--- Login failed ---${resetformatting}"
             echo "##vso[task.logissue type=error]az login failed."
             exit $return_code
         fi
     fi
 
 else
-    echo -e "$green--- az login ---$reset"
+    echo -e "$green--- az login ---${resetformatting}"
 
     if [ $LOGON_USING_SPN == "true" ]; then
         echo "Using SPN"
@@ -257,19 +244,19 @@ else
 
     return_code=$?
     if [ 0 != $return_code ]; then
-        echo -e "$boldred--- Login failed ---$reset"
+        echo -e "$boldred--- Login failed ---${resetformatting}"
         echo "##vso[task.logissue type=error]az login failed."
         exit $return_code
     fi
 
     if [ $USE_MSI != "true" ]; then
-        echo -e "$green --- Set secrets ---$reset"
+        echo -e "$green --- Set secrets ---${resetformatting}"
 
         $SAP_AUTOMATION_REPO_PATH/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
             --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
             --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
         secrets_set=$?
-        echo -e "$cyan Set Secrets returned $secrets_set $reset"
+        echo -e "$cyan Set Secrets returned $secrets_set ${resetformatting}"
         az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
     fi
 fi
@@ -286,10 +273,10 @@ if [ $USE_MSI != "true" ]; then
 
     if [ -n "${isUserAccessAdmin}" ]; then
 
-        echo -e "$green--- Set permissions ---$reset"
+        echo -e "$green--- Set permissions ---${resetformatting}"
         perms=$(az role assignment list --subscription ${STATE_SUBSCRIPTION} --role "Reader" --query "[?principalId=='$WL_ARM_CLIENT_ID'].principalId | [0]" -o tsv --only-show-errors)
         if [ -z "$perms" ]; then
-            echo -e "$green --- Assign subscription permissions to $perms ---$reset"
+            echo -e "$green --- Assign subscription permissions to $perms ---${resetformatting}"
             az role assignment create --assignee-object-id $WL_ARM_OBJECT_ID --assignee-principal-type ServicePrincipal --role "Reader" --scope "/subscriptions/${STATE_SUBSCRIPTION}" --output none
         fi
 
@@ -331,7 +318,7 @@ if [ $USE_MSI != "true" ]; then
     fi
 fi
 
-echo -e "$green--- Deploy the workload zone ---$reset"
+echo -e "$green--- Deploy the workload zone ---${resetformatting}"
 cd $CONFIG_REPO_PATH/LANDSCAPE/$(workload_zone_folder)
 if [ -f /etc/profile.d/deploy_server.sh ]; then
     if [ $LOGON_USING_SPN == "true" ]; then
@@ -346,7 +333,7 @@ if [ -f /etc/profile.d/deploy_server.sh ]; then
         az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
         return_code=$?
         if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---$reset"
+            echo -e "$boldred--- Login failed ---${resetformatting}"
             echo "##vso[task.logissue type=error]az login failed."
             exit $return_code
         fi
@@ -365,7 +352,7 @@ else
         az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
         return_code=$?
         if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---$reset"
+            echo -e "$boldred--- Login failed ---${resetformatting}"
             echo "##vso[task.logissue type=error]az login failed."
             exit $return_code
         fi
@@ -411,11 +398,11 @@ else
     fi
 fi
 
-echo -e "$green--- Add & update files in the DevOps Repository ---$reset"
+echo -e "$green--- Add & update files in the DevOps Repository ---${resetformatting}"
 cd $(Build.Repository.LocalPath)
 git pull
 
-echo -e "$green--- Pull latest ---$reset"
+echo -e "$green--- Pull latest ---${resetformatting}"
 cd $CONFIG_REPO_PATH
 git pull
 
