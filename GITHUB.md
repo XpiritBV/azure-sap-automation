@@ -130,8 +130,8 @@ The GitHub runner is a self-hosted runner that runs the GitHub Actions. If you e
 
 
 # Cleanup
-- Delete Azure Resources
-- Delete GitHub runner
-- Delete GitHub App
-- Delete GitHub repository
-- Delete Entra ID App registration(s)
+1. Delete Azure Resources
+1. Delete GitHub runner
+1. Delete GitHub App
+1. Delete GitHub repository
+1. Delete Entra ID App registration(s)
