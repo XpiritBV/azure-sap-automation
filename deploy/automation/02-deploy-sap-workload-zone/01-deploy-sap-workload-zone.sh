@@ -8,10 +8,14 @@ function check_deploy_inputs() {
         "deployerconfig"
         "deployerfolder"
         "SAP_AUTOMATION_REPO_PATH"
-        "ARM_SUBSCRIPTION_ID"
-        "ARM_CLIENT_ID"
-        "ARM_CLIENT_SECRET"
-        "ARM_TENANT_ID"
+        "CP_ARM_SUBSCRIPTION_ID"
+        "CP_ARM_CLIENT_ID"
+        "CP_ARM_CLIENT_SECRET"
+        "CP_ARM_TENANT_ID"
+        "WL_ARM_SUBSCRIPTION_ID"
+        "WL_ARM_CLIENT_ID"
+        "WL_ARM_CLIENT_SECRET"
+        "WL_ARM_TENANT_ID"
     )
 
     case $(get_platform) in
