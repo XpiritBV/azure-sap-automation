@@ -85,64 +85,7 @@ echo Network: ${NETWORK}
 
 ENVIRONMENT_IN_FILENAME=$(echo $(workload_zone_folder) | awk -F'-' '{print $1}' | xargs)
 LOCATION_CODE=$(echo $(workload_zone_folder) | awk -F'-' '{print $2}' | xargs)
-case "$LOCATION_CODE" in
-"AUCE") LOCATION_IN_FILENAME="australiacentral" ;;
-"AUC2") LOCATION_IN_FILENAME="australiacentral2" ;;
-"AUEA") LOCATION_IN_FILENAME="australiaeast" ;;
-"AUSE") LOCATION_IN_FILENAME="australiasoutheast" ;;
-"BRSO") LOCATION_IN_FILENAME="brazilsouth" ;;
-"BRSE") LOCATION_IN_FILENAME="brazilsoutheast" ;;
-"BRUS") LOCATION_IN_FILENAME="brazilus" ;;
-"CACE") LOCATION_IN_FILENAME="canadacentral" ;;
-"CAEA") LOCATION_IN_FILENAME="canadaeast" ;;
-"CEIN") LOCATION_IN_FILENAME="centralindia" ;;
-"CEUS") LOCATION_IN_FILENAME="centralus" ;;
-"CEUA") LOCATION_IN_FILENAME="centraluseuap" ;;
-"EAAS") LOCATION_IN_FILENAME="eastasia" ;;
-"EAUS") LOCATION_IN_FILENAME="eastus" ;;
-"EUSA") LOCATION_IN_FILENAME="eastus2euap" ;;
-"EUS2") LOCATION_IN_FILENAME="eastus2" ;;
-"EUSG") LOCATION_IN_FILENAME="eastusstg" ;;
-"FRCE") LOCATION_IN_FILENAME="francecentral" ;;
-"FRSO") LOCATION_IN_FILENAME="francesouth" ;;
-"GENO") LOCATION_IN_FILENAME="germanynorth" ;;
-"GEWE") LOCATION_IN_FILENAME="germanywest" ;;
-"GEWC") LOCATION_IN_FILENAME="germanywestcentral" ;;
-"ISCE") LOCATION_IN_FILENAME="israelcentral" ;;
-"ITNO") LOCATION_IN_FILENAME="italynorth" ;;
-"JAEA") LOCATION_IN_FILENAME="japaneast" ;;
-"JAWE") LOCATION_IN_FILENAME="japanwest" ;;
-"JINC") LOCATION_IN_FILENAME="jioindiacentral" ;;
-"JINW") LOCATION_IN_FILENAME="jioindiawest" ;;
-"KOCE") LOCATION_IN_FILENAME="koreacentral" ;;
-"KOSO") LOCATION_IN_FILENAME="koreasouth" ;;
-"NCUS") LOCATION_IN_FILENAME="northcentralus" ;;
-"NOEU") LOCATION_IN_FILENAME="northeurope" ;;
-"NOEA") LOCATION_IN_FILENAME="norwayeast" ;;
-"NOWE") LOCATION_IN_FILENAME="norwaywest" ;;
-"PLCE") LOCATION_IN_FILENAME="polandcentral" ;;
-"QACE") LOCATION_IN_FILENAME="qatarcentral" ;;
-"SANO") LOCATION_IN_FILENAME="southafricanorth" ;;
-"SAWE") LOCATION_IN_FILENAME="southafricawest" ;;
-"SCUS") LOCATION_IN_FILENAME="southcentralus" ;;
-"SCUG") LOCATION_IN_FILENAME="southcentralusstg" ;;
-"SOEA") LOCATION_IN_FILENAME="southeastasia" ;;
-"SOIN") LOCATION_IN_FILENAME="southindia" ;;
-"SECE") LOCATION_IN_FILENAME="swedencentral" ;;
-"SWNO") LOCATION_IN_FILENAME="switzerlandnorth" ;;
-"SWWE") LOCATION_IN_FILENAME="switzerlandwest" ;;
-"UACE") LOCATION_IN_FILENAME="uaecentral" ;;
-"UANO") LOCATION_IN_FILENAME="uaenorth" ;;
-"UKSO") LOCATION_IN_FILENAME="uksouth" ;;
-"UKWE") LOCATION_IN_FILENAME="ukwest" ;;
-"WCUS") LOCATION_IN_FILENAME="westcentralus" ;;
-"WEEU") LOCATION_IN_FILENAME="westeurope" ;;
-"WEIN") LOCATION_IN_FILENAME="westindia" ;;
-"WEUS") LOCATION_IN_FILENAME="westus" ;;
-"WUS2") LOCATION_IN_FILENAME="westus2" ;;
-"WUS3") LOCATION_IN_FILENAME="westus3" ;;
-*) LOCATION_IN_FILENAME="westeurope" ;;
-esac
+LOCATION_IN_FILENAME=region_with_region_map ${LOCATION_CODE}
 
 NETWORK_IN_FILENAME=$(echo $(workload_zone_folder) | awk -F'-' '{print $3}' | xargs)
 echo "Environment(filename): $ENVIRONMENT_IN_FILENAME"
