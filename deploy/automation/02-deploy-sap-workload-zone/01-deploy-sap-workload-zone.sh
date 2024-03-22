@@ -117,9 +117,10 @@ if [ $USE_MSI != "true" ]; then
 fi
 
 start_group "Convert config file to UX format"
-dos2unix -q LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file}
+dos2unix -q ${CONFIG_REPO_PATH}/LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file}
 end_group
 
+ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
 ENVIRONMENT=$(grep "^environment" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs)
 LOCATION=$(grep "^location" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs | tr 'A-Z' 'a-z')
 NETWORK=$(grep "^network_logical_name" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs)
@@ -191,7 +192,7 @@ fi
 
 echo -e "$green--- Read parameter values ---${resetformatting}"
 
-if [ "true" == $(inherit) ]; then
+if [ "true" == ${inherit} ]; then
 
     az_var=$(az pipelines variable-group variable list --group-id ${PARENT_VARIABLE_GROUP_ID} --query "Deployer_State_FileName.value" | tr -d \")
     if [ -z ${az_var} ]; then
