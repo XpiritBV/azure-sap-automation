@@ -7,8 +7,6 @@ function check_deploy_inputs() {
     REQUIRED_VARS=(
         "deployerconfig"
         "deployerfolder"
-        "libraryconfig"
-        "libraryfolder"
         "SAP_AUTOMATION_REPO_PATH"
         "ARM_SUBSCRIPTION_ID"
         "ARM_CLIENT_ID"
