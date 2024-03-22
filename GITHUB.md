@@ -130,6 +130,12 @@ The GitHub runner is a self-hosted runner that runs the GitHub Actions. If you e
 
 ## Retry installation of the GitHub runner
 
+The GitHub runner is installed on the Deployer VM in the first step of the deployment. If the runner installation fails, you can retry the installation by following these steps.
+
+- Remove the Custom Script extension `configure_deployer` in the Azure Portal.
+- Remove the runner from the GitHub repository.
+- Run the `Deploy Control Plane` workflow again, with the `Force a re-install` setting enabled.
+
 # Cleanup
 1. Delete Azure Resources
 1. Delete GitHub runner
