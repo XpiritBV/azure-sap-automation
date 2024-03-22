@@ -1,11 +1,11 @@
 # /*---------------------------------------------------------------------------8
 # |                                                                            |
-# |       This workflows deploys the Workload Zone with GitHub Actions         |
+# |     This workflows deploys the SAP Workload Zone with GitHub Actions       |
 # |                                                                            |
 # +------------------------------------4--------------------------------------*/
 
-name: Deploy Workload Zone
-run-name: Deploy Workload Zone  by @${{ github.actor }}
+name: Deploy SAP Workload Zone
+run-name: Deploy SAP Workload Zone by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   deploy_sap_workload_zone:
-    name: Deploy SAP workload zone
+    name: Deploy SAP Workload Zone
     environment: ${{ inputs.deployer }}
     runs-on: self-hosted
     container:
@@ -54,7 +54,7 @@ jobs:
       - name: Deploy SAP Workload Zone
         run: |
           cd ${SAP_AUTOMATION_REPO_PATH}
-          deploy/automation/02-sap-workflow-zone/01-sap-workflow-zone.sh
+          deploy/automation/02-deploy-sap-workload-zone/01-deploy-sap-workload-zone.sh
         env:
           CP_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           CP_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
