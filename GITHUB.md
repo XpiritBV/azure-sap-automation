@@ -126,7 +126,6 @@ The GitHub runner is a self-hosted runner that runs the GitHub Actions. If you e
 
 - Validate the runner is registered in your repository and is **Online** or **Active** in the `Settings` - `Actions` - `Runners` in the GitHub repository.
 - Validate the runner is installed on the VM by validating the output of the VM extension Custom Script named `configure_deployer` in the Azure Portal.
-- Validate the
 
 ## Retry installation of the GitHub runner
 
