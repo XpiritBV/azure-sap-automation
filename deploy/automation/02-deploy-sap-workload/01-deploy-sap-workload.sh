@@ -442,63 +442,27 @@ fi
 if [ -f ${workload_environment_file_name}.md ]; then
     echo "##vso[task.uploadsummary]${workload_environment_file_name}.md"
 fi
-echo -e "$green--- Adding variables to the variable group" $(variable_group) "---$reset"
+
+start_group "Adding variables to platform variable group"
+
 if [ -n $VARIABLE_GROUP_ID ]; then
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query Terraform_Remote_Storage_Account_Name.value --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name Terraform_Remote_Storage_Account_Name --value "${REMOTE_STATE_SA}" --output none --only-show-errors
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name Terraform_Remote_Storage_Account_Name --value "${REMOTE_STATE_SA}" --output none --only-show-errors
-    fi
+    set_value_with_key "Terraform_Remote_Storage_Account_Name" ${REMOTE_STATE_SA}
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query Terraform_Remote_Storage_Subscription.value --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name Terraform_Remote_Storage_Subscription --value "${STATE_SUBSCRIPTION}" --output none --only-show-errors
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name Terraform_Remote_Storage_Subscription --value "${STATE_SUBSCRIPTION}" --output none --only-show-errors
-    fi
+    set_value_with_key "Terraform_Remote_Storage_Subscription" ${STATE_SUBSCRIPTION}
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query Deployer_State_FileName.value --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name Deployer_State_FileName --value "${deployer_tfstate_key}" --output none --only-show-errors
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name Deployer_State_FileName --value "${deployer_tfstate_key}" --output none --only-show-errors
-    fi
+    set_value_with_key "Deployer_State_FileName" ${deployer_tfstate_key}
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query Deployer_Key_Vault.value --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name Deployer_Key_Vault --value ${key_vault} --output none --only-show-errors
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name Deployer_Key_Vault --value ${key_vault} --output none --only-show-errors
-    fi
+    set_value_with_key "Deployer_Key_Vault" ${key_vault}
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${NETWORK}"Workload_Key_Vault.value --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name "${NETWORK}"Workload_Key_Vault --value $workload_key_vault --output none --only-show-errors
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name "${NETWORK}"Workload_Key_Vault --value $workload_key_vault --output none --only-show-errors
-    fi
+    set_value_with_key "Workload_Key_Vault" ${workload_key_vault}
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${NETWORK}"Workload_Secret_Prefix.value --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name "${NETWORK}"Workload_Secret_Prefix --value "${workload_prefix}" --output none --only-show-errors
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name "${NETWORK}"Workload_Secret_Prefix --value "${workload_prefix}" --output none --only-show-errors
-    fi
+    set_value_with_key "${NETWORK}Workload_Secret_Prefix" ${workload_prefix}
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${NETWORK}"Workload_Zone_State_FileName.value --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name "${NETWORK}"Workload_Zone_State_FileName --value "${landscape_tfstate_key}" --output none --only-show-errors
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name "${NETWORK}"Workload_Zone_State_FileName --value "${landscape_tfstate_key}" --output none --only-show-errors
-    fi
+    set_value_with_key "${NETWORK}Workload_Zone_State_FileName" ${landscape_tfstate_key}
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query WZ_PAT.isSecret --output table)
-    if [ -n "${az_var}" ]; then
-        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name WZ_PAT --value $AZURE_DEVOPS_EXT_PAT --output none --only-show-errors --secret true
-    else
-        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name WZ_PAT --value $AZURE_DEVOPS_EXT_PAT --output none --only-show-errors --secret true
-    fi
+    set_value_with_key "Workload_Zone_State_FileName" ${landscape_tfstate_key}
+
+    set_secret_with_key "WZ_PAT" $AZURE_DEVOPS_EXT_PAT
 fi
 
 if [ 0 != $return_code ]; then
