@@ -1,0 +1,40 @@
+# /*---------------------------------------------------------------------------8
+# |                                                                            |
+# |       This workflows deploys the Workload Zone with GitHub Actions         |
+# |                                                                            |
+# +------------------------------------4--------------------------------------*/
+
+name: Deploy Workload Zone
+run-name: Deploy Workload Zone  by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployer:
+        description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
+        required: true
+        type: environment
+      library:
+        default: MGMT-NOEU-SAP_LIBRARY
+        description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
+        type: choice
+        options:
+          - MGMT-NOEU-SAP_LIBRARY
+
+permissions:
+  contents: write
+  id-token: write
+  issues: write
+
+jobs:
+  setup_deployer:
+    name: Prepare the self hosted runners(s)
+    environment: ${{ inputs.deployer }}
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
