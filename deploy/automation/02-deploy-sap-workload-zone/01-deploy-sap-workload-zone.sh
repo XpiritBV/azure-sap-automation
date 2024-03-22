@@ -62,13 +62,13 @@ end_group
 
 echo "Deploying the SAP Workload zone defined in ${workload_zone_folder}"
 
-if [ ! -f $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} ]; then
+if [ ! -f ${CONFIG_REPO_PATH}/LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} ]; then
     exit_error "${workload_zone_configuration_file} was not found" 2
 fi
 
 echo -e "$green--- Checkout $(Build.SourceBranchName) ---${resetformatting}"
 
-cd $CONFIG_REPO_PATH
+cd ${CONFIG_REPO_PATH}
 mkdir -p .sap_deployment_automation
 git checkout -q $(Build.SourceBranchName)
 

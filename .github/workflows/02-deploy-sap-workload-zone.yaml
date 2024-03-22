@@ -14,6 +14,11 @@ on:
         description: "Deployer configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
         required: true
         type: environment
+      workload_zone:
+        description: "Workload zone configuration name, use the following syntax: ENV-LOCA-VNET-INFRASTRUCTURE"
+        required: true
+        type: string
+        default: "DEV-WEEU-SAP01-INFRASTRUCTURE"
       workload_environment:
         description: "Workload environment (DEV, QA, PRD, ...)"
         required: true
@@ -72,3 +77,5 @@ jobs:
           deployerfolder: ${{ inputs.deployer }}
           inherit: ${{ inputs.inherit_settings }}
           workload_environment: ${{ inputs.workload_environment }}
+          workload_zone_folder: ${{ inputs.workload_zone }}
+          workload_zone_configuration_file: ${{ inputs.workload_zone }}.tfvars
