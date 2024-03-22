@@ -15,11 +15,11 @@ on:
         required: true
         type: environment
       library:
-        default: MGMT-NOEU-SAP_LIBRARY
+        default: DVD-WEEU-SAP_LIBRARY
         description: "SAP Library configuration name, use the following syntax: ENV-LOCA-SAP_LIBRARY"
         type: choice
         options:
-          - MGMT-NOEU-SAP_LIBRARY
+          - DVD-WEEU-SAP_LIBRARY
       use_webapp:
         default: true
         description: Deploy the configuration web application infrastructure
