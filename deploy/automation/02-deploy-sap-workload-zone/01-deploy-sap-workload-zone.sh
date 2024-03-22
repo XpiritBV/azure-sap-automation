@@ -4,14 +4,20 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
 function check_deploy_inputs() {
-
     REQUIRED_VARS=(
+        "deployerconfig"
+        "deployerfolder"
+        "libraryconfig"
+        "libraryfolder"
+        "SAP_AUTOMATION_REPO_PATH"
+        "ARM_SUBSCRIPTION_ID"
+        "ARM_CLIENT_ID"
+        "ARM_CLIENT_SECRET"
+        "ARM_TENANT_ID"
     )
 
     case $(get_platform) in
-    github)
-        REQUIRED_VARS+=("deployer")
-        ;;
+    github) ;;
 
     devops)
         REQUIRED_VARS+=("variable_group")
