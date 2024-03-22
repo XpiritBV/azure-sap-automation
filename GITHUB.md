@@ -135,9 +135,13 @@ The GitHub runner is installed on the Deployer VM in the first step of the deplo
 - Remove the runner from the GitHub repository.
 - Run the `Deploy Control Plane` workflow again, with the `Force a re-install` setting enabled.
 
-# Cleanup
-1. Delete Azure Resources
-1. Delete GitHub runner
-1. Delete GitHub App
-1. Delete GitHub repository
-1. Delete Entra ID App registration(s)
+# Clean up resources
+
+After you have finished using the SAP Deployment Automation Framework from GitHub, you can clean up the resources by following these steps.
+
+1. Delete the Azure resources
+2. Delete the resource group(s)
+3. Delete Entra ID App registration(s)
+4. Delete GitHub runner
+5. Delete GitHub App
+6. Delete GitHub repository
