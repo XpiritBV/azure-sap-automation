@@ -422,21 +422,23 @@ git pull
 added=0
 if [ -f ${workload_environment_file_name} ]; then
     git add ${workload_environment_file_name}
-    added=1
 fi
+
 if [ -f ${workload_environment_file_name}.md ]; then
     git add ${workload_environment_file_name}.md
-    added=1
 fi
-if [ -f $(Deployment_Configuration_Path)/LANDSCAPE/$(workload_zone_folder)/.terraform/terraform.tfstate ]; then
-    git add -f $(Deployment_Configuration_Path)/LANDSCAPE/$(workload_zone_folder)/.terraform/terraform.tfstate
-    added=1
+
+if [ -f $(Deployment_Configuration_Path)/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate ]; then
+    git add -f $(Deployment_Configuration_Path)/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate
 fi
-if [ 1 == $added ]; then
-    git config --global user.email "$(Build.RequestedForEmail)"
-    git config --global user.name "$(Build.RequestedFor)"
-    git commit -m "Added updates from devops deployment $(Build.DefinitionName) [skip ci]"
-    git -c http.extraheader="AUTHORIZATION: bearer $(System.AccessToken)" push --set-upstream origin $(Build.SourceBranchName)
+
+set +e
+git diff --cached --quiet
+git_diff_return_code=$?
+set -e
+
+if [ 1 == $git_diff_return_code ]; then
+    commit_changes "Added updates from deployment"
 fi
 
 if [ -f ${workload_environment_file_name}.md ]; then
