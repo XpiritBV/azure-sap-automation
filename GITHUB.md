@@ -1,7 +1,7 @@
 ---
 title: Configure GitHub for SAP Deployment Automation Framework
 description: Configure your GitHub repository for SAP Deployment Automation Framework.
-author: rdeveen
+author: rdeveen, cloudcosmonaut
 ms.author: kimforss
 ms.reviewer: kimforss
 ms.date: 21/03/2024
@@ -57,9 +57,13 @@ This app needs the following repository permissions only for **this** repository
 
 When this is done, you can close this issue and new issues using the issue template **create a new environment**.
 
-## Create a new environment issue
+## Create a new environment
 
+If you want to start to create a new environment to start deploying a deployer, you can do this by creating a new issue on your cloned mirror repository and select the `Create Environment` on tap.
 
+When you open this form, you can enter the name of your environment (e.g. acc, dev, prd, etc. Max 5 characters.),the Azure region you want to deploy to and the VNET your deployer needs to be added to/needs to be created. **note** [more info on the naming convention](https://learn.microsoft.com/en-us/azure/sap/automation/naming).
+
+After you clicked `Submit new issue` a GitHub worklow will be triggered which will create an environment on GitHub to store configuration values and create the configuration file with default settings in your repository. You can look in the `WORKSPACES/DEPLOYER` and `WORKSPACES/LIBRARY`. Depending on your Azure set-up you need to configure this file to make sure the Deployer is using the correct subnet, vnet, private endpoints, etc. **note** [more information about customizing the control plane](https://learn.microsoft.com/en-us/azure/sap/automation/configure-control-plane).
 
 ## Set up the web app
 
