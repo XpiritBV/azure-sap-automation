@@ -26,7 +26,7 @@ To use SAP Deployment Automation Framework from GitHub, you need to have a GitHu
 Use the `https://github.com/XpiritBV/azure-sap-automation-deployer` repository template as a starting point for your own repository. Click the [**Use this template**](https://github.com/new?template_name=azure-sap-automation-deployer&template_owner=XpiritBV) button to create a new repository based on the template.
 
 > [!NOTE]
->  The GitHub Actions is using Environments to store secrets and variables. Make sure your repository can use the [environments feature](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment) and the Issues feature is enabled.
+> The GitHub Actions is using Environments to store secrets and variables. Make sure your repository can use the [environments feature](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment) and the Issues feature is enabled.
 
 After you created the repository, there will be an Issue created with the title "**Create GitHub App**". This issue contains the steps to configure a GitHub App for the repository.
 
@@ -130,8 +130,8 @@ The GitHub runner is a self-hosted runner that runs the GitHub Actions. If you e
 
 
 # Cleanup
-Delete Azure Resources
-Delete GitHub runner
-Delete GitHub App
-Delete GitHub repository
-Delete Entra ID App registration(s)
+- Delete Azure Resources
+- Delete GitHub runner
+- Delete GitHub App
+- Delete GitHub repository
+- Delete Entra ID App registration(s)
