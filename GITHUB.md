@@ -100,7 +100,21 @@ del manifest.json
 
 Save the app registration ID and password values for later use.
 
+# Deploy the Control Plane
 
+The deployment uses the configuration defined in the Terraform variable files located in the /WORKSPACES/DEPLOYER/MGMT-WEEU-DEP00-INFRASTRUCTURE and /WORKSPACES/LIBRARY/MGMT-WEEU-SAP_LIBRARY folders.
+
+1. In the GitHub repository, navigate to the `Actions` tab.
+1. Select the `Deploy Control Plane` workflow.
+1. Click the `Run workflow` button and select the configuration name for the deployer and the SAP library.
+
+![Run Workflow - Deploy Control Plane](RunWorkflowDeployControlPlane.png)
+
+You can track the progress in the `Actions` tab. After the deployment is finished, you can see the control plane details on the summary output.
+
+## Configure the Web Application authentication issue
+
+If the web app is deployed, you need to configure the web app authentication. The issue  **Configure Web Application authentication** is created and contains the steps to configure the web app authentication.
 
 # GitHub runner troubleshooting
 
