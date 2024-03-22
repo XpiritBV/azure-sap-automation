@@ -55,6 +55,9 @@ if [[ $(get_platform) = github ]]; then
     export CONFIG_REPO_PATH=${GITHUB_WORKSPACE}/WORKSPACES
 fi
 
+# TODO:
+export USE_MSI=false
+
 start_group "Setup platform dependencies"
 # Will return vars which we need to export afterwards
 eval "$(setup_dependencies | sed 's/^/export /')"
@@ -66,20 +69,17 @@ if [ ! -f ${CONFIG_REPO_PATH}/LANDSCAPE/${workload_zone_folder}/${workload_zone_
     exit_error "${workload_zone_configuration_file} was not found" 2
 fi
 
-echo -e "$green--- Checkout $(Build.SourceBranchName) ---${resetformatting}"
-
 cd ${CONFIG_REPO_PATH}
-mkdir -p .sap_deployment_automation
-git checkout -q $(Build.SourceBranchName)
 
 start_group "Validations"
 
 if [ -z $WL_ARM_SUBSCRIPTION_ID ]; then
+    # TODO: Relocate this to the check_deploy_inputs function
     echo "##vso[task.logissue type=error]Variable ARM_SUBSCRIPTION_ID was not defined in the $(variable_group) variable group."
     exit 2
 fi
 if [ $USE_MSI != "true" ]; then
-
+    # TODO: Relocate this to the check_deploy_inputs function
     if [ -z $WL_ARM_CLIENT_ID ]; then
         echo "##vso[task.logissue type=error]Variable ARM_CLIENT_ID was not defined in the $(variable_group) variable group."
         exit 2
