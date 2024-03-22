@@ -63,6 +63,14 @@ function __appconfig_set_value_with_key() {
     echo $var
 }
 
+function __appconfig_get_secret_with_key() {
+    key=$1
+
+    var=$(az appconfig kv show -n ${appconfig_name} --key ${key} --label ${variable_group} --query value --secret)
+
+    echo $var
+}
+
 function get_value_with_key() {
     key=$1
 
@@ -91,6 +99,37 @@ function set_value_with_key() {
         __appconfig_set_value_with_key $key $value
     else
         __set_value_with_key $key $value
+    fi
+}
+
+function get_secret_with_key() {
+    key=$1
+
+    if [[ $key == "" ]]; then
+        exit_error "Cannot get secret with an empty key" 1
+    fi
+
+    if [[ -v appconfig_name ]]; then
+        value=$(__appconfig_get_secret_with_key $key)
+    else
+        value=$(__set_secret_with_key $key)
+    fi
+
+    echo $value
+}
+
+function set_secret_with_key() {
+    key=$1
+    value=$2
+
+    if [[ $key == "" ]]; then
+        exit_error "Cannot set secret with an empty key" 1
+    fi
+
+    if [[ -v appconfig_name ]]; then
+        __appconfig_set_secret_with_key $key $value
+    else
+        __set_secret_with_key $key $value
     fi
 }
 
@@ -125,7 +164,7 @@ function set_config_key_with_value() {
     if grep -q "^$key=" "$deployer_environment_file_name"; then
         sed -i "s/^$key=.*/$key=$value/" "$deployer_environment_file_name"
     else
-        echo "$key=$value" >>"$deployer_environment_file_name"
+88       echo "$key=$value" >>"$deployer_environment_file_name"
     fi
 }
 

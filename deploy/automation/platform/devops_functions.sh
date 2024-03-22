@@ -58,6 +58,18 @@ function __get_value_with_key() {
     echo $value
 }
 
+function __set_secret_with_key() {
+    key=$1
+
+    value=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${key}.isSecret")
+
+    if [ -z ${value} ]; then
+        az pipelines variable-group variable create --group-id ${VARIABLE_GROUP_ID} --name $key --secret true --value ${file_key_vault} --output none --only-show-errors
+    else
+        az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name $key --secret true --value ${file_key_vault} --output none --only-show-errors
+    fi
+}
+
 function commit_changes() {
     message=$1
     is_custom_message=${2:-false}
