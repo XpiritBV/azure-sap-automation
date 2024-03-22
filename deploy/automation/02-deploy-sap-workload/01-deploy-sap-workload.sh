@@ -3,10 +3,59 @@
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/shared_functions.sh
 . ${SAP_AUTOMATION_REPO_PATH}/deploy/automation/set-colors.sh
 
-if [ ! -f $CONFIG_REPO_PATH/LANDSCAPE/$(workload_zone_folder)/$(workload_zone_configuration_file) ]; then
-    echo -e "$boldred--- $(workload_zone_configuration_file) was not found ---$reset"
-    echo "##vso[task.logissue type=error]File $(workload_zone_configuration_file) was not found."
-    exit 2
+function check_deploy_inputs() {
+
+    REQUIRED_VARS=(
+    )
+
+    case $(get_platform) in
+    github)
+        REQUIRED_VARS+=("deployer")
+        ;;
+
+    devops)
+        REQUIRED_VARS+=("variable_group")
+        REQUIRED_VARS+=("parent_variable_group")
+        ;;
+
+    *) ;;
+    esac
+
+    success=0
+    for var in "${REQUIRED_VARS[@]}"; do
+        if [[ -z "${!var}" ]]; then
+            success=1
+            log_warning "Missing required variable: ${var}"
+        fi
+    done
+
+    return $success
+}
+
+start_group "Check all required inputs are set"
+check_deploy_inputs
+if [ $? == 0 ]; then
+    echo "All required variables are set"
+else
+    exit_error "Missing required variables" 1
+fi
+end_group
+
+set -euo pipefail
+
+if [[ $(get_platform) = github ]]; then
+    export CONFIG_REPO_PATH=${GITHUB_WORKSPACE}/WORKSPACES
+fi
+
+start_group "Setup platform dependencies"
+# Will return vars which we need to export afterwards
+eval "$(setup_dependencies | sed 's/^/export /')"
+end_group
+
+echo "Deploying the SAP Workload zone defined in ${workload_zone_folder}"
+
+if [ ! -f $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} ]; then
+    exit_error "${workload_zone_configuration_file} was not found" 2
 fi
 
 echo -e "$green--- Checkout $(Build.SourceBranchName) ---${resetformatting}"
@@ -15,7 +64,7 @@ cd $CONFIG_REPO_PATH
 mkdir -p .sap_deployment_automation
 git checkout -q $(Build.SourceBranchName)
 
-echo -e "$green--- Validations ---$reset"
+start_group "Validations"
 
 if [ -z $WL_ARM_SUBSCRIPTION_ID ]; then
     echo "##vso[task.logissue type=error]Variable ARM_SUBSCRIPTION_ID was not defined in the $(variable_group) variable group."
@@ -59,38 +108,38 @@ if [ $USE_MSI != "true" ]; then
     fi
 fi
 
-echo -e "$green--- Convert config file to UX format ---$reset"
-dos2unix -q LANDSCAPE/$(workload_zone_folder)/$(workload_zone_configuration_file)
-echo -e "$green--- Read details ---$reset"
+start_group "Convert config file to UX format"
+dos2unix -q LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file}
+end_group
 
-ENVIRONMENT=$(grep "^environment" LANDSCAPE/$(workload_zone_folder)/$(workload_zone_configuration_file) | awk -F'=' '{print $2}' | xargs)
-LOCATION=$(grep "^location" LANDSCAPE/$(workload_zone_folder)/$(workload_zone_configuration_file) | awk -F'=' '{print $2}' | xargs | tr 'A-Z' 'a-z')
-NETWORK=$(grep "^network_logical_name" LANDSCAPE/$(workload_zone_folder)/$(workload_zone_configuration_file) | awk -F'=' '{print $2}' | xargs)
+ENVIRONMENT=$(grep "^environment" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs)
+LOCATION=$(grep "^location" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs | tr 'A-Z' 'a-z')
+NETWORK=$(grep "^network_logical_name" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs)
 echo Environment: ${ENVIRONMENT}
 echo Location: ${LOCATION}
 echo Network: ${NETWORK}
 
-ENVIRONMENT_IN_FILENAME=$(echo $(workload_zone_folder) | awk -F'-' '{print $1}' | xargs)
-LOCATION_CODE=$(echo $(workload_zone_folder) | awk -F'-' '{print $2}' | xargs)
+ENVIRONMENT_IN_FILENAME=$(echo ${workload_zone_folder} | awk -F'-' '{print $1}' | xargs)
+LOCATION_CODE=$(echo ${workload_zone_folder} | awk -F'-' '{print $2}' | xargs)
 LOCATION_IN_FILENAME=region_with_region_map ${LOCATION_CODE}
 
-NETWORK_IN_FILENAME=$(echo $(workload_zone_folder) | awk -F'-' '{print $3}' | xargs)
+NETWORK_IN_FILENAME=$(echo ${workload_zone_folder} | awk -F'-' '{print $3}' | xargs)
 echo "Environment(filename): $ENVIRONMENT_IN_FILENAME"
 echo "Location(filename):    $LOCATION_IN_FILENAME"
 echo "Network(filename):     $NETWORK_IN_FILENAME"
 
 if [ $ENVIRONMENT != $ENVIRONMENT_IN_FILENAME ]; then
-    echo "##vso[task.logissue type=error]The environment setting in $(workload_zone_configuration_file) '$ENVIRONMENT' does not match the $(workload_zone_configuration_file) file name '$ENVIRONMENT_IN_FILENAME'. Filename should have the pattern [ENVIRONMENT]-[REGION_CODE]-[NETWORK_LOGICAL_NAME]-INFRASTRUCTURE"
+    echo "##vso[task.logissue type=error]The environment setting in ${workload_zone_configuration_file} '$ENVIRONMENT' does not match the ${workload_zone_configuration_file} file name '$ENVIRONMENT_IN_FILENAME'. Filename should have the pattern [ENVIRONMENT]-[REGION_CODE]-[NETWORK_LOGICAL_NAME]-INFRASTRUCTURE"
     exit 2
 fi
 
 if [ $LOCATION != $LOCATION_IN_FILENAME ]; then
-    echo "##vso[task.logissue type=error]The location setting in $(workload_zone_configuration_file) '$LOCATION' does not match the $(workload_zone_configuration_file) file name '$LOCATION_IN_FILENAME'. Filename should have the pattern [ENVIRONMENT]-[REGION_CODE]-[NETWORK_LOGICAL_NAME]-INFRASTRUCTURE"
+    echo "##vso[task.logissue type=error]The location setting in ${workload_zone_configuration_file} '$LOCATION' does not match the ${workload_zone_configuration_file} file name '$LOCATION_IN_FILENAME'. Filename should have the pattern [ENVIRONMENT]-[REGION_CODE]-[NETWORK_LOGICAL_NAME]-INFRASTRUCTURE"
     exit 2
 fi
 
 if [ $NETWORK != $NETWORK_IN_FILENAME ]; then
-    echo "##vso[task.logissue type=error]The network_logical_name setting in $(workload_zone_configuration_file) '$NETWORK' does not match the $(workload_zone_configuration_file) file name '$NETWORK_IN_FILENAME-. Filename should have the pattern [ENVIRONMENT]-[REGION_CODE]-[NETWORK_LOGICAL_NAME]-INFRASTRUCTURE"
+    echo "##vso[task.logissue type=error]The network_logical_name setting in ${workload_zone_configuration_file} '$NETWORK' does not match the ${workload_zone_configuration_file} file name '$NETWORK_IN_FILENAME-. Filename should have the pattern [ENVIRONMENT]-[REGION_CODE]-[NETWORK_LOGICAL_NAME]-INFRASTRUCTURE"
     exit 2
 fi
 
@@ -319,7 +368,7 @@ if [ $USE_MSI != "true" ]; then
 fi
 
 echo -e "$green--- Deploy the workload zone ---${resetformatting}"
-cd $CONFIG_REPO_PATH/LANDSCAPE/$(workload_zone_folder)
+cd $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}
 if [ -f /etc/profile.d/deploy_server.sh ]; then
     if [ $LOGON_USING_SPN == "true" ]; then
         echo "Logon Using SPN"
@@ -361,13 +410,13 @@ else
 fi
 
 if [ $USE_MSI != "true" ]; then
-    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/install_workloadzone.sh --parameterfile $(workload_zone_configuration_file) \
+    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
         --deployer_environment $(deployer_environment) --subscription $(ARM_SUBSCRIPTION_ID) \
         --spn_id $WL_ARM_CLIENT_ID --spn_secret $WL_ARM_CLIENT_SECRET --tenant_id $WL_ARM_TENANT_ID \
         --deployer_tfstate_key "${deployer_tfstate_key}" --keyvault "${key_vault}" --storageaccountname "${REMOTE_STATE_SA}" \
         --state_subscription "${STATE_SUBSCRIPTION}" --auto-approve --ado
 else
-    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/install_workloadzone.sh --parameterfile $(workload_zone_configuration_file) \
+    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
         --deployer_environment $(deployer_environment) --subscription $(ARM_SUBSCRIPTION_ID) \
         --deployer_tfstate_key "${deployer_tfstate_key}" --keyvault "${key_vault}" --storageaccountname "${REMOTE_STATE_SA}" \
         --state_subscription "${STATE_SUBSCRIPTION}" --auto-approve --ado --msi
@@ -429,7 +478,7 @@ if [ 1 == $git_diff_return_code ]; then
 fi
 
 if [ -f ${workload_environment_file_name}.md ]; then
-    echo "##vso[task.uploadsummary]${workload_environment_file_name}.md"
+    upload_summary ${workload_environment_file_name}.md
 fi
 
 start_group "Adding variables to platform variable group"
