@@ -106,11 +106,11 @@ Save the app registration ID and password values for later use.
 
 # Deploy the Control Plane
 
-The deployment uses the configuration defined in the Terraform variable files located in the /WORKSPACES/DEPLOYER/MGMT-WEEU-DEP00-INFRASTRUCTURE and /WORKSPACES/LIBRARY/MGMT-WEEU-SAP_LIBRARY folders.
+The deployment uses the configuration defined in the Terraform variable files located in the `/WORKSPACES/DEPLOYER` and `/WORKSPACES/LIBRARY` folders.
 
 1. In the GitHub repository, navigate to the `Actions` tab.
-1. Select the `Deploy Control Plane` workflow.
-1. Click the `Run workflow` button and select the configuration name for the deployer and the SAP library.
+2. Select the `Deploy Control Plane` workflow.
+3. Click the `Run workflow` button and select the configuration name for the deployer and the SAP library.
 
 ![Run Workflow - Deploy Control Plane](RunWorkflowDeployControlPlane.png)
 
@@ -127,6 +127,8 @@ The GitHub runner is a self-hosted runner that runs the GitHub Actions. If you e
 - Validate the runner is registered in your repository and is **Online** or **Active** in the `Settings` - `Actions` - `Runners` in the GitHub repository.
 - Validate the runner is installed on the VM by validating the output of the VM extension Custom Script named `configure_deployer` in the Azure Portal.
 - Validate the
+
+## Retry installation of the GitHub runner
 
 # Cleanup
 1. Delete Azure Resources
