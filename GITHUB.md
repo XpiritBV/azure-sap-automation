@@ -65,44 +65,21 @@ When you open this form, you can enter the name of your environment (e.g. acc, d
 
 After you clicked `Submit new issue` a GitHub worklow will be triggered which will create an environment on GitHub to store configuration values and create the configuration file with default settings in your repository. You can look in the `WORKSPACES/DEPLOYER` and `WORKSPACES/LIBRARY`. Depending on your Azure set-up you need to configure this file to make sure the Deployer is using the correct subnet, vnet, private endpoints, etc. **note** [more information about customizing the control plane](https://learn.microsoft.com/en-us/azure/sap/automation/configure-control-plane).
 
-## Set up the web app
+# Link Azure to GitHub issue
 
-The automation framework optionally provisions a web app as a part of the control plane to assist with the SAP workload zone and system configuration files. If you want to use the web app, you must first create an app registration for authentication purposes. Open Azure Cloud Shell and run the following commands.
+The next thing we need to do do be able to setup our deployer on Azure, is to [connect GitHub and Azure together using OpenID connect](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#set-up-azure-login-with-openid-connect-authentication). Please follow this link, and create the following secrets:
 
-# [Linux](#tab/linux)
+- Application (client) ID: as `AZURE_CLIENT_ID` in `environment secrets`
+- Client secret: as `AZURE_CLIENT_SECRET` in `environment secrets`
+- Directory (tenant) ID: as `AZURE_TENANT_ID` in `environment secrets`
+- Subscription ID: as `AZURE_SUBSCRIPTION_ID` in `environment secrets`
 
-Replace `MGMT` with your environment, as necessary.
+If you need to deploy the Control Plane Web Application credentials create an app registration as described [here](https://learn.microsoft.com/en-gb/azure/sap/automation/configure-webapp?tabs=linux#create-an-app-registration).
 
-```bash
-echo '[{"resourceAppId":"00000003-0000-0000-c000-000000000000","resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}]}]' >> manifest.json
+- App registration ID: as `APP_REGISTRATION_APP_ID` in `environment secrets`
+- App registration password: as `WEB_APP_CLIENT_SECRET` in `environment secrets`
 
-TF_VAR_app_registration_app_id=$(az ad app create --display-name MGMT-webapp-registration --enable-id-token-issuance true --sign-in-audience AzureADMyOrg --required-resource-access @manifest.json --query "appId" | tr -d '"')
-
-echo $TF_VAR_app_registration_app_id
-
-az ad app credential reset --id $TF_VAR_app_registration_app_id --append --query "password"
-
-rm manifest.json
-```
-
-# [Windows](#tab/windows)
-
-Replace `MGMT` with your environment, as necessary.
-
-```powershell
-Add-Content -Path manifest.json -Value '[{"resourceAppId":"00000003-0000-0000-c000-000000000000","resourceAccess":[{"id":"e1fe6dd8-ba31-4d61-89e7-88639da4683d","type":"Scope"}]}]'
-
-$TF_VAR_app_registration_app_id=(az ad app create --display-name MGMT-webapp-registration --enable-id-token-issuance true --sign-in-audience AzureADMyOrg --required-resource-access .\manifest.json --query "appId").Replace('"',"")
-
-echo $TF_VAR_app_registration_app_id
-
-az ad app credential reset --id $TF_VAR_app_registration_app_id --append --query "password"
-
-del manifest.json
-```
----
-
-Save the app registration ID and password values for later use.
+When you saved these secrets, please close this issue. A workflow will be triggered to validate the configuration. If the configuration is correct, the issue will be closed automatically. If the configuration is incorrect, the issue will be reopened.
 
 # Deploy the Control Plane
 
