@@ -176,7 +176,6 @@ workload_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${
 echo "Workload Environment File: " ${workload_environment_file_name}
 
 if [ ! -f ${deployer_environment_file_name} ]; then
-    echo -e "$boldred--- ${deployer_environment}${deployer_location} was not found ---${resetformatting}"
     exit_error "Control plane configuration file ${deployer_environment}${deployer_location} was not found." 2
 fi
 
@@ -268,7 +267,6 @@ if [ $USE_MSI != "true" ]; then
     return_code=$?
 
     if [ 0 != $return_code ]; then
-        echo -e "$boldred--- Login failed ---${resetformatting}"
         exit_error "az login failed." $return_code
     fi
 fi
@@ -288,7 +286,6 @@ else
 
     return_code=$?
     if [ 0 != $return_code ]; then
-        echo -e "$boldred--- Login failed ---${resetformatting}"
         exit_error "az login failed." $return_code
     fi
 
@@ -306,7 +303,6 @@ fi
 
 return_code=$?
 if [ 0 != $return_code ]; then
-    echo -e "$boldred--- Login failed ---${resetformatting}"
     exit_error "az login failed." $return_code
 fi
 
@@ -392,7 +388,6 @@ if [ $USE_MSI != "true" ]; then
     az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
     return_code=$?
     if [ 0 != $return_code ]; then
-        echo -e "$boldred--- Login failed ---${resetformatting}"
         exit_error "az login failed." $return_code
     fi
 fi
