@@ -75,43 +75,43 @@ start_group "Validations"
 
 if [ -z $WL_ARM_SUBSCRIPTION_ID ]; then
     # TODO: Relocate this to the check_deploy_inputs function
-    echo "##vso[task.logissue type=error]Variable ARM_SUBSCRIPTION_ID was not defined in the $(variable_group) variable group."
+    echo "##vso[task.logissue type=error]Variable ARM_SUBSCRIPTION_ID was not defined in the ${variable_group} variable group."
     exit 2
 fi
 if [ $USE_MSI != "true" ]; then
     # TODO: Relocate this to the check_deploy_inputs function
     if [ -z $WL_ARM_CLIENT_ID ]; then
-        echo "##vso[task.logissue type=error]Variable ARM_CLIENT_ID was not defined in the $(variable_group) variable group."
+        echo "##vso[task.logissue type=error]Variable ARM_CLIENT_ID was not defined in the ${variable_group} variable group."
         exit 2
     fi
 
     if [ -z $WL_ARM_CLIENT_SECRET ]; then
-        echo "##vso[task.logissue type=error]Variable ARM_CLIENT_SECRET was not defined in the $(variable_group) variable group."
+        echo "##vso[task.logissue type=error]Variable ARM_CLIENT_SECRET was not defined in the ${variable_group} variable group."
         exit 2
     fi
 
     if [ -z $WL_ARM_TENANT_ID ]; then
-        echo "##vso[task.logissue type=error]Variable ARM_TENANT_ID was not defined in the $(variable_group) variable group."
+        echo "##vso[task.logissue type=error]Variable ARM_TENANT_ID was not defined in the ${variable_group} variable group."
         exit 2
     fi
 
     if [ -z $CP_ARM_SUBSCRIPTION_ID ]; then
-        echo "##vso[task.logissue type=error]Variable CP_ARM_SUBSCRIPTION_ID was not defined in the $(parent_variable_group) variable group."
+        echo "##vso[task.logissue type=error]Variable CP_ARM_SUBSCRIPTION_ID was not defined in the ${parent_variable_group} variable group."
         exit 2
     fi
 
     if [ -z $CP_ARM_CLIENT_ID ]; then
-        echo "##vso[task.logissue type=error]Variable CP_ARM_CLIENT_ID was not defined in the $(parent_variable_group) variable group."
+        echo "##vso[task.logissue type=error]Variable CP_ARM_CLIENT_ID was not defined in the ${parent_variable_group} variable group."
         exit 2
     fi
 
     if [ -z $CP_ARM_CLIENT_SECRET ]; then
-        echo "##vso[task.logissue type=error]Variable CP_ARM_CLIENT_SECRET was not defined in the $(parent_variable_group) variable group."
+        echo "##vso[task.logissue type=error]Variable CP_ARM_CLIENT_SECRET was not defined in the ${parent_variable_group} variable group."
         exit 2
     fi
 
     if [ -z $CP_ARM_TENANT_ID ]; then
-        echo "##vso[task.logissue type=error]Variable CP_ARM_TENANT_ID was not defined in the $(parent_variable_group) variable group."
+        echo "##vso[task.logissue type=error]Variable CP_ARM_TENANT_ID was not defined in the ${parent_variable_group} variable group."
         exit 2
     fi
 fi
@@ -154,16 +154,16 @@ if [ $NETWORK != $NETWORK_IN_FILENAME ]; then
 fi
 
 if [[ $(get_platform) = devops ]]; then
-    export PARENT_VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='$(parent_variable_group)'].id | [0]")
-    echo "$(parent_variable_group) id: : " $PARENT_VARIABLE_GROUP_ID
+    export PARENT_VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${parent_variable_group}'].id | [0]")
+    echo "${parent_variable_group} id: : " $PARENT_VARIABLE_GROUP_ID
     if [ -z ${PARENT_VARIABLE_GROUP_ID} ]; then
-        exit_error "Variable group $(parent_variable_group) could not be found." 2
+        exit_error "Variable group ${parent_variable_group} could not be found." 2
     fi
 
-    export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='$(variable_group)'].id | [0]")
-    echo "$(variable_group) id: : " $VARIABLE_GROUP_ID
+    export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
+    echo "${variable_group} id: : " $VARIABLE_GROUP_ID
     if [ -z ${VARIABLE_GROUP_ID} ]; then
-        exit_error "Variable group $(variable_group) could not be found." 2
+        exit_error "Variable group ${variable_group} could not be found." 2
     fi
 
     echo "Agent Pool: " $(this_agent)
