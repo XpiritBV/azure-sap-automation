@@ -305,18 +305,25 @@ secrets_set=1
 if [ $USE_MSI != "true" ]; then
     echo -e "$green --- Set secrets ---${resetformatting}"
 
-    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
-        --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
-        --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set_secrets.sh \
+        --workload \
+        --vault ${key_vault} \
+        --environment ${ENVIRONMENT} \
+        --region ${LOCATION} \
+        --subscription ${WL_ARM_SUBSCRIPTION_ID} \
+        --spn_id ${WL_ARM_CLIENT_ID} \
+        --spn_secret ${WL_ARM_CLIENT_SECRET} \
+        --tenant_id ${WL_ARM_TENANT_ID} \
+        --keyvault_subscription ${STATE_SUBSCRIPTION}
     secrets_set=$?
-    echo -e "$cyan Set Secrets returned $secrets_set ${resetformatting}"
+    echo -e "$cyan Set Secrets returned ${secrets_set} ${resetformatting}"
     az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
 fi
 
 if [ $USE_MSI != "true" ]; then
     az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
 
-    isUserAccessAdmin=$(az role assignment list --role "User Access Administrator" --subscription $STATE_SUBSCRIPTION --query "[?principalType=='ServicePrincipal'].principalId | [0] " --assignee $CP_ARM_CLIENT_ID)
+    isUserAccessAdmin=$(az role assignment list --role "User Access Administrator" --subscription ${STATE_SUBSCRIPTION} --query "[?principalType=='ServicePrincipal'].principalId | [0] " --assignee $CP_ARM_CLIENT_ID)
 
     tfstate_resource_id=$(az resource list --name "${REMOTE_STATE_SA}" --subscription ${STATE_SUBSCRIPTION} --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
 
