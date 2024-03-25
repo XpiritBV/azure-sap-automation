@@ -157,25 +157,25 @@ fi
 
 if [[ $(get_platform) = devops ]]; then
     export PARENT_VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${parent_variable_group}'].id | [0]")
-    echo "${parent_variable_group} id: : " $PARENT_VARIABLE_GROUP_ID
+    echo "${parent_variable_group} id" $PARENT_VARIABLE_GROUP_ID
     if [ -z ${PARENT_VARIABLE_GROUP_ID} ]; then
         exit_error "Variable group ${parent_variable_group} could not be found." 2
     fi
 
     export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='${variable_group}'].id | [0]")
-    echo "${variable_group} id: : " $VARIABLE_GROUP_ID
+    echo "${variable_group} id: " $VARIABLE_GROUP_ID
     if [ -z ${VARIABLE_GROUP_ID} ]; then
         exit_error "Variable group ${variable_group} could not be found." 2
     fi
 
-    echo "Agent Pool: " $(this_agent)
+    echo "Agent Pool" $(this_agent)
 fi
 
 start_group "Configure parameters files"
 deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${deployer_environment}${deployer_location}
-echo "Deployer Environment File: " ${deployer_environment_file_name}
+echo "Deployer Environment File: ${deployer_environment_file_name}"
 workload_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION_CODE}${NETWORK}
-echo "Workload Environment File: " ${workload_environment_file_name}
+echo "Workload Environment File: ${workload_environment_file_name}"
 
 if [ ! -f ${deployer_environment_file_name} ]; then
     exit_error "Control plane configuration file ${deployer_environment}${deployer_location} was not found." 2
@@ -195,7 +195,7 @@ echo -e "$green--- Read parameter values ---${resetformatting}"
     else
         deployer_tfstate_key=${var}
     fi
-    echo "Deployer State File: " $deployer_tfstate_key
+    echo "Deployer State File:" $deployer_tfstate_key
 
     var=$(get_value_with_key "Deployer_Key_Vault")
     if [ -z ${var} ]; then
@@ -203,7 +203,7 @@ echo -e "$green--- Read parameter values ---${resetformatting}"
     else
         key_vault=${var}
     fi
-    echo "Deployer Key Vault: " ${key_vault}
+    echo "Deployer Key Vault: ${key_vault}"
 
     var=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
     if [ -z ${var} ]; then
@@ -211,7 +211,7 @@ echo -e "$green--- Read parameter values ---${resetformatting}"
     else
         REMOTE_STATE_SA=${var}
     fi
-    echo "Terraform state file storage account: " $REMOTE_STATE_SA
+    echo "Terraform state file storage account: ${REMOTE_STATE_SA}"
 
     var=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
     if [ -z ${var} ]; then
@@ -219,34 +219,34 @@ echo -e "$green--- Read parameter values ---${resetformatting}"
     else
         STATE_SUBSCRIPTION=${var}
     fi
-    echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
+    echo "Terraform state file subscription: ${STATE_SUBSCRIPTION}"
 
-    var=$(get_value_with_key "ARM_SUBSCRIPTION_ID")
-    if [ -z ${var} ]; then
-        exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
-    else
-        echo "Target subscription: " $WL_ARM_SUBSCRIPTION_ID
-    fi
+    # var=$(get_value_with_key "ARM_SUBSCRIPTION_ID")
+    # if [ -z ${var} ]; then
+    #     exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
+    # else
+    #     echo "Target subscription: ${WL_ARM_SUBSCRIPTION_ID}"
+    # fi
 
     var=$(get_value_with_key "Workload_Key_Vault")
     if [ -z ${var} ]; then
         if [ -f ${workload_environment_file_name} ]; then
             export workload_key_vault=$(config_value_with_key "workload_key_vault" ${workload_environment_file_name})
-            echo "Workload Key Vault: " ${workload_key_vault}
+            echo "Workload Key Vault: ${workload_key_vault}"
         fi
     else
         export workload_key_vault=$(Workload_Key_Vault)
-        echo "Workload Key Vault: " ${workload_key_vault}
+        echo "Workload Key Vault: ${workload_key_vault}"
     fi
 # else
 #     deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
-#     echo "Deployer State File: " $deployer_tfstate_key
+#     echo "Deployer State File" $deployer_tfstate_key
 #     key_vault=$(config_value_with_key "workload_key_vault" ${workload_environment_file_name})
-#     echo "Workload Key Vault: " ${key_vault}
+#     echo "Workload Key Vault" ${key_vault}
 #     REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA" ${workload_environment_file_name})
-#     echo "Terraform state file storage account: " $REMOTE_STATE_SA
+#     echo "Terraform state file storage account" $REMOTE_STATE_SA
 #     STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION" ${workload_environment_file_name})
-#     echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
+#     echo "Terraform state file subscription" $STATE_SUBSCRIPTION
 # fi
 
 secrets_set=1
@@ -386,27 +386,40 @@ fi
 
 
 if [ $USE_MSI != "true" ]; then
-    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
-        --deployer_environment ${deployer_environment} --subscription ${ARM_SUBSCRIPTION_ID} \
-        --spn_id $WL_ARM_CLIENT_ID --spn_secret $WL_ARM_CLIENT_SECRET --tenant_id $WL_ARM_TENANT_ID \
-        --deployer_tfstate_key "${deployer_tfstate_key}" --keyvault "${key_vault}" --storageaccountname "${REMOTE_STATE_SA}" \
-        --state_subscription "${STATE_SUBSCRIPTION}" --auto-approve --ado
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh \
+        --parameterfile ${workload_zone_configuration_file} \
+        --deployer_environment ${deployer_environment} \
+        --subscription ${WL_ARM_SUBSCRIPTION_ID} \
+        --spn_id $WL_ARM_CLIENT_ID \
+        --spn_secret $WL_ARM_CLIENT_SECRET \
+        --tenant_id $WL_ARM_TENANT_ID \
+        --deployer_tfstate_key "${deployer_tfstate_key}" \
+        --keyvault "${key_vault}" \
+        --storageaccountname "${REMOTE_STATE_SA}" \
+        --state_subscription "${STATE_SUBSCRIPTION}" \
+        --auto-approve  # TODO: --ado
 else
-    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
-        --deployer_environment ${deployer_environment} --subscription ${ARM_SUBSCRIPTION_ID} \
-        --deployer_tfstate_key "${deployer_tfstate_key}" --keyvault "${key_vault}" --storageaccountname "${REMOTE_STATE_SA}" \
-        --state_subscription "${STATE_SUBSCRIPTION}" --auto-approve --ado --msi
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh \
+        --parameterfile ${workload_zone_configuration_file} \
+        --deployer_environment ${deployer_environment} \
+        --subscription ${WL_ARM_SUBSCRIPTION_ID} \
+        --deployer_tfstate_key "${deployer_tfstate_key}" \
+        --keyvault "${key_vault}" \
+        --storageaccountname "${REMOTE_STATE_SA}" \
+        --state_subscription "${STATE_SUBSCRIPTION}" \
+        --auto-approve \
+        --msi # TODO: --ado
 fi
 return_code=$?
 
 echo "Return code: ${return_code}"
 if [ -f ${workload_environment_file_name} ]; then
     export workload_key_vault=$(cat ${workload_environment_file_name} | grep workloadkeyvault= | awk -F'=' '{print $2}' | xargs)
-    echo "Workload Key Vault: " ${workload_key_vault}
+    echo "Workload Key Vault: ${workload_key_vault}"
     export workload_prefix=$(cat ${workload_environment_file_name} | grep workload_zone_prefix= | awk -F'=' '{print $2}' | xargs)
-    echo "Workload Prefix: " ${workload_prefix}
+    echo "Workload Prefix: ${workload_prefix}"
     export landscape_tfstate_key=$(cat ${workload_environment_file_name} | grep landscape_tfstate_key= | awk -F'=' '{print $2}' | xargs)
-    echo "Workload Zone State File: " ${landscape_tfstate_key}
+    echo "Workload Zone State File: ${landscape_tfstate_key}"
 fi
 
 az logout --output none
