@@ -260,64 +260,33 @@ else
 fi
 
 secrets_set=1
-if [ ! -f /etc/profile.d/deploy_server.sh ]; then
-    echo -e "$green --- Install terraform ---${resetformatting}"
+echo -e "$green--- az login ---${resetformatting}"
 
-    wget -q $(tf_url)
-    return_code=$?
-    if [ 0 != $return_code ]; then
-        echo "##vso[task.logissue type=error]Unable to download Terraform version $(tf_version)."
-        exit 2
-    fi
-    unzip -qq terraform_$(tf_version)_linux_amd64.zip
-    sudo mv terraform /bin/
-    rm -f terraform_$(tf_version)_linux_amd64.zip
-
-    if [ $USE_MSI != "true" ]; then
-        export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-        export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-        export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-        export ARM_USE_MSI=false
-
-        echo -e "$green--- az login ---${resetformatting}"
-        az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
-        return_code=$?
-        if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---${resetformatting}"
-            echo "##vso[task.logissue type=error]az login failed."
-            exit $return_code
-        fi
-    fi
-
+if [ $LOGON_USING_SPN == "true" ]; then
+    echo "Using SPN"
+    az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
 else
-    echo -e "$green--- az login ---${resetformatting}"
-
-    if [ $LOGON_USING_SPN == "true" ]; then
-        echo "Using SPN"
-        az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
-    else
-        az login --identity --allow-no-subscriptions --output none
-    fi
-
-    return_code=$?
-    if [ 0 != $return_code ]; then
-        echo -e "$boldred--- Login failed ---${resetformatting}"
-        echo "##vso[task.logissue type=error]az login failed."
-        exit $return_code
-    fi
-
-    if [ $USE_MSI != "true" ]; then
-        echo -e "$green --- Set secrets ---${resetformatting}"
-
-        $SAP_AUTOMATION_REPO_PATH/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
-            --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
-            --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
-        secrets_set=$?
-        echo -e "$cyan Set Secrets returned $secrets_set ${resetformatting}"
-        az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
-    fi
+    az login --identity --allow-no-subscriptions --output none
 fi
+
+return_code=$?
+if [ 0 != $return_code ]; then
+    echo -e "$boldred--- Login failed ---${resetformatting}"
+    echo "##vso[task.logissue type=error]az login failed."
+    exit $return_code
+fi
+
+if [ $USE_MSI != "true" ]; then
+    echo -e "$green --- Set secrets ---${resetformatting}"
+
+    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
+        --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
+        --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
+    secrets_set=$?
+    echo -e "$cyan Set Secrets returned $secrets_set ${resetformatting}"
+    az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
+fi
+
 
 debug_variable='--output none'
 debug_variable=''
@@ -378,44 +347,21 @@ fi
 
 echo -e "$green--- Deploy the workload zone ---${resetformatting}"
 cd $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}
-if [ -f /etc/profile.d/deploy_server.sh ]; then
-    if [ $LOGON_USING_SPN == "true" ]; then
-        echo "Logon Using SPN"
 
-        az logout --output none
-        export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-        export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-        export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-        export ARM_USE_MSI=false
-        az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
-        return_code=$?
-        if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---${resetformatting}"
-            echo "##vso[task.logissue type=error]az login failed."
-            exit $return_code
-        fi
-    else
-        export ARM_USE_MSI=true
-        az login --identity --allow-no-subscriptions --output none
+if [ $USE_MSI != "true" ]; then
+    az logout --output none
+    export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
+    export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
+    export ARM_TENANT_ID=$WL_ARM_TENANT_ID
+    export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
+    export ARM_USE_MSI=false
+    az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
+    return_code=$?
+    if [ 0 != $return_code ]; then
+        echo -e "$boldred--- Login failed ---${resetformatting}"
+        echo "##vso[task.logissue type=error]az login failed."
+        exit $return_code
     fi
-else
-    if [ $USE_MSI != "true" ]; then
-        az logout --output none
-        export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-        export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-        export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-        export ARM_USE_MSI=false
-        az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
-        return_code=$?
-        if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---${resetformatting}"
-            echo "##vso[task.logissue type=error]az login failed."
-            exit $return_code
-        fi
-    fi
-
 fi
 
 if [ $USE_MSI != "true" ]; then
