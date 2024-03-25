@@ -14,8 +14,8 @@ permissions:
   issues: write
 
 jobs:
-  deploy_sap_workload_zone:
-    name: Test Azure Login
+  test_spn_login:
+    name: Test SPN Azure Login
     environment: ${{ inputs.deployer }}
     runs-on: self-hosted
     container:
@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Test SPN Login
         run: |
-          az login
+          az login --service-principal
           az account show
           az logout
         env:
@@ -33,30 +33,37 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         continue-on-error: true
 
-      - name: Test MSI Login
-        run: |
-          az login --identity
-          az account show
-          az logout
-
-      - name: Azure login IDENTITY
-        uses: Azure/login@v2
-        with:
-          auth-type: IDENTITY
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Test IDENTITY Login
-        run: |
-          az account show
-          az logout
-
       - name: Azure Login SPN
         uses: Azure/Login@v2
         with:
           creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
       - name: Test SPN Login
+        run: |
+          az account show
+          az logout
+
+  test_msi_login:
+    name: Test MSI Azure Login
+    environment: ${{ inputs.deployer }}
+    runs-on: self-hosted
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+    steps:
+      - name: Test MSI Login
+        run: |
+          az login --identity
+          az account show
+          az logout
+
+      - name: Azure login with IDENTITY
+        uses: Azure/Login@v2
+        with:
+          auth-type: IDENTITY
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Test IDENTITY Login
         run: |
           az account show
           az logout
