@@ -300,7 +300,7 @@ else
     if [ $USE_MSI != "true" ]; then
         echo -e "$green --- Set secrets ---${resetformatting}"
 
-        $SAP_AUTOMATION_REPO_PATH/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
+        ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
             --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
             --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
         secrets_set=$?
@@ -318,7 +318,7 @@ fi
 if [ $USE_MSI != "true" ]; then
     echo -e "$green --- Set secrets ---${resetformatting}"
 
-    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
         --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
         --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
     secrets_set=$?
@@ -422,14 +422,14 @@ else
 fi
 
 if [ $USE_MSI != "true" ]; then
-    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
-        --deployer_environment $(deployer_environment) --subscription $(ARM_SUBSCRIPTION_ID) \
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
+        --deployer_environment ${deployer_environment} --subscription ${ARM_SUBSCRIPTION_ID} \
         --spn_id $WL_ARM_CLIENT_ID --spn_secret $WL_ARM_CLIENT_SECRET --tenant_id $WL_ARM_TENANT_ID \
         --deployer_tfstate_key "${deployer_tfstate_key}" --keyvault "${key_vault}" --storageaccountname "${REMOTE_STATE_SA}" \
         --state_subscription "${STATE_SUBSCRIPTION}" --auto-approve --ado
 else
-    $SAP_AUTOMATION_REPO_PATH/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
-        --deployer_environment $(deployer_environment) --subscription $(ARM_SUBSCRIPTION_ID) \
+    ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
+        --deployer_environment ${deployer_environment} --subscription ${ARM_SUBSCRIPTION_ID} \
         --deployer_tfstate_key "${deployer_tfstate_key}" --keyvault "${key_vault}" --storageaccountname "${REMOTE_STATE_SA}" \
         --state_subscription "${STATE_SUBSCRIPTION}" --auto-approve --ado --msi
 fi
@@ -449,7 +449,7 @@ az logout --output none
 
 az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "FENCING_SPN_ID.value")
 if [ -z ${az_var} ]; then
-    echo "##vso[task.logissue type=warning]Variable FENCING_SPN_ID is not set. Required for highly available deployments"
+    log_warning "Variable FENCING_SPN_ID is not set. Required for highly available deployments"
 else
     export fencing_id=$(az keyvault secret list --vault-name $workload_key_vault --query [].name -o tsv | grep ${workload_prefix}-fencing-spn-id | xargs)
     if [ -z "$fencing_id" ]; then
@@ -476,8 +476,8 @@ if [ -f ${workload_environment_file_name}.md ]; then
     git add ${workload_environment_file_name}.md
 fi
 
-if [ -f $(Deployment_Configuration_Path)/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate ]; then
-    git add -f $(Deployment_Configuration_Path)/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate
+if [ -f ${Deployment_Configuration_Path}/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate ]; then
+    git add -f ${Deployment_Configuration_Path}/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate
 fi
 
 set +e
