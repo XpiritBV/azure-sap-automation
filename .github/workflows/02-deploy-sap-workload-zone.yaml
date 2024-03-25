@@ -51,6 +51,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get app token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v3
+        with:
+          application_id: ${{ secrets.APPLICATION_ID }}
+          application_private_key: ${{ secrets.APPLICATION_PRIVATE_KEY }}
+          organization: ${{ github.repository_owner }}
+
       - name: Azure Login
         uses: Azure/Login@v2
         with:
@@ -61,6 +69,7 @@ jobs:
           cd ${SAP_AUTOMATION_REPO_PATH}
           deploy/automation/02-deploy-sap-workload-zone/01-deploy-sap-workload-zone.sh
         env:
+          APP_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
           CP_ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           CP_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           CP_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
