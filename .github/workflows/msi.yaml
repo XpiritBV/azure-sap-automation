@@ -23,13 +23,12 @@ jobs:
     steps:
       - name: Test SPN Az Login
         run: |
-          az login --service-principal
+          az login --output none --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
           az account show
           az logout
         env:
           AZURE_CLIENT_ID: ef6134f6-3912-41f7-b684-63fe90ae4100 # = SDAF-GH-Integration ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Azure Login SPN
@@ -51,7 +50,7 @@ jobs:
     steps:
       - name: Test System-assigned Managed Identity Az Login
         run: |
-          az login --identity
+          az login --output none --identity
           az account show
           az logout
 
@@ -76,7 +75,7 @@ jobs:
     steps:
       - name: Test User-assigned Managed Identity Az Login
         run: |
-          az login --identity --username 3de250ca-210c-4177-8f81-c07f7153be9b
+          az login --output none --identity --username 3de250ca-210c-4177-8f81-c07f7153be9b
           az account show
           az logout
 
