@@ -184,54 +184,55 @@ end_group
 echo -e "$green--- Read parameter values ---${resetformatting}"
 
 if [ "true" == ${inherit} ]; then
+    var=$(get_value_with_key "Deployer_State_FileName")
 
-    az_var=$(az pipelines variable-group variable list --group-id ${PARENT_VARIABLE_GROUP_ID} --query "Deployer_State_FileName.value" | tr -d \")
-    if [ -z ${az_var} ]; then
-        deployer_tfstate_key=$(cat ${deployer_environment_file_name} | grep deployer_tfstate_key | awk -F'=' '{print $2}' | xargs)
+    if [ -z ${var} ]; then
+        deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
         echo 'Deployer State File' $deployer_tfstate_key
     else
-        deployer_tfstate_key=${az_var}
+        deployer_tfstate_key=${var}
         echo 'Deployer State File' $deployer_tfstate_key
     fi
 
-    az_var=$(az pipelines variable-group variable list --group-id ${PARENT_VARIABLE_GROUP_ID} --query "Deployer_Key_Vault.value" | tr -d \")
-    if [ -z ${az_var} ]; then
-        key_vault=$(cat ${deployer_environment_file_name} | grep keyvault= | awk -F'=' '{print $2}' | xargs)
+    var=$(get_value_with_key "Deployer_Key_Vault")
+    if [ -z ${var} ]; then
+        key_vault=$(config_value_with_key "keyvault"
         echo 'Deployer Key Vault' ${key_vault}
     else
-        key_vault=${az_var}
+        key_vault=${var}
         echo 'Deployer Key Vault' ${key_vault}
     fi
 
-    az_var=$(az pipelines variable-group variable list --group-id ${PARENT_VARIABLE_GROUP_ID} --query "Terraform_Remote_Storage_Account_Name.value" | tr -d \")
-    if [ -z ${az_var} ]; then
-        REMOTE_STATE_SA=$(cat ${deployer_environment_file_name} | grep REMOTE_STATE_SA | awk -F'=' '{print $2}' | xargs)
+
+    var=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
+    if [ -z ${var} ]; then
+        REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA")
         echo 'Terraform state file storage account' $REMOTE_STATE_SA
     else
-        REMOTE_STATE_SA=${az_var}
+        REMOTE_STATE_SA=${var}
         echo 'Terraform state file storage account' $REMOTE_STATE_SA
     fi
 
-    az_var=$(az pipelines variable-group variable list --group-id ${PARENT_VARIABLE_GROUP_ID} --query "Terraform_Remote_Storage_Subscription.value" | tr -d \")
-    if [ -z ${az_var} ]; then
-        STATE_SUBSCRIPTION=$(cat ${deployer_environment_file_name} | grep STATE_SUBSCRIPTION | awk -F'=' '{print $2}' | xargs)
+    var=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
+    if [ -z ${var} ]; then
+        STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION")
         echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
     else
-        STATE_SUBSCRIPTION=${az_var}
+        STATE_SUBSCRIPTION=${var}
         echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
     fi
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "ARM_SUBSCRIPTION_ID.value" | tr -d \")
+    var=$(get_value_with_key "ARM_SUBSCRIPTION_ID")
     if [ -z ${az_var} ]; then
         exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
     else
         echo 'Target subscription' $WL_ARM_SUBSCRIPTION_ID
     fi
 
-    az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "Workload_Key_Vault.value" | tr -d \")
-    if [ -z ${az_var} ]; then
+    var=$(get_value_with_key "Workload_Key_Vault")
+    if [ -z ${var} ]; then
         if [ -f ${workload_environment_file_name} ]; then
-            export workload_key_vault=$(cat ${workload_environment_file_name} | grep workload_key_vault | awk -F'=' '{print $2}' | xargs)
+            export workload_key_vault=$(config_value_with_key "workload_key_vault" ${workload_environment_file_name})
             echo 'Workload Key Vault' ${workload_key_vault}
         fi
     else
@@ -239,13 +240,13 @@ if [ "true" == ${inherit} ]; then
         echo 'Workload Key Vault' ${workload_key_vault}
     fi
 else
-    deployer_tfstate_key=$(cat ${workload_environment_file_name} | grep deployer_tfstate_key | awk -F'=' '{print $2}' | xargs)
+    deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
     echo 'Deployer State File' $deployer_tfstate_key
-    key_vault=$(cat ${workload_environment_file_name} | grep workload_key_vault= -m1 | awk -F'=' '{print $2}' | xargs)
+    key_vault=$(config_value_with_key "workload_key_vault" ${workload_environment_file_name})
     echo 'Deployer Key Vault' ${key_vault}
-    REMOTE_STATE_SA=$(cat ${workload_environment_file_name} | grep REMOTE_STATE_SA | awk -F'=' '{print $2}' | xargs)
+    REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA" ${workload_environment_file_name})
     echo 'Terraform state file storage account' $REMOTE_STATE_SA
-    STATE_SUBSCRIPTION=$(cat ${workload_environment_file_name} | grep STATE_SUBSCRIPTION | awk -F'=' '{print $2}' | xargs)
+    STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION" ${workload_environment_file_name})
     echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
 fi
 
