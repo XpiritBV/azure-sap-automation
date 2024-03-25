@@ -421,10 +421,6 @@ else
     fi
 fi
 
-echo -e "$green--- Add & update files in the DevOps Repository ---${resetformatting}"
-cd $(Build.Repository.LocalPath)
-git pull
-
 echo -e "$green--- Pull latest ---${resetformatting}"
 cd ${CONFIG_REPO_PATH}
 git pull
