@@ -145,7 +145,7 @@ function validate_key_value() {
 
 function config_value_with_key() {
     key=$1
-    config_file_name={$2:-$deployer_environment_file_name}
+    config_file_name=${2:-$deployer_environment_file_name}
 
     if [[ $key == "" ]]; then
         exit_error "The argument cannot be empty, please supply a key to get the value of" 1
@@ -157,7 +157,7 @@ function config_value_with_key() {
 function set_config_key_with_value() {
     key=$1
     value=$2
-    config_file_name={$3:-$deployer_environment_file_name}
+    config_file_name=${3:-$deployer_environment_file_name}
 
     if [[ $key == "" ]]; then
         exit_error "The argument cannot be empty, please supply a key to set the value of" 1
