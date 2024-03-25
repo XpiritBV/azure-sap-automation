@@ -227,7 +227,7 @@ if [ "true" == ${inherit} ]; then
     fi
 
     var=$(get_value_with_key "ARM_SUBSCRIPTION_ID")
-    if [ -z ${az_var} ]; then
+    if [ -z ${var} ]; then
         exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
     else
         echo 'Target subscription' $WL_ARM_SUBSCRIPTION_ID
