@@ -73,5 +73,3 @@ variable "dns_label"                   {
                                          description = "DNS label"
                                          default     = ""
                                        }
-
-variable "naming"                      { description = "Defines the names for the resources" }

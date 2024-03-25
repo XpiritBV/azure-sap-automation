@@ -378,43 +378,42 @@ fi
 echo -e "$green--- Deploy the workload zone ---${resetformatting}"
 cd $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}
 
-if [ $USE_MSI != "true" ]; then
-    az logout --output none
-    export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-    export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-    export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-    export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-    export ARM_USE_MSI=false
-    az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
-    return_code=$?
-    if [ 0 != $return_code ]; then
-        exit_error "az login failed." $return_code
-    fi
-fi
-
+# if [ $USE_MSI != "true" ]; then
+#     az logout --output none
+#     export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
+#     export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
+#     export ARM_TENANT_ID=$WL_ARM_TENANT_ID
+#     export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
+#     export ARM_USE_MSI=false
+#     az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
+#     return_code=$?
+#     if [ 0 != $return_code ]; then
+#         exit_error "az login failed." $return_code
+#     fi
+# fi
 
 if [ $USE_MSI != "true" ]; then
     ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh \
         --parameterfile ${workload_zone_configuration_file} \
         --deployer_environment ${deployer_environment} \
         --subscription ${WL_ARM_SUBSCRIPTION_ID} \
-        --spn_id $WL_ARM_CLIENT_ID \
-        --spn_secret $WL_ARM_CLIENT_SECRET \
-        --tenant_id $WL_ARM_TENANT_ID \
+        --spn_id ${WL_ARM_CLIENT_ID} \
+        --spn_secret ${WL_ARM_CLIENT_SECRET} \
+        --tenant_id ${WL_ARM_TENANT_ID} \
         --deployer_tfstate_key "${deployer_tfstate_key}" \
-        --keyvault "${key_vault}" \
-        --storageaccountname "${REMOTE_STATE_SA}" \
-        --state_subscription "${STATE_SUBSCRIPTION}" \
+        --keyvault ${key_vault} \
+        --storageaccountname ${REMOTE_STATE_SA} \
+        --state_subscription ${STATE_SUBSCRIPTION} \
         --auto-approve  # TODO: --ado
 else
     ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh \
         --parameterfile ${workload_zone_configuration_file} \
         --deployer_environment ${deployer_environment} \
         --subscription ${WL_ARM_SUBSCRIPTION_ID} \
-        --deployer_tfstate_key "${deployer_tfstate_key}" \
-        --keyvault "${key_vault}" \
-        --storageaccountname "${REMOTE_STATE_SA}" \
-        --state_subscription "${STATE_SUBSCRIPTION}" \
+        --deployer_tfstate_key ${deployer_tfstate_key} \
+        --keyvault ${key_vault} \
+        --storageaccountname ${REMOTE_STATE_SA} \
+        --state_subscription ${STATE_SUBSCRIPTION} \
         --auto-approve \
         --msi # TODO: --ado
 fi

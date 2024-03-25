@@ -535,7 +535,7 @@ else
     tfstate_parameter=" -var tfstate_resource_id=${tfstate_resource_id}"
 fi
 
-terraform_module_directory="$(realpath "${SAP_AUTOMATION_REPO_PATH}"/deploy/terraform/run/"${deployment_system}" )"
+terraform_module_directory="$(realpath "${SAP_AUTOMATION_REPO_PATH}/deploy/terraform/run/${deployment_system}" )"
 
 if [ ! -d "${terraform_module_directory}" ]
 then
