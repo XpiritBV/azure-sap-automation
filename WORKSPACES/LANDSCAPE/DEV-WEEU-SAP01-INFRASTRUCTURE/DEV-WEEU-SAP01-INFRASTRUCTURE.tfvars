@@ -389,7 +389,7 @@ dns_label = "azure.sapcontoso.com"
 NFS_provider = "AFS"
 
 # use_AFS_for_shared_storage defines if shared media is on AFS even when using ANF for data
-use_AFS_for_shared_storage = true
+use_AFS_for_shared_storage = false
 
 #########################################################################################
 #                                                                                       #
