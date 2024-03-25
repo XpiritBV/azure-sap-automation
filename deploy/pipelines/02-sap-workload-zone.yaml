@@ -428,9 +428,6 @@ stages:
                 fi
               fi
 
-              debug_variable='--output none'
-              debug_variable=''
-
               if [ $USE_MSI != "true" ]; then
                 az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
 
