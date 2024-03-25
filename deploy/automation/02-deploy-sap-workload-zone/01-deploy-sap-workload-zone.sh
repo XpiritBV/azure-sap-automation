@@ -166,10 +166,10 @@ if [[ $(get_platform) = devops ]]; then
 fi
 
 start_group "Configure parameters files"
-deployer_environment_file_name=${CONFIG_REPO_PATH/}.sap_deployment_automation/${deployer_environment}${deployer_region}
-echo 'Deployer Environment File' $deployer_environment_file_name
+deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${deployer_environment}${deployer_region}
+echo 'Deployer Environment File: ' ${deployer_environment_file_name}
 workload_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION_CODE}${NETWORK}
-echo 'Workload Environment File' $workload_environment_file_name
+echo 'Workload Environment File: ' ${workload_environment_file_name}
 
 echo -e "$green--- Convert config files to UX format ---$resetformatting"
 dos2unix -q ${deployer_environment_file_name}
@@ -414,7 +414,7 @@ if [ -f ${workload_environment_file_name} ]; then
     export workload_prefix=$(cat ${workload_environment_file_name} | grep workload_zone_prefix= | awk -F'=' '{print $2}' | xargs)
     echo 'Workload Prefix' ${workload_prefix}
     export landscape_tfstate_key=$(cat ${workload_environment_file_name} | grep landscape_tfstate_key= | awk -F'=' '{print $2}' | xargs)
-    echo 'Workload Zone State File' $landscape_tfstate_key
+    echo 'Workload Zone State File' ${landscape_tfstate_key}
 fi
 
 az logout --output none
@@ -423,11 +423,11 @@ az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_I
 if [ -z ${az_var} ]; then
     log_warning "Variable FENCING_SPN_ID is not set. Required for highly available deployments"
 else
-    export fencing_id=$(az keyvault secret list --vault-name $workload_key_vault --query [].name -o tsv | grep ${workload_prefix}-fencing-spn-id | xargs)
-    if [ -z "$fencing_id" ]; then
-        az keyvault secret set --name ${workload_prefix}-fencing-spn-id --vault-name $workload_key_vault --value $(FENCING_SPN_ID) --output none
-        az keyvault secret set --name ${workload_prefix}-fencing-spn-pwd --vault-name $workload_key_vault --value=$FENCING_SPN_PWD --output none
-        az keyvault secret set --name ${workload_prefix}-fencing-spn-tenant --vault-name $workload_key_vault --value $(FENCING_SPN_TENANT) --output none
+    export fencing_id=$(az keyvault secret list --vault-name ${workload_key_vault} --query [].name -o tsv | grep ${workload_prefix}-fencing-spn-id | xargs)
+    if [ -z "${fencing_id}" ]; then
+        az keyvault secret set --name ${workload_prefix}-fencing-spn-id --vault-name $workload_key_vault --value ${FENCING_SPN_ID} --output none
+        az keyvault secret set --name ${workload_prefix}-fencing-spn-pwd --vault-name $workload_key_vault --value=${FENCING_SPN_PWD} --output none
+        az keyvault secret set --name ${workload_prefix}-fencing-spn-tenant --vault-name $workload_key_vault --value ${FENCING_SPN_TENANT} --output none
     fi
 fi
 
@@ -436,7 +436,7 @@ cd $(Build.Repository.LocalPath)
 git pull
 
 echo -e "$green--- Pull latest ---${resetformatting}"
-cd $CONFIG_REPO_PATH
+cd ${CONFIG_REPO_PATH}
 git pull
 
 added=0
