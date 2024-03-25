@@ -434,8 +434,8 @@ if [ -f ${workload_environment_file_name}.md ]; then
     git add ${workload_environment_file_name}.md
 fi
 
-if [ -f ${Deployment_Configuration_Path}/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate ]; then
-    git add -f ${Deployment_Configuration_Path}/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate
+if [ -f ${CONFIG_REPO_PATH}/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate ]; then
+    git add -f ${CONFIG_REPO_PATH}/LANDSCAPE/${workload_zone_folder}/.terraform/terraform.tfstate
 fi
 
 set +e
