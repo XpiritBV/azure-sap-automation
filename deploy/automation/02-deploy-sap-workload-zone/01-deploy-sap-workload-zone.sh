@@ -378,6 +378,7 @@ fi
 echo -e "$green--- Deploy the workload zone ---${resetformatting}"
 cd $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}
 
+# Is this needed? The `validate_exports` method on line 103 is checking for these variables, but the values are also set with --subscription param.
 export ARM_SUBSCRIPTION_ID=${WL_ARM_SUBSCRIPTION_ID}
 
 # if [ $USE_MSI != "true" ]; then
