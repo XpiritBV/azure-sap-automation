@@ -78,7 +78,7 @@ jobs:
           WL_ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           WL_ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           WL_ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          WL_ARM_OBJECT_ID: 064521ca-5d54-48c3-9449-772597943455 # ${{ secrets.AZURE_OBJECT_ID }}
+          WL_ARM_OBJECT_ID: cb57ce26-47f6-4da0-93c2-71c7a6c815e7 # ${{ secrets.AZURE_OBJECT_ID }}
           SAP_AUTOMATION_REPO_PATH: ${{ github.workspace }} # TODO: Remove this line when using the scripts from the container
           TEST_ONLY: ${{ inputs.test }}
           deployerconfig: ${{ inputs.deployer }}.tfvars
