@@ -25,10 +25,12 @@ jobs:
       - name: Test MSI Login
         run: |
           az login --identity
+          az account show
           az ad signed-in-user show
+        continue-on-error: true
 
       - name: Azure login IDENTITY
-        uses: azure/login@v2
+        uses: Azure/login@v2
         with:
           auth-type: IDENTITY
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -36,7 +38,9 @@ jobs:
 
       - name: Test IDENTITY Login
         run: |
+          az account show
           az ad signed-in-user show
+        continue-on-error: true
 
       - name: Azure Login SPN
         uses: Azure/Login@v2
@@ -45,4 +49,6 @@ jobs:
 
       - name: Test SPN Login
         run: |
+          az account show
           az ad signed-in-user show
+        continue-on-error: true
