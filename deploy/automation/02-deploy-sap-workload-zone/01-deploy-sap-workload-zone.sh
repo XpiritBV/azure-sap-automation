@@ -456,13 +456,13 @@ fi
 start_group "Adding variables to platform variable group"
 
 if [ -n $VARIABLE_GROUP_ID ]; then
-    set_value_with_key "Terraform_Remote_Storage_Account_Name" ${REMOTE_STATE_SA}
+    #set_value_with_key "Terraform_Remote_Storage_Account_Name" ${REMOTE_STATE_SA}
 
-    set_value_with_key "Terraform_Remote_Storage_Subscription" ${STATE_SUBSCRIPTION}
+    #set_value_with_key "Terraform_Remote_Storage_Subscription" ${STATE_SUBSCRIPTION}
 
-    set_value_with_key "Deployer_State_FileName" ${deployer_tfstate_key}
+    #set_value_with_key "Deployer_State_FileName" ${deployer_tfstate_key}
 
-    set_value_with_key "Deployer_Key_Vault" ${key_vault}
+    #set_value_with_key "Deployer_Key_Vault" ${key_vault}
 
     set_value_with_key "Workload_Key_Vault" ${workload_key_vault}
 
@@ -472,7 +472,9 @@ if [ -n $VARIABLE_GROUP_ID ]; then
 
     set_value_with_key "Workload_Zone_State_FileName" ${landscape_tfstate_key}
 
-    set_secret_with_key "WZ_PAT" $AZURE_DEVOPS_EXT_PAT
+    if [[ $(get_platform) = devops ]]; then
+        set_secret_with_key "WZ_PAT" $AZURE_DEVOPS_EXT_PAT
+    fi
 fi
 
 if [ 0 != $return_code ]; then

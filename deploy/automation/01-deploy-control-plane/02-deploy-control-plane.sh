@@ -451,9 +451,9 @@ if [ 0 == $return_code ]; then
     # if [[ -n "${ARM_SUBSCRIPTION_ID}" ]]; then
     #     set_value_with_key "Terraform_Remote_Storage_Subscription" ${ARM_SUBSCRIPTION_ID} fi
     # fi
-    if [[ -n "${deployerfolder}" ]]; then
-        set_value_with_key "Deployer_State_FileName" ${deployerfolder}.terraform.tfstate
-    fi
+    # # # if [[ -n "${deployerfolder}" ]]; then
+    # # #     set_value_with_key "Deployer_State_FileName" ${deployerfolder}.terraform.tfstate
+    # # # fi
     # if [[ -n "${file_key_vault}" ]]; then
     #     set_value_with_key "Deployer_Key_Vault" ${file_key_vault} fi
     # fi
