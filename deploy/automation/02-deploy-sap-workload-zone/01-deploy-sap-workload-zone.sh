@@ -120,7 +120,11 @@ start_group "Convert config file to UX format"
 dos2unix -q ${CONFIG_REPO_PATH}/LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file}
 end_group
 
-ENVIRONMENT=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
+deployer_environment=$(echo ${deployerfolder} | awk -F'-' '{print $1}' | xargs)
+echo Deployer Environment: ${deployer_environment}
+deployer_location=$(echo ${deployerfolder} | awk -F'-' '{print $2}' | xargs)
+echo Deployer Location: ${deployer_location}
+
 ENVIRONMENT=$(grep "^environment" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs)
 LOCATION=$(grep "^location" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs | tr 'A-Z' 'a-z')
 NETWORK=$(grep "^network_logical_name" LANDSCAPE/${workload_zone_folder}/${workload_zone_configuration_file} | awk -F'=' '{print $2}' | xargs)
@@ -166,14 +170,14 @@ if [[ $(get_platform) = devops ]]; then
 fi
 
 start_group "Configure parameters files"
-deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${deployer_environment}${deployer_region}
-echo 'Deployer Environment File: ' ${deployer_environment_file_name}
+deployer_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${deployer_environment}${deployer_location}
+echo "Deployer Environment File: " ${deployer_environment_file_name}
 workload_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION_CODE}${NETWORK}
-echo 'Workload Environment File: ' ${workload_environment_file_name}
+echo "Workload Environment File: " ${workload_environment_file_name}
 
 if [ ! -f ${deployer_environment_file_name} ]; then
-    echo -e "$boldred--- ${deployer_environment}${deployer_region} was not found ---${resetformatting}"
-    exit_error "Control plane configuration file ${deployer_environment}${deployer_region} was not found." 2
+    echo -e "$boldred--- ${deployer_environment}${deployer_location} was not found ---${resetformatting}"
+    exit_error "Control plane configuration file ${deployer_environment}${deployer_location} was not found." 2
 fi
 
 echo -e "$green--- Convert config files to UX format ---$resetformatting"
