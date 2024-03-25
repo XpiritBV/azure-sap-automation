@@ -250,33 +250,23 @@ else
 fi
 
 secrets_set=1
-if [ ! -f /etc/profile.d/deploy_server.sh ]; then
-    echo -e "$green --- Install terraform ---${resetformatting}"
 
-    wget -q $(tf_url)
+if [ $USE_MSI != "true" ]; then
+    export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
+    export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
+    export ARM_TENANT_ID=$WL_ARM_TENANT_ID
+    export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
+    export ARM_USE_MSI=false
+
+    echo -e "$green--- az login ---${resetformatting}"
+    az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
     return_code=$?
+
     if [ 0 != $return_code ]; then
-        exit_error "Unable to download Terraform version $(tf_version)." 2
+        echo -e "$boldred--- Login failed ---${resetformatting}"
+        exit_error "az login failed." $return_code
     fi
-    unzip -qq terraform_$(tf_version)_linux_amd64.zip
-    sudo mv terraform /bin/
-    rm -f terraform_$(tf_version)_linux_amd64.zip
-
-    if [ $USE_MSI != "true" ]; then
-        export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-        export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-        export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-        export ARM_USE_MSI=false
-
-        echo -e "$green--- az login ---${resetformatting}"
-        az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
-        return_code=$?
-        if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---${resetformatting}"
-            exit_error "az login failed." $return_code
-        fi
-    fi
+fi
 
 if [ $LOGON_USING_SPN == "true" ]; then
     echo "Using SPN"
@@ -387,39 +377,21 @@ fi
 echo -e "$green--- Deploy the workload zone ---${resetformatting}"
 cd $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}
 
-        az logout --output none
-        export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-        export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-        export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-        export ARM_USE_MSI=false
-        az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
-        return_code=$?
-        if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---${resetformatting}"
-            exit_error "az login failed." $return_code
-        fi
-    else
-        export ARM_USE_MSI=true
-        az login --identity --allow-no-subscriptions --output none
+if [ $USE_MSI != "true" ]; then
+    az logout --output none
+    export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
+    export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
+    export ARM_TENANT_ID=$WL_ARM_TENANT_ID
+    export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
+    export ARM_USE_MSI=false
+    az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
+    return_code=$?
+    if [ 0 != $return_code ]; then
+        echo -e "$boldred--- Login failed ---${resetformatting}"
+        exit_error "az login failed." $return_code
     fi
-else
-    if [ $USE_MSI != "true" ]; then
-        az logout --output none
-        export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-        export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-        export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-        export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-        export ARM_USE_MSI=false
-        az login --service-principal --username $WL_ARM_CLIENT_ID --password=$WL_ARM_CLIENT_SECRET --tenant $WL_ARM_TENANT_ID --output none
-        return_code=$?
-        if [ 0 != $return_code ]; then
-            echo -e "$boldred--- Login failed ---${resetformatting}"
-            exit_error "az login failed." $return_code
-        fi
-    fi
-
 fi
+
 
 if [ $USE_MSI != "true" ]; then
     ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/install_workloadzone.sh --parameterfile ${workload_zone_configuration_file} \
