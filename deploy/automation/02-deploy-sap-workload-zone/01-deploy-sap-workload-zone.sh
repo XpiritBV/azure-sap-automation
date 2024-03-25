@@ -155,13 +155,13 @@ fi
 
 if [[ $(get_platform) = devops ]]; then
     export PARENT_VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='$(parent_variable_group)'].id | [0]")
-    echo '$(parent_variable_group) id: ' $PARENT_VARIABLE_GROUP_ID
+    echo "$(parent_variable_group) id: : " $PARENT_VARIABLE_GROUP_ID
     if [ -z ${PARENT_VARIABLE_GROUP_ID} ]; then
         exit_error "Variable group $(parent_variable_group) could not be found." 2
     fi
 
     export VARIABLE_GROUP_ID=$(az pipelines variable-group list --query "[?name=='$(variable_group)'].id | [0]")
-    echo '$(variable_group) id: ' $VARIABLE_GROUP_ID
+    echo "$(variable_group) id: : " $VARIABLE_GROUP_ID
     if [ -z ${VARIABLE_GROUP_ID} ]; then
         exit_error "Variable group $(variable_group) could not be found." 2
     fi
@@ -186,125 +186,124 @@ end_group
 
 echo -e "$green--- Read parameter values ---${resetformatting}"
 
-if [ "true" == ${inherit} ]; then
+#if [ "true" == ${inherit} ]; then
     var=$(get_value_with_key "Deployer_State_FileName")
 
     if [ -z ${var} ]; then
         deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
-        echo 'Deployer State File' $deployer_tfstate_key
+        echo "Deployer State File: " $deployer_tfstate_key
     else
         deployer_tfstate_key=${var}
-        echo 'Deployer State File' $deployer_tfstate_key
+        echo "Deployer State File: " $deployer_tfstate_key
     fi
 
     var=$(get_value_with_key "Deployer_Key_Vault")
     if [ -z ${var} ]; then
         key_vault=$(config_value_with_key "keyvault")
-        echo 'Deployer Key Vault' ${key_vault}
+        echo "Deployer Key Vault: " ${key_vault}
     else
         key_vault=${var}
-        echo 'Deployer Key Vault' ${key_vault}
+        echo "Deployer Key Vault: " ${key_vault}
     fi
-
 
     var=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
     if [ -z ${var} ]; then
         REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA")
-        echo 'Terraform state file storage account' $REMOTE_STATE_SA
+        echo "Terraform state file storage account: " $REMOTE_STATE_SA
     else
         REMOTE_STATE_SA=${var}
-        echo 'Terraform state file storage account' $REMOTE_STATE_SA
+        echo "Terraform state file storage account: " $REMOTE_STATE_SA
     fi
 
     var=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
     if [ -z ${var} ]; then
         STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION")
-        echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
+        echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
     else
         STATE_SUBSCRIPTION=${var}
-        echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
+        echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
     fi
 
     var=$(get_value_with_key "ARM_SUBSCRIPTION_ID")
     if [ -z ${var} ]; then
         exit_error "Variable ARM_SUBSCRIPTION_ID was not defined." 2
     else
-        echo 'Target subscription' $WL_ARM_SUBSCRIPTION_ID
+        echo "Target subscription: " $WL_ARM_SUBSCRIPTION_ID
     fi
 
     var=$(get_value_with_key "Workload_Key_Vault")
     if [ -z ${var} ]; then
         if [ -f ${workload_environment_file_name} ]; then
             export workload_key_vault=$(config_value_with_key "workload_key_vault" ${workload_environment_file_name})
-            echo 'Workload Key Vault' ${workload_key_vault}
+            echo "Workload Key Vault: " ${workload_key_vault}
         fi
     else
         export workload_key_vault=$(Workload_Key_Vault)
-        echo 'Workload Key Vault' ${workload_key_vault}
+        echo "Workload Key Vault: " ${workload_key_vault}
     fi
-else
-    deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
-    echo 'Deployer State File' $deployer_tfstate_key
-    key_vault=$(config_value_with_key "workload_key_vault" ${workload_environment_file_name})
-    echo 'Deployer Key Vault' ${key_vault}
-    REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA" ${workload_environment_file_name})
-    echo 'Terraform state file storage account' $REMOTE_STATE_SA
-    STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION" ${workload_environment_file_name})
-    echo 'Terraform state file subscription' $STATE_SUBSCRIPTION
-fi
+# else
+#     deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
+#     echo "Deployer State File: " $deployer_tfstate_key
+#     key_vault=$(config_value_with_key "workload_key_vault" ${workload_environment_file_name})
+#     echo "Workload Key Vault: " ${key_vault}
+#     REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA" ${workload_environment_file_name})
+#     echo "Terraform state file storage account: " $REMOTE_STATE_SA
+#     STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION" ${workload_environment_file_name})
+#     echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
+# fi
 
 secrets_set=1
 
-if [ $USE_MSI != "true" ]; then
-    export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
-    export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
-    export ARM_TENANT_ID=$WL_ARM_TENANT_ID
-    export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
-    export ARM_USE_MSI=false
+# if [ $USE_MSI != "true" ]; then
+#     export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
+#     export ARM_CLIENT_SECRET=$WL_ARM_CLIENT_SECRET
+#     export ARM_TENANT_ID=$WL_ARM_TENANT_ID
+#     export ARM_SUBSCRIPTION_ID=$WL_ARM_SUBSCRIPTION_ID
+#     export ARM_USE_MSI=false
 
-    echo -e "$green--- az login ---${resetformatting}"
-    az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
-    return_code=$?
+#     echo -e "$green--- az login ---${resetformatting}"
+#     az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
+#     return_code=$?
 
-    if [ 0 != $return_code ]; then
-        exit_error "az login failed." $return_code
-    fi
-fi
+#     if [ 0 != $return_code ]; then
+#         exit_error "az login failed." $return_code
+#     fi
+# fi
 
-if [ $LOGON_USING_SPN == "true" ]; then
-    echo "Using SPN"
-    az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
-else
-    echo -e "$green--- az login ---${resetformatting}"
+# if [ $LOGON_USING_SPN == "true" ]; then
+#     echo "Using SPN"
+#     az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
+# else
+#     echo -e "$green--- az login ---${resetformatting}"
 
-    if [ $LOGON_USING_SPN == "true" ]; then
-        echo "Using SPN"
-        az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
-    else
-        az login --identity --allow-no-subscriptions --output none
-    fi
+#     if [ $LOGON_USING_SPN == "true" ]; then
+#         echo "Using SPN"
+#         az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
+#     else
+#         az login --identity --allow-no-subscriptions --output none
+#     fi
+#
+#     return_code=$?
+#     if [ 0 != $return_code ]; then
+#         exit_error "az login failed." $return_code
+#     fi
+#
+#    if [ $USE_MSI != "true" ]; then
+#        echo -e "$green --- Set secrets ---${resetformatting}"
+#
+#        ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
+#            --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
+#            --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
+#        secrets_set=$?
+#        echo -e "$cyan Set Secrets returned $secrets_set ${resetformatting}"
+#        az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
+#    fi
+#fi
 
-    return_code=$?
-    if [ 0 != $return_code ]; then
-        exit_error "az login failed." $return_code
-    fi
-
-    if [ $USE_MSI != "true" ]; then
-        echo -e "$green --- Set secrets ---${resetformatting}"
-
-        ${SAP_AUTOMATION_REPO_PATH}/deploy/scripts/set_secrets.sh --workload --vault "${key_vault}" --environment "${ENVIRONMENT}" \
-            --region "${LOCATION}" --subscription $WL_ARM_SUBSCRIPTION_ID --spn_id $WL_ARM_CLIENT_ID --spn_secret "${WL_ARM_CLIENT_SECRET}" \
-            --tenant_id $WL_ARM_TENANT_ID --keyvault_subscription $STATE_SUBSCRIPTION
-        secrets_set=$?
-        echo -e "$cyan Set Secrets returned $secrets_set ${resetformatting}"
-        az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
-    fi
-fi
-
-return_code=$?
-if [ 0 != $return_code ]; then
-    exit_error "az login failed." $return_code
-fi
+# return_code=$?
+# if [ 0 != $return_code ]; then
+#     exit_error "az login failed." $return_code
+# fi
 
 if [ $USE_MSI != "true" ]; then
     echo -e "$green --- Set secrets ---${resetformatting}"
@@ -316,10 +315,6 @@ if [ $USE_MSI != "true" ]; then
     echo -e "$cyan Set Secrets returned $secrets_set ${resetformatting}"
     az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
 fi
-
-
-debug_variable='--output none'
-debug_variable=''
 
 if [ $USE_MSI != "true" ]; then
     az login --service-principal --username $CP_ARM_CLIENT_ID --password=$CP_ARM_CLIENT_SECRET --tenant $CP_ARM_TENANT_ID --output none
@@ -410,11 +405,11 @@ return_code=$?
 echo "Return code: ${return_code}"
 if [ -f ${workload_environment_file_name} ]; then
     export workload_key_vault=$(cat ${workload_environment_file_name} | grep workloadkeyvault= | awk -F'=' '{print $2}' | xargs)
-    echo 'Workload Key Vault' ${workload_key_vault}
+    echo "Workload Key Vault: " ${workload_key_vault}
     export workload_prefix=$(cat ${workload_environment_file_name} | grep workload_zone_prefix= | awk -F'=' '{print $2}' | xargs)
-    echo 'Workload Prefix' ${workload_prefix}
+    echo "Workload Prefix: " ${workload_prefix}
     export landscape_tfstate_key=$(cat ${workload_environment_file_name} | grep landscape_tfstate_key= | awk -F'=' '{print $2}' | xargs)
-    echo 'Workload Zone State File' ${landscape_tfstate_key}
+    echo "Workload Zone State File: " ${landscape_tfstate_key}
 fi
 
 az logout --output none
