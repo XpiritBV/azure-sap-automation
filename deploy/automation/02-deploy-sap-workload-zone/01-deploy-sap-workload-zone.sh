@@ -200,7 +200,7 @@ if [ "true" == ${inherit} ]; then
 
     var=$(get_value_with_key "Deployer_Key_Vault")
     if [ -z ${var} ]; then
-        key_vault=$(config_value_with_key "keyvault"
+        key_vault=$(config_value_with_key "keyvault")
         echo 'Deployer Key Vault' ${key_vault}
     else
         key_vault=${var}
