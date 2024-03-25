@@ -317,7 +317,7 @@ if [ $USE_MSI != "true" ]; then
         --keyvault_subscription ${STATE_SUBSCRIPTION}
     secrets_set=$?
     echo -e "$cyan Set Secrets returned ${secrets_set} ${resetformatting}"
-    az keyvault set-policy --name "${key_vault}" --object-id $WL_ARM_OBJECT_ID --secret-permissions get list --output none
+    az keyvault set-policy --name "${key_vault}" --application-id $WL_ARM_CLIENT_ID --secret-permissions get list --output none
 fi
 
 if [ $USE_MSI != "true" ]; then
