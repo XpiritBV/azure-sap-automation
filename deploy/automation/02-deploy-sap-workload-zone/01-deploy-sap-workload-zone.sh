@@ -378,6 +378,8 @@ fi
 echo -e "$green--- Deploy the workload zone ---${resetformatting}"
 cd $CONFIG_REPO_PATH/LANDSCAPE/${workload_zone_folder}
 
+export ARM_SUBSCRIPTION_ID=${WL_ARM_SUBSCRIPTION_ID}
+
 # if [ $USE_MSI != "true" ]; then
 #     az logout --output none
 #     export ARM_CLIENT_ID=$WL_ARM_CLIENT_ID
