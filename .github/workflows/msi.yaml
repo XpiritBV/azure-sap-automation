@@ -1,4 +1,4 @@
-name: Test Azure MSI login workflow
+name: Test Azure login workflow
 
 on:
   workflow_dispatch:
@@ -15,19 +15,29 @@ permissions:
 
 jobs:
   deploy_sap_workload_zone:
-    name: Test MSI Login
+    name: Test Azure Login
     environment: ${{ inputs.deployer }}
     runs-on: self-hosted
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
+      - name: Test SPN Login
+        run: |
+          az login
+          az account show
+          az logout
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        continue-on-error: true
 
       - name: Test MSI Login
         run: |
           az login --identity
           az account show
-          az ad signed-in-user show
-        continue-on-error: true
+          az logout
 
       - name: Azure login IDENTITY
         uses: Azure/login@v2
@@ -39,8 +49,7 @@ jobs:
       - name: Test IDENTITY Login
         run: |
           az account show
-          az ad signed-in-user show
-        continue-on-error: true
+          az logout
 
       - name: Azure Login SPN
         uses: Azure/Login@v2
@@ -50,5 +59,4 @@ jobs:
       - name: Test SPN Login
         run: |
           az account show
-          az ad signed-in-user show
-        continue-on-error: true
+          az logout
