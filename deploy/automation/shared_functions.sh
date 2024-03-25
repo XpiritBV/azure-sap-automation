@@ -171,7 +171,11 @@ function set_config_key_with_value() {
 function region_with_region_map() {
     LOCATION_CODE=$1
 
-    case "$LOCATION_CODE" in
+    if [[ $LOCATION_CODE == "" ]]; then
+        exit_error "The argument cannot be empty, please supply a region code" 1
+    fi
+
+    case $LOCATION_CODE in
         "AUCE") LOCATION_IN_FILENAME="australiacentral" ;;
         "AUC2") LOCATION_IN_FILENAME="australiacentral2" ;;
         "AUEA") LOCATION_IN_FILENAME="australiaeast" ;;
