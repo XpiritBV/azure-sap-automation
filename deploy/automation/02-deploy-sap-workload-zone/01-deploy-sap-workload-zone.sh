@@ -188,41 +188,36 @@ echo -e "$green--- Read parameter values ---${resetformatting}"
 
 #if [ "true" == ${inherit} ]; then
     var=$(get_value_with_key "Deployer_State_FileName")
-
     if [ -z ${var} ]; then
         deployer_tfstate_key=$(config_value_with_key "deployer_tfstate_key")
-        echo "Deployer State File: " $deployer_tfstate_key
     else
         deployer_tfstate_key=${var}
-        echo "Deployer State File: " $deployer_tfstate_key
     fi
+    echo "Deployer State File: " $deployer_tfstate_key
 
     var=$(get_value_with_key "Deployer_Key_Vault")
     if [ -z ${var} ]; then
         key_vault=$(config_value_with_key "keyvault")
-        echo "Deployer Key Vault: " ${key_vault}
     else
         key_vault=${var}
-        echo "Deployer Key Vault: " ${key_vault}
     fi
+    echo "Deployer Key Vault: " ${key_vault}
 
     var=$(get_value_with_key "Terraform_Remote_Storage_Account_Name")
     if [ -z ${var} ]; then
         REMOTE_STATE_SA=$(config_value_with_key "REMOTE_STATE_SA")
-        echo "Terraform state file storage account: " $REMOTE_STATE_SA
     else
         REMOTE_STATE_SA=${var}
-        echo "Terraform state file storage account: " $REMOTE_STATE_SA
     fi
+    echo "Terraform state file storage account: " $REMOTE_STATE_SA
 
     var=$(get_value_with_key "Terraform_Remote_Storage_Subscription")
     if [ -z ${var} ]; then
         STATE_SUBSCRIPTION=$(config_value_with_key "STATE_SUBSCRIPTION")
-        echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
     else
         STATE_SUBSCRIPTION=${var}
-        echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
     fi
+    echo "Terraform state file subscription: " $STATE_SUBSCRIPTION
 
     var=$(get_value_with_key "ARM_SUBSCRIPTION_ID")
     if [ -z ${var} ]; then

@@ -88,3 +88,4 @@ jobs:
           workload_environment: ${{ inputs.workload_environment }}
           workload_zone_folder: ${{ inputs.workload_zone }}
           workload_zone_configuration_file: ${{ inputs.workload_zone }}.tfvars
+          APP_CONFIGURATION_NAME: ${{ vars.APP_CONFIGURATION_NAME }}
