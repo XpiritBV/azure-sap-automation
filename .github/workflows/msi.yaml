@@ -21,7 +21,7 @@ jobs:
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
-      - name: Test SPN Login
+      - name: Test SPN Az Login
         run: |
           az login --service-principal
           az account show
@@ -31,7 +31,6 @@ jobs:
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        continue-on-error: true
 
       - name: Azure Login SPN
         uses: Azure/Login@v2
@@ -43,14 +42,14 @@ jobs:
           az account show
           az logout
 
-  test_msi_login:
-    name: Test MSI Azure Login
+  test_sami_login:
+    name: Test System-assigned Managed Identity Azure Login
     environment: ${{ inputs.deployer }}
     runs-on: self-hosted
     container:
       image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
     steps:
-      - name: Test MSI Login
+      - name: Test System-assigned Managed Identity Az Login
         run: |
           az login --identity
           az account show
@@ -65,6 +64,19 @@ jobs:
 
       - name: Test System-assigned Managed Identity Login
         run: |
+          az account show
+          az logout
+
+  test_uami_login:
+    name: Test User-assigned Managed Identity Azure Login
+    environment: ${{ inputs.deployer }}
+    runs-on: self-hosted
+    container:
+      image: ghcr.io/xpiritbv/azure-sap-automation:github-workflow
+    steps:
+      - name: Test User-assigned Managed Identity Az Login
+        run: |
+          az login --identity --username 3de250ca-210c-4177-8f81-c07f7153be9b
           az account show
           az logout
 
