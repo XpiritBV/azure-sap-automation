@@ -25,13 +25,11 @@ jobs:
         run: |
           az login --output none --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
           az account show
-          az ad signed-in-user show
           az logout
         env:
           AZURE_CLIENT_ID: ef6134f6-3912-41f7-b684-63fe90ae4100 # = SDAF-GH-Integration ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        continue-on-error: true
 
       - name: Azure Login SPN
         uses: Azure/Login@v2
@@ -41,9 +39,7 @@ jobs:
       - name: Test SPN Login
         run: |
           az account show
-          az ad signed-in-user show
           az logout
-        continue-on-error: true
 
   test_sami_login:
     name: Test System-assigned Managed Identity Azure Login
@@ -56,9 +52,7 @@ jobs:
         run: |
           az login --output none --identity
           az account show
-          az ad signed-in-user show
           az logout
-        continue-on-error: true
 
       - name: Azure login with System-assigned Managed Identity
         uses: Azure/Login@v2
@@ -70,9 +64,7 @@ jobs:
       - name: Test System-assigned Managed Identity Login
         run: |
           az account show
-          az ad signed-in-user show
           az logout
-        continue-on-error: true
 
   test_uami_login:
     name: Test User-assigned Managed Identity Azure Login
@@ -85,9 +77,7 @@ jobs:
         run: |
           az login --output none --identity --username 3de250ca-210c-4177-8f81-c07f7153be9b
           az account show
-          az ad signed-in-user show
           az logout
-        continue-on-error: true
 
       - name: Azure login with User-assigned Managed Identity
         uses: Azure/Login@v2
@@ -100,6 +90,4 @@ jobs:
       - name: Test User-assigned Managed Identity Login
         run: |
           az account show
-          az ad signed-in-user show
           az logout
-        continue-on-error: true
