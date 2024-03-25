@@ -171,14 +171,14 @@ echo 'Deployer Environment File: ' ${deployer_environment_file_name}
 workload_environment_file_name=${CONFIG_REPO_PATH}/.sap_deployment_automation/${ENVIRONMENT}${LOCATION_CODE}${NETWORK}
 echo 'Workload Environment File: ' ${workload_environment_file_name}
 
-echo -e "$green--- Convert config files to UX format ---$resetformatting"
-dos2unix -q ${deployer_environment_file_name}
-dos2unix -q ${workload_environment_file_name}
-
 if [ ! -f ${deployer_environment_file_name} ]; then
     echo -e "$boldred--- ${deployer_environment}${deployer_region} was not found ---${resetformatting}"
     exit_error "Control plane configuration file ${deployer_environment}${deployer_region} was not found." 2
 fi
+
+echo -e "$green--- Convert config files to UX format ---$resetformatting"
+dos2unix -q ${deployer_environment_file_name}
+dos2unix -q ${workload_environment_file_name}
 end_group
 
 echo -e "$green--- Read parameter values ---${resetformatting}"
