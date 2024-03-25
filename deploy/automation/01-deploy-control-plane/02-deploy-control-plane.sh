@@ -442,27 +442,27 @@ end_group
 
 start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
-    if [[ -n "${REMOTE_STATE_SA}" ]]; then
-        set_value_with_key "Terraform_Remote_Storage_Account_Name" ${REMOTE_STATE_SA}
-    fi
-    if [[ -n "${REMOTE_STATE_RG}" ]]; then
-        set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name" ${REMOTE_STATE_RG} fi
-    fi
-    if [[ -n "${ARM_SUBSCRIPTION_ID}" ]]; then
-        set_value_with_key "Terraform_Remote_Storage_Subscription" ${ARM_SUBSCRIPTION_ID} fi
-    fi
+    # if [[ -n "${REMOTE_STATE_SA}" ]]; then
+    #     set_value_with_key "Terraform_Remote_Storage_Account_Name" ${REMOTE_STATE_SA}
+    # fi
+    # if [[ -n "${REMOTE_STATE_RG}" ]]; then
+    #     set_value_with_key "Terraform_Remote_Storage_Resource_Group_Name" ${REMOTE_STATE_RG} fi
+    # fi
+    # if [[ -n "${ARM_SUBSCRIPTION_ID}" ]]; then
+    #     set_value_with_key "Terraform_Remote_Storage_Subscription" ${ARM_SUBSCRIPTION_ID} fi
+    # fi
     if [[ -n "${deployerfolder}" ]]; then
         set_value_with_key "Deployer_State_FileName" ${deployerfolder}.terraform.tfstate
     fi
-    if [[ -n "${file_key_vault}" ]]; then
-        set_value_with_key "Deployer_Key_Vault" ${file_key_vault} fi
-    fi
-    if [[ -n "${ENVIRONMENT}" ]]; then
-        set_value_with_key "ControlPlaneEnvironment" ${ENVIRONMENT} fi
-    fi
-    if [[ -n "${LOCATION}" ]]; then
-        set_value_with_key "ControlPlaneLocation" ${LOCATION}
-    fi
+    # if [[ -n "${file_key_vault}" ]]; then
+    #     set_value_with_key "Deployer_Key_Vault" ${file_key_vault} fi
+    # fi
+    # if [[ -n "${ENVIRONMENT}" ]]; then
+    #     set_value_with_key "ControlPlaneEnvironment" ${ENVIRONMENT} fi
+    # fi
+    # if [[ -n "${LOCATION}" ]]; then
+    #     set_value_with_key "ControlPlaneLocation" ${LOCATION}
+    # fi
 fi
 end_group
 

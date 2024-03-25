@@ -92,5 +92,9 @@ locals {
                                                 split("/", azurerm_resource_group.library[0].id)[2]
                                               )
                                           }
+                                          "Deployer_State_FileName" = {
+                                            label = var.deployer_tfstate.created_resource_group_name
+                                            value = format("%s%s", var.deployer_tfstate.created_resource_group_name, ".terraform.tfstate")
+                                          }
                                         }
 }
