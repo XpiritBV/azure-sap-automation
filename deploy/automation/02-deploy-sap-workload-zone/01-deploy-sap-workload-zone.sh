@@ -168,7 +168,7 @@ if [[ $(get_platform) = devops ]]; then
         exit_error "Variable group ${variable_group} could not be found." 2
     fi
 
-    echo "Agent Pool" $(this_agent)
+    echo "Agent Pool: " ${this_agent}
 fi
 
 start_group "Configure parameters files"
