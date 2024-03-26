@@ -89,7 +89,7 @@ use_private_endpoint = false
 use_service_endpoint = false
 
 #Defines if the SAP VNet will be peered with the control plane VNet
-peer_with_control_plane_vnet = true
+peer_with_control_plane_vnet = false
 
 # Defines if access to the key vaults and storage accounts is restricted to the SAP and deployer VNets
 enable_firewall_for_keyvaults_and_storage = false
