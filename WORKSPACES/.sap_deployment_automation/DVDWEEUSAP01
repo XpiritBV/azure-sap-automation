@@ -1,0 +1,13 @@
+keyvault=DVDWEEUDVD05user1F6
+ARM_SUBSCRIPTION_ID=d6c8e3b6-467e-452e-97c9-49d9de9e37da
+REMOTE_STATE_RG=DVD-WEEU-SAP_LIBRARY
+client_id=ef6134f6-3912-41f7-b684-63fe90ae4100
+tenant_id=c01abe72-ffef-4ecc-bda0-937975b49e6b
+deployer_tfstate_key=DVD-WEEU-DVD05-INFRASTRUCTURE.terraform.tfstate
+REMOTE_STATE_SA=dvdweeutfstateaa7
+subscription=d6c8e3b6-467e-452e-97c9-49d9de9e37da
+STATE_SUBSCRIPTION=d6c8e3b6-467e-452e-97c9-49d9de9e37da
+tfstate_resource_id=/subscriptions/d6c8e3b6-467e-452e-97c9-49d9de9e37da/resourceGroups/DVD-WEEU-SAP_LIBRARY/providers/Microsoft.Storage/storageAccounts/dvdweeutfstateaa7
+workload_zone_prefix=DVD-WEEU-SAP01
+landscape_tfstate_key=DVD-WEEU-SAP01-INFRASTRUCTURE.terraform.tfstate
+workloadkeyvault=DVDWEEUSAP01userE19
