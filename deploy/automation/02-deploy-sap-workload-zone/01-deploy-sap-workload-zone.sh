@@ -337,6 +337,8 @@ if [ $USE_MSI != "true" ]; then
             az role assignment create --assignee-object-id $WL_ARM_OBJECT_ID --assignee-principal-type ServicePrincipal --role "Reader" --scope "/subscriptions/${STATE_SUBSCRIPTION}" --output none
         fi
 
+        # TODO: This check does not work correctly, the check failed, the role assignment is created every time again and again.
+        # TODO: Remove check of fix check.
         perms=$(az role assignment list --subscription ${STATE_SUBSCRIPTION} --role "Storage Account Contributor" --scope "${tfstate_resource_id}" --query "[?principalId=='$WL_ARM_OBJECT_ID'].principalName | [0]" -o tsv --only-show-errors)
         if [ -z "$perms" ]; then
             echo "Assigning Storage Account Contributor permissions for $WL_ARM_OBJECT_ID to ${tfstate_resource_id}"
