@@ -432,7 +432,7 @@ if [ -f ${workload_environment_file_name} ]; then
     echo "Workload Zone State File: ${landscape_tfstate_key}"
 fi
 
-az logout --output none
+# az logout --output none
 
 var=$(get_value_with_key "FENCING_SPN_ID")
 if [ -z ${var} ]; then
