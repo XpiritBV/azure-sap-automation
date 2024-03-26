@@ -337,7 +337,6 @@ if [ $USE_MSI != "true" ]; then
             az role assignment create --assignee-object-id $WL_ARM_OBJECT_ID --assignee-principal-type ServicePrincipal --role "Reader" --scope "/subscriptions/${STATE_SUBSCRIPTION}" --output none
         fi
 
-        export MSYS_NO_PATHCONV=1
         perms=$(az role assignment list --subscription ${STATE_SUBSCRIPTION} --role "Storage Account Contributor" --scope "${tfstate_resource_id}" --query "[?principalId=='$WL_ARM_OBJECT_ID'].principalName | [0]" -o tsv --only-show-errors)
         if [ -z "$perms" ]; then
             echo "Assigning Storage Account Contributor permissions for $WL_ARM_OBJECT_ID to ${tfstate_resource_id}"
@@ -435,14 +434,14 @@ fi
 
 az logout --output none
 
-az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "FENCING_SPN_ID.value")
-if [ -z ${az_var} ]; then
+var=$(get_value_with_key "FENCING_SPN_ID")
+if [ -z ${var} ]; then
     log_warning "Variable FENCING_SPN_ID is not set. Required for highly available deployments"
 else
     export fencing_id=$(az keyvault secret list --vault-name ${workload_key_vault} --query [].name -o tsv | grep ${workload_prefix}-fencing-spn-id | xargs)
     if [ -z "${fencing_id}" ]; then
         az keyvault secret set --name ${workload_prefix}-fencing-spn-id --vault-name $workload_key_vault --value ${FENCING_SPN_ID} --output none
-        az keyvault secret set --name ${workload_prefix}-fencing-spn-pwd --vault-name $workload_key_vault --value=${FENCING_SPN_PWD} --output none
+        az keyvault secret set --name ${workload_prefix}-fencing-spn-pwd --vault-name $workload_key_vault --value ${FENCING_SPN_PWD} --output none
         az keyvault secret set --name ${workload_prefix}-fencing-spn-tenant --vault-name $workload_key_vault --value ${FENCING_SPN_TENANT} --output none
     fi
 fi
@@ -451,7 +450,6 @@ echo -e "$green--- Pull latest ---${resetformatting}"
 cd ${CONFIG_REPO_PATH}
 git pull
 
-added=0
 if [ -f ${workload_environment_file_name} ]; then
     git add ${workload_environment_file_name}
 fi
