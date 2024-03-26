@@ -94,8 +94,7 @@ data "azurerm_user_assigned_identity" "deployer" {
   resource_group_name                  = split("/", var.deployer.user_assigned_identity_id)[4]
 }
 
-
-# // Add role to be able to deploy resources
+// Add role to be able to deploy resources
 resource "azurerm_role_assignment" "sub_contributor" {
   provider                             = azurerm.main
   count                                = var.assign_subscription_permissions && length(var.deployer.user_assigned_identity_id) == 0 ? 1 : 0
@@ -146,7 +145,6 @@ resource "azurerm_linux_virtual_machine" "deployer" {
                                             disk_size_gb           = 128
                                           }
 
-
   dynamic "source_image_reference"        {
                                             for_each = range(var.deployer.os.type == "marketplace" || var.deployer.os.type == "marketplace_with_plan" ? 1 : 0)
                                             content {
@@ -185,6 +183,7 @@ resource "azurerm_linux_virtual_machine" "deployer" {
                                               azurerm_storage_account.deployer[0].primary_blob_endpoint
                                             )
                                           }
+
   connection                              {
                                             type        = "ssh"
                                             host        = azurerm_public_ip.deployer[count.index].ip_address
@@ -194,19 +193,23 @@ resource "azurerm_linux_virtual_machine" "deployer" {
                                             timeout     = var.ssh-timeout
                                           }
 
-  tags                                 = local.tags
+  tags                                  = local.tags
+  depends_on                            = [
+                                            data.azurerm_storage_account.deployer,
+                                            azurerm_storage_account.deployer
+                                          ]
 }
 
-# // Add role to be able to deploy resources
+// Add role to be able to deploy resources
 resource "azurerm_role_assignment" "subscription_contributor_system_identity" {
-  count                                = var.assign_subscription_permissions && var.deployer.add_system_assigned_identity ? var.deployer_vm_count : 0
-  provider                             = azurerm.main
-  scope                                = data.azurerm_subscription.primary.id
-  role_definition_name                 = "Reader"
-  principal_id                         = azurerm_linux_virtual_machine.deployer[count.index].identity[0].principal_id
+  count                                 = var.assign_subscription_permissions && var.deployer.add_system_assigned_identity ? var.deployer_vm_count : 0
+  provider                              = azurerm.main
+  scope                                 = data.azurerm_subscription.primary.id
+  role_definition_name                  = "Reader"
+  principal_id                          = azurerm_linux_virtual_machine.deployer[count.index].identity[0].principal_id
 }
 
-#Private endpoint tend to take a while to be created, so we need to wait for it to be ready before we can use it
+// Private endpoint tend to take a while to be created, so we need to wait for it to be ready before we can use it
 resource "time_sleep" "wait_for_VM" {
   create_duration                      = "60s"
 
@@ -234,21 +237,22 @@ resource "azurerm_virtual_machine_extension" "configure" {
                                                  format(
                                                  "%s/templates/configure_deployer.sh.tmpl", path.module),
                                                  {
-                                                   tfversion            = var.tf_version,
-                                                   rg_name              = local.resourcegroup_name,
-                                                   client_id            = length(var.deployer.user_assigned_identity_id) == 0 ? azurerm_user_assigned_identity.deployer[0].client_id : data.azurerm_user_assigned_identity.deployer[0].client_id,
-                                                   subscription_id      = data.azurerm_subscription.primary.subscription_id,
-                                                   tenant_id            = data.azurerm_subscription.primary.tenant_id,
+                                                   agent_ado_url        = var.agent_ado_url
+                                                   agent_pat            = var.agent_pat
+                                                   agent_pool           = var.agent_pool
+                                                   api_url              = var.api_url
+                                                   app_token            = var.app_token
                                                    local_user           = local.username
-                                                   pool                 = var.agent_pool
-                                                   pat                  = var.agent_pat
-                                                   ado_repo             = var.agent_ado_url
-                                                   use_webapp           = var.use_webapp
-                                                   ansible_core_version = var.ansible_core_version
+                                                   platform             = var.platform
+                                                   repository           = var.repository
+                                                   server_url           = var.server_url
                                                  }
                                                )
                                              )
                                            }
                                          )
 
+  lifecycle {
+    ignore_changes                     = [ protected_settings ]
+  }
 }

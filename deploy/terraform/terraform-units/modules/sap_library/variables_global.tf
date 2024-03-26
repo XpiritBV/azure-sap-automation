@@ -76,7 +76,6 @@ variable "dns_zone_names"              {
                                                    }
                                        }
 
-
 variable "naming"                     {
                                         description = "naming convention data structure"
                                       }
@@ -134,7 +133,6 @@ variable "Agent_IP"                       {
                                           }
 
 variable "bootstrap"                      {}
-
 
 variable "short_named_endpoints_nics"     {
                                             description = "If defined, uses short names for private endpoints nics"

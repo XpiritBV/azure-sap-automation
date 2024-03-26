@@ -194,6 +194,7 @@ then
     deployer_tfstate_key=${key}.terraform.tfstate
     STATE_SUBSCRIPTION=$ARM_SUBSCRIPTION_ID
 fi
+
 if [[ -z $STATE_SUBSCRIPTION ]];
 then
   STATE_SUBSCRIPTION=$ARM_SUBSCRIPTION_ID
@@ -207,7 +208,7 @@ then
     load_config_vars "${system_config_information}" "tfstate_resource_id"
     load_config_vars "${system_config_information}" "STATE_SUBSCRIPTION"
 else
-    save_config_vars "${system_config_information}" REMOTE_STATE_SA
+    save_config_vars "${system_config_information}" "REMOTE_STATE_SA"
 fi
 
 echo "Terraform state file storage:" "${REMOTE_STATE_SA}"
@@ -403,7 +404,6 @@ if [[ -z ${tfstate_resource_id} ]]; then
     load_config_vars "${system_config_information}" "STATE_SUBSCRIPTION"
     load_config_vars "${system_config_information}" "REMOTE_STATE_RG"
     load_config_vars "${system_config_information}" "tfstate_resource_id"
-
 fi
 
 tfstate_parameter=" -var tfstate_resource_id=${tfstate_resource_id}"
@@ -452,9 +452,9 @@ if [ -f terraform.tfstate ]; then
   then
     echo ""
     echo -e "$cyan Reinitializing deployer in case of on a new deployer $resetformatting"
-
     terraform_module_directory="${SAP_AUTOMATION_REPO_PATH}"/deploy/terraform/bootstrap/"${deployment_system}"/
-    terraform -chdir="${terraform_module_directory}" init  -backend-config "path=${param_dirname}/terraform.tfstate" -reconfigure
+
+    terraform -chdir="${terraform_module_directory}" init -backend-config "path=${param_dirname}/terraform.tfstate" -reconfigure
     echo ""
     key_vault_id=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_kv_user_arm_id | tr -d \")
 
@@ -462,13 +462,12 @@ if [ -f terraform.tfstate ]; then
     then
       export TF_VAR_deployer_kv_user_arm_id="${key_vault_id}" ; echo $TF_VAR_deployer_kv_user_arm_id
     fi
-
-
   fi
 
   if [ "${deployment_system}" == sap_library ]
   then
-    echo "Reinitializing library in case of on a new deployer"
+    echo ""
+    echo -e "$cyan Reinitializing library in case of on a new deployer $resetformatting"
     terraform_module_directory="${SAP_AUTOMATION_REPO_PATH}"/deploy/terraform/bootstrap/"${deployment_system}"/
 
     terraform -chdir="${terraform_module_directory}" init -backend-config "path=${param_dirname}/terraform.tfstate" -reconfigure
@@ -522,9 +521,9 @@ else
         --backend-config "container_name=tfstate" \
         --backend-config "key=${key}.terraform.tfstate"
         return_value=$?
-
     fi
 fi
+
 if [ 0 != $return_value ]
 then
     echo "#########################################################################################"
@@ -536,6 +535,7 @@ then
     echo "Error when initializing Terraform" > "${system_config_information}".err
     exit $return_value
 fi
+
 if [ 1 == $check_output ]
 then
     outputs=$(terraform -chdir="${terraform_module_directory}" output )
@@ -619,7 +619,7 @@ fi
 
 allParams=$(printf " -var-file=%s %s %s %s %s %s %s" "${var_file}" "${extra_vars}" "${tfstate_parameter}" "${landscape_tfstate_key_parameter}" "${deployer_tfstate_key_parameter}" "${deployment_parameter}" "${version_parameter}" )
 
-terraform -chdir="$terraform_module_directory" plan -no-color -detailed-exitcode $allParams | tee -a plan_output.log
+terraform -chdir="$terraform_module_directory" plan -no-color -detailed-exitcode $allParams >> plan_output.log
 return_value=$?
 echo "Terraform Plan return code: " $return_value
 
@@ -634,13 +634,13 @@ if [ 1 == $return_value ] ; then
     echo "Error when running Terraform plan" > "${system_config_information}".err
 
     unset TF_DATA_DIR
+    cat plan_output.log
     rm plan_output.log
     exit $return_value
 fi
 
 state_path="SYSTEM"
 if [ 1 != $return_value ] ; then
-
     if [ "${deployment_system}" == sap_deployer ]
     then
         state_path="DEPLOYER"
@@ -673,15 +673,11 @@ if [ 1 != $return_value ] ; then
                       az pipelines variable-group variable update --group-id ${VARIABLE_GROUP_ID} --name WEBAPP_ID --value $webapp_id --output none --only-show-errors
                   fi
                 fi
-                fi
-
+            fi
         fi
-
-
     fi
 
     if [ "${deployment_system}" == sap_landscape ]
-
     then
         state_path="LANDSCAPE"
         if [ $landscape_tfstate_key_exists == false ]
@@ -716,13 +712,10 @@ if [ 1 != $return_value ] ; then
               fi
             fi
           fi
-
-
       fi
     fi
 
     ok_to_proceed=true
-
 fi
 
 container_exists=$(az storage container exists --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}" --name tfvars --only-show-errors --query exists)
@@ -730,7 +723,6 @@ container_exists=$(az storage container exists --subscription "${STATE_SUBSCRIPT
 if [ "${container_exists}" == "false" ]; then
     az storage container create --subscription "${STATE_SUBSCRIPTION}" --account-name "${REMOTE_STATE_SA}" --name tfvars --only-show-errors
 fi
-
 
 fatal_errors=0
 # HANA VM
@@ -971,11 +963,11 @@ if [ 1 == $ok_to_proceed ]; then
     allParams=$(printf " -var-file=%s %s %s %s %s %s %s %s " "${var_file}" "${extra_vars}" "${tfstate_parameter}" "${landscape_tfstate_key_parameter}" "${deployer_tfstate_key_parameter}" "${deployment_parameter}" "${version_parameter}"  "${approve}" )
 
     if [ 1 == $called_from_ado ] ; then
-        terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -no-color -compact-warnings -json $allParams | tee -a apply_output.json
+        terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -no-color -compact-warnings -json $allParams >> apply_output.json
     else
         if [ -n "${approve}" ]
         then
-          terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -json $allParams | tee -a  apply_output.json
+          terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -json $allParams >> apply_output.json
         else
           terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" $allParams
         fi
@@ -1015,9 +1007,9 @@ if [ 1 == $ok_to_proceed ]; then
                 echo ""
                 echo ""
                 if [ 1 == $called_from_ado ] ; then
-                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -no-color -compact-warnings -json $allParams | tee -a apply_output.json
+                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -no-color -compact-warnings -json $allParams >> apply_output.json
                 else
-                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -json $allParams | tee -a  apply_output.json
+                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -json $allParams >> apply_output.json
                 fi
                 return_value=$?
             fi
@@ -1052,9 +1044,9 @@ if [ 1 == $ok_to_proceed ]; then
                 echo ""
                 echo ""
                 if [ 1 == $called_from_ado ] ; then
-                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -no-color -compact-warnings -json $allParams | tee -a apply_output.json
+                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -no-color -compact-warnings -json $allParams >> apply_output.json
                 else
-                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -json $allParams | tee -a  apply_output.json
+                    terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -json $allParams >> apply_output.json
                 fi
                 return_value=$?
             fi
@@ -1146,7 +1138,7 @@ then
         temp=$(echo "${random_id}" | grep "Backend reinitialization required")
         if [ -z "${temp}" ]
         then
-            save_config_var "deployer_random_id" "${random_id}"
+            save_config_var "deployer_random_id" "${system_config_information}"
             return_value=0
         fi
     fi
@@ -1332,7 +1324,7 @@ then
         temp=$(echo "${random_id_b64}" | grep "Backend reinitialization required")
         if [ -z "${temp}" ]
         then
-            save_config_var "library_random_id" "${random_id_b64}"
+            save_config_var "library_random_id" "${system_config_information}"
             return_value=0
         fi
     fi

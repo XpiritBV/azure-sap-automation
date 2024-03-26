@@ -1,6 +1,9 @@
 output "naming" {
   description                          = "values for naming convention"
   value                                = {
+                                           appconfig_names       = {
+                                                                          DEPLOYER = local.deployer_appconfig_name
+                                                                   }
                                            availabilityset_names = {
                                                                      app = local.app_avset_names
                                                                      db  = local.db_avset_names
@@ -37,7 +40,9 @@ output "naming" {
 
                          resource_prefixes = var.resource_prefixes
                          resource_suffixes = var.resource_suffixes
-
+                         DEPLOYER = {
+                           location_short = local.deployer_location_short
+                         }
                          separator = length(var.custom_prefix) > 0 ? "" : local.separator
 
                          storageaccount_names = {
@@ -87,5 +92,4 @@ output "naming_new" {
   value                                =  {
                                              app_ppg_names = local.app_ppg_names
                                           }
-
 }

@@ -186,6 +186,7 @@ locals {
                                            app_service_SKU                     = var.app_service_SKU_name
                                            user_assigned_identity_id           = var.user_assigned_identity_id
                                            shared_access_key_enabled           = var.shared_access_key_enabled
+                                           pipeline_parameters                 = var.deployer_pipeline_parameters
                                          }
 
   authentication                       = {
@@ -204,7 +205,6 @@ locals {
                                            kv_pwd               = var.deployer_password_secret_name
 
                                         }
-
   options                              = {
                                             enable_deployer_public_ip = var.deployer_enable_public_ip || try(var.options.enable_deployer_public_ip, false)
                                          }
@@ -220,5 +220,4 @@ locals {
                                            app_id = var.app_registration_app_id
                                            client_secret = var.webapp_client_secret
                                          }
-
 }

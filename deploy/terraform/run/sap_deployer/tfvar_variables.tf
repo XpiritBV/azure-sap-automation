@@ -375,12 +375,6 @@ variable "deployer_diagnostics_account_arm_id"        {
                                                         default     = ""
                                                       }
 
-
-variable "tf_version"                                 {
-                                                        description = "Terraform version to install on deployer"
-                                                        default     = "1.7.0"
-                                                      }
-
 variable "name_override_file"                         {
                                                         description = "If provided, contains a json formatted file defining the name overrides"
                                                         default     = ""
@@ -438,6 +432,7 @@ variable "management_dns_resourcegroup_name"          {
                                                         default     = null
                                                         type        = string
                                                       }
+
 variable "dns_zone_names"                             {
                                                         description = "Private DNS zone names"
                                                         type        = map(string)
@@ -469,11 +464,6 @@ variable "agent_pat" {
 variable "agent_ado_url"                              {
                                                         description = "If provided, contains the Url to the ADO repository"
                                                         default     = ""
-                                                      }
-
-variable "ansible_core_version"                       {
-                                                        description = "If provided, the version of ansible core to be installed"
-                                                        default     = "2.15"
                                                       }
 
 #########################################################################################
@@ -559,3 +549,39 @@ variable "use_spn"                              {
                                                   default     = true
                                                 }
 
+variable "PLATFORM"                                 {
+                                                       description = "Type of agent to be used"
+                                                       type       = string
+                                                       default = "devops"
+                                                     }
+variable "APP_TOKEN"                                {
+                                                       description = "If provided, contains token to access github"
+                                                       default = ""
+                                                    }
+variable "SERVER_URL"                               {
+                                                      description = "If provided, contains the Server Url of the GitHub instance"
+                                                      default = "https://github.com"
+                                                    }
+variable "API_URL"                                  {
+                                                      description = "If provided, contains the API Url of the GitHub instance"
+                                                      default = "https://api.github.com"
+                                                    }
+variable "REPOSITORY"                               {
+                                                      description = "If provided, contains the Reference to tue repositry (e.g. owner/repository)"
+                                                      default = ""
+                                                    }
+
+#########################################################################################
+#                                                                                       #
+#  App Configuration settings                                                           #
+#                                                                                       #
+#########################################################################################
+
+variable "deployer_pipeline_parameters"              {
+                                                       description = "Values to define the pipeline parameters for the deployer and store them in app configuration"
+                                                       type = map(object({
+                                                         label = string
+                                                         value = string
+                                                       }))
+                                                       default = null
+                                                     }

@@ -11,6 +11,7 @@ locals {
 
   // Storage account names must be between 3 and 24 characters in length and use numbers and lower-case letters only. The name must be unique.
   deployer_storageaccount_name                    = substr(replace(lower(format("%s%s%sdiag%s", local.deployer_env_verified, local.deployer_location_short, local.dep_vnet_verified, local.random_id_verified)), "/[^a-z0-9]/", ""), 0, var.azlimits.stgaccnt)
+  deployer_appconfig_name                         = substr(replace(lower(format("%s%sapc%s", local.deployer_env_verified, local.deployer_location_short, local.random_id_verified)), "/[^a-z0-9]/", ""), 0, var.azlimits.stgaccnt)
   landscape_storageaccount_name                   = substr(replace(lower(format("%s%s%sdiag%s", local.landscape_env_verified, local.location_short, local.sap_vnet_verified, local.random_id_verified)), "/[^a-z0-9]/", ""), 0, var.azlimits.stgaccnt)
   landscape_shared_transport_storage_account_name = substr(replace(lower(format("%s%s%stransport%s", local.landscape_env_verified, local.location_short, local.sap_vnet_verified, local.random_id_verified)), "/[^a-z0-9]/", ""), 0, var.azlimits.stgaccnt)
   landscape_shared_install_storage_account_name   = substr(replace(lower(format("%s%s%sinstall%s", local.landscape_env_verified, local.location_short, local.sap_vnet_verified, local.random_id_verified)), "/[^a-z0-9]/", ""), 0, var.azlimits.stgaccnt)
@@ -20,5 +21,4 @@ locals {
 
   // Witness account
   witness_storageaccount_name = substr(replace(lower(format("%s%s%switness%s", local.landscape_env_verified, local.location_short, local.sap_vnet_verified, local.random_id_verified)), "/[^a-z0-9]/", ""), 0, var.azlimits.stgaccnt)
-
 }

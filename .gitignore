@@ -32,7 +32,6 @@ override.tf.json
 **/obj/*
 .vscode/launch.json
 .vscode/tasks.json
-.vscode/settings.json
 Webapp/.vs/SDAF
 Webapp/SDAF/bin
 Webapp/SDAF/Properties/PublishProfiles
@@ -53,3 +52,6 @@ Importer/SDAF SDU Importer/SDAFSDUImporter/bin
 __pycache__/
 __pycache__
 *.pyc
+.secrets
+.env
+stdout.az

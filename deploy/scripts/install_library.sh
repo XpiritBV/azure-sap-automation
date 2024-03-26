@@ -52,7 +52,6 @@ VALID_ARGUMENTS=$?
 
 if [ "$VALID_ARGUMENTS" != "0" ]; then
   showhelp
-
 fi
 
 eval set -- "$INPUT_ARGUMENTS"
@@ -103,13 +102,10 @@ if [ "${ext}" == json ]; then
     region=$(jq --raw-output .infrastructure.region "${parameterfile}")
     use_deployer=$(jq --raw-output .deployer.use "${parameterfile}")
 else
-
     load_config_vars "${param_dirname}"/"${parameterfile}" "environment"
     load_config_vars "${param_dirname}"/"${parameterfile}" "location"
     region=$(echo ${location} | xargs)
-
 fi
-
 
 key=$(echo "${parameterfile}" | cut -d. -f1)
 
@@ -170,9 +166,6 @@ sudo chown -R $USER:$USER /opt/terraform
 export TF_PLUGIN_CACHE_DIR=/opt/terraform/.terraform.d/plugin-cache
 
 
-param_dirname=$(pwd)
-
-
 arm_config_stored=false
 
 param_dirname=$(pwd)
@@ -186,10 +179,10 @@ if [ ! -n "${SAP_AUTOMATION_REPO_PATH}" ]; then
     echo ""
     echo "#########################################################################################"
     echo "#                                                                                       #"
-    echo "#   Missing environment variables (SAP_AUTOMATION_REPO_PATH)!!!                             #"
+    echo "#   Missing environment variables (SAP_AUTOMATION_REPO_PATH)!!!                         #"
     echo "#                                                                                       #"
     echo "#   Please export the folloing variables:                                               #"
-    echo "#      SAP_AUTOMATION_REPO_PATH (path to the repo folder (sap-automation))                        #"
+    echo "#      SAP_AUTOMATION_REPO_PATH (path to the repo folder (sap-automation))              #"
     echo "#      ARM_SUBSCRIPTION_ID (subscription containing the state file storage account)     #"
     echo "#                                                                                       #"
     echo "#########################################################################################"
@@ -261,7 +254,6 @@ if [ ! -d ./.terraform/ ]; then
     sed -i /REMOTE_STATE_RG/d  "${library_config_information}"
     sed -i /REMOTE_STATE_SA/d  "${library_config_information}"
     sed -i /tfstate_resource_id/d  "${library_config_information}"
-
 else
     if [ -f ./.terraform/terraform.tfstate ]; then
         if grep "azurerm" ./.terraform/terraform.tfstate ; then
@@ -271,7 +263,7 @@ else
             echo "#                                                                                       #"
             echo "#########################################################################################"
 
-            if [ $approve == "--auto-approve" ] ; then
+            if [ "$approve" == "--auto-approve" ] ; then
               tfstate_resource_id=$(az resource list --name $REINSTALL_ACCOUNTNAME --subscription $REINSTALL_SUBSCRIPTION --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
               if [ -n "${tfstate_resource_id}" ]; then
                   echo "Reinitializing against remote state"
@@ -320,7 +312,6 @@ else
     fi
 fi
 
-
 echo ""
 echo "#########################################################################################"
 echo "#                                                                                       #"
@@ -333,7 +324,7 @@ if [ -n "${deployer_statefile_foldername}" ]; then
     echo "Deployer folder specified:" "${deployer_statefile_foldername}"
     terraform -chdir="${terraform_module_directory}" plan -no-color -detailed-exitcode -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" > plan_output.log 2>&1
 else
-    terraform -chdir="${terraform_module_directory}" plan -no-color -detailed-exitcode -var-file="${var_file}"  > plan_output.log 2>&1
+    terraform -chdir="${terraform_module_directory}" plan -no-color -detailed-exitcode -var-file="${var_file}" > plan_output.log 2>&1
 fi
 return_value=$?
 
@@ -400,14 +391,14 @@ then
     echo "Deployer folder specified:" "${deployer_statefile_foldername}"
     if [ -n "${approve}" ]
     then
-        terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json | tee -a  apply_output.json
+        terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json >> apply_output.json
     else
         terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}"
     fi
 else
     if [ -n "${approve}" ]
     then
-      terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json | tee -a  apply_output.json
+      terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json >> apply_output.json
     else
       terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}"
     fi
@@ -452,9 +443,9 @@ then
         if [ -n "${deployer_statefile_foldername}" ];
         then
             echo "Deployer folder specified:" "${deployer_statefile_foldername}"
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json >> apply_output.json
         else
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json >> apply_output.json
         fi
         return_value=$?
         rerun_apply=0
@@ -495,9 +486,9 @@ then
         if [ -n "${deployer_statefile_foldername}" ];
         then
             echo "Deployer folder specified:" "${deployer_statefile_foldername}"
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -var deployer_statefile_foldername="${deployer_statefile_foldername}" -auto-approve -json >> apply_output.json
         else
-            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply -var-file="${var_file}" -auto-approve -json >> apply_output.json
         fi
         return_value=$?
         rerun_apply=0
@@ -554,7 +545,7 @@ if [ 1 == $return_value ] ; then
     exit $return_value
 fi
 
-REMOTE_STATE_SA=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw remote_state_storage_account_name| tr -d \")
+REMOTE_STATE_SA=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw remote_state_storage_account_name | tr -d \")
 temp=$(echo "${REMOTE_STATE_SA}" | grep -m1 "Warning")
 if [ -z "${temp}" ]
 then
@@ -565,7 +556,7 @@ then
     fi
 fi
 
-tfstate_resource_id=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw tfstate_resource_id| tr -d \")
+tfstate_resource_id=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw tfstate_resource_id | tr -d \")
 temp=$(echo $tfstate_resource_id | grep -m1 "Warning")
 if [ -z "${temp}" ]
 then
@@ -595,7 +586,7 @@ then
     temp=$(echo "${random_id_b64}" | grep "Backend reinitialization required")
     if [ -z "${temp}" ]
     then
-        save_config_var "library_random_id" "${random_id_b64}"
+        save_config_var "library_random_id" "${library_config_information}"
         return_value=0
     fi
 fi

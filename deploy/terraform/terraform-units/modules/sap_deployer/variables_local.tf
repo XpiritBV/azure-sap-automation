@@ -264,4 +264,46 @@ locals {
   // Tags
   tags                                 = try(var.deployer.tags, { "Role" = "Deployer" })
 
+  pipeline_parameters                  = {
+                                          "ControlPlaneEnvironment" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = var.infrastructure.environment
+                                          }
+                                          "ControlPlaneLocation" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = var.naming.DEPLOYER.location_short
+                                          }
+                                          "Deployer_Key_Vault" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = var.key_vault.kv_exists ? data.azurerm_key_vault.kv_user[0].name : azurerm_key_vault.kv_user[0].name
+                                          }
+                                          "deployer_public_ip_address"= {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = local.enable_deployer_public_ip ? azurerm_public_ip.deployer[0].ip_address : ""
+                                          }
+                                          "deployer_random_id" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = random_id.deployer.b64_url
+                                          }
+                                          "resourcegroup_name" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = local.resourcegroup_name
+                                          }
+                                          "webapp_id" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = var.use_webapp ? azurerm_windows_web_app.webapp[0].id : ""
+                                          }
+                                          "webapp_identity" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = var.use_webapp ? azurerm_windows_web_app.webapp[0].identity[0].principal_id : ""
+                                          }
+                                          "webapp_url_base" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = var.use_webapp ? azurerm_windows_web_app.webapp[0].name : ""
+                                          }
+                                          "WEBAPP_RESOURCE_GROUP" = {
+                                            label = local.resource_group_exists ? ( data.azurerm_resource_group.deployer[0].name) : ( azurerm_resource_group.deployer[0].name )
+                                            value = var.use_webapp ? azurerm_windows_web_app.webapp[0].resource_group_name : ""
+                                          }
+                                        }
 }
