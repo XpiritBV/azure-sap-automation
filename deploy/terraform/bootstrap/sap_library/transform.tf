@@ -11,7 +11,8 @@ locals {
                                            tags = try(coalesce(var.resourcegroup_tags, try(var.infrastructure.tags, {})), {})
                                          }
   deployer                             = {
-                                           use = var.use_deployer
+                                           use                                  = var.use_deployer
+                                           pipeline_parameters                  = var.deployer_pipeline_parameters
                                          }
   key_vault                            = {
                                            kv_spn_id = try(coalesce(local.spn_key_vault_arm_id, var.spn_keyvault_id, try(var.key_vault.kv_spn_id, "")), "")

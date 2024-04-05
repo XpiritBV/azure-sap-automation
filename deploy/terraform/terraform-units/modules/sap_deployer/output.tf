@@ -243,4 +243,7 @@ output "subnet_bastion_address_prefixes" {
                                         )
 }
 
-
+output "deployer_app_config_name"                {
+                                                   description = "Deployer app configuration name"
+                                                   value = azurerm_app_configuration.app_config.name
+                                                 }

@@ -56,7 +56,6 @@ VALID_ARGUMENTS=$?
 
 if [ "$VALID_ARGUMENTS" != "0" ]; then
     showhelp
-
 fi
 
 eval set -- "$INPUT_ARGUMENTS"
@@ -168,7 +167,7 @@ else
             echo "#                                                                                       #"
             echo "#########################################################################################"
             sed -i /"use_microsoft_graph"/d "${param_dirname}/.terraform/terraform.tfstate"
-            if [ $approve == "--auto-approve" ] ; then
+            if [ "$approve" == "--auto-approve" ] ; then
               tfstate_resource_id=$(az resource list --name $REINSTALL_ACCOUNTNAME --subscription $REINSTALL_SUBSCRIPTION --resource-type Microsoft.Storage/storageAccounts --query "[].id | [0]" -o tsv)
               if [ -n "${tfstate_resource_id}" ]; then
                   echo "Reinitializing against remote state"
@@ -215,7 +214,6 @@ fi
 
 terraform -chdir="${terraform_module_directory}"  refresh -var-file="${var_file}" $extra_vars
 
-
 echo ""
 echo "#########################################################################################"
 echo "#                                                                                       #"
@@ -224,9 +222,9 @@ echo "#                                                                         
 echo "#########################################################################################"
 echo ""
 
-terraform -chdir="${terraform_module_directory}"  plan  -detailed-exitcode -var-file="${var_file}" $extra_vars | tee -a plan_output.log
+terraform -chdir="${terraform_module_directory}"  plan  -detailed-exitcode -var-file="${var_file}" $extra_vars >> plan_output.log
+return_value=${PIPESTATUS[0]}
 
-return_value=$?
 if [ 1 == $return_value ]
 then
     echo ""
@@ -265,11 +263,11 @@ if [[ -n "${TF_PARALLELLISM}" ]]; then
 fi
 if [ -n "${approve}" ]
 then
-  terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
+  terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json >> apply_output.json
 else
-  terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars
+  terraform -chdir="${terraform_module_directory}" apply -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars
 fi
-return_value=$?
+return_value=${PIPESTATUS[0]}
 
 rerun_apply=0
 if [ -f apply_output.json ]
@@ -304,8 +302,8 @@ then
         echo "#                                                                                       #"
         echo "#########################################################################################"
         echo ""
-        terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
-        return_value=$?
+        terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json >> apply_output.json
+        return_value=${PIPESTATUS[0]}
         rerun_apply=0
     fi
 
@@ -317,7 +315,6 @@ then
         existing=$(jq 'select(."@level" == "error") | {address: .diagnostic.address, summary: .diagnostic.summary}  | select(.summary | startswith("A resource with the ID"))' apply_output.json)
         if [[ -n ${existing} ]]
         then
-
             readarray -t existing_resources < <(echo ${existing} | jq -c '.' )
             for item in "${existing_resources[@]}"; do
               moduleID=$(jq -c -r '.address '  <<< "$item")
@@ -342,47 +339,45 @@ then
             echo "#                                                                                       #"
             echo "#########################################################################################"
             echo ""
-            terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json | tee -a  apply_output.json
-            return_value=$?
+            terraform -chdir="${terraform_module_directory}"  apply ${approve} -parallelism="${parallelism}" -var-file="${var_file}" $extra_vars -json >> apply_output.json
+            return_value=${PIPESTATUS[0]}
         fi
 
         return_value=$?
         errors_occurred=$(jq 'select(."@level" == "error") | length' apply_output.json)
         if [ -f apply_output.json ]
         then
-
-          if [[ -n $errors_occurred ]]
-          then
-            echo ""
-            echo "#########################################################################################"
-            echo "#                                                                                       #"
-            echo -e "#                          $boldreduscore!Errors during the apply phase!$resetformatting                              #"
-
-            return_value=2
-            all_errors=$(jq 'select(."@level" == "error") | {summary: .diagnostic.summary, detail: .diagnostic.detail}' apply_output.json)
-            if [[ -n ${all_errors} ]]
+            if [[ -n $errors_occurred ]]
             then
-                readarray -t errors_strings < <(echo ${all_errors} | jq -c '.' )
-                for errors_string in "${errors_strings[@]}"; do
-                    string_to_report=$(jq -c -r '.detail '  <<< "$errors_string" )
-                    if [[ -z ${string_to_report} ]]
-                    then
-                        string_to_report=$(jq -c -r '.summary '  <<< "$errors_string" )
-                    fi
+                echo ""
+                echo "#########################################################################################"
+                echo "#                                                                                       #"
+                echo -e "#                          $boldreduscore!Errors during the apply phase!$resetformatting                              #"
 
-                    echo -e "#                          $boldreduscore  $string_to_report $resetformatting"
-                    echo "##vso[task.logissue type=error]${string_to_report}"
+                return_value=2
+                all_errors=$(jq 'select(."@level" == "error") | {summary: .diagnostic.summary, detail: .diagnostic.detail}' apply_output.json)
+                if [[ -n ${all_errors} ]]
+                then
+                    readarray -t errors_strings < <(echo ${all_errors} | jq -c '.' )
+                    for errors_string in "${errors_strings[@]}"; do
+                        string_to_report=$(jq -c -r '.detail '  <<< "$errors_string" )
+                        if [[ -z ${string_to_report} ]]
+                        then
+                            string_to_report=$(jq -c -r '.summary '  <<< "$errors_string" )
+                        fi
 
-                done
+                        echo -e "#                          $boldreduscore  $string_to_report $resetformatting"
+                        echo "##vso[task.logissue type=error]${string_to_report}"
 
+                    done
+                fi
+                echo "#                                                                                       #"
+                echo "#########################################################################################"
+                echo ""
+
+                exit $return_value
             fi
-            echo "#                                                                                       #"
-            echo "#########################################################################################"
-            echo ""
-
-          fi
         fi
-
     fi
 
     if [ -f apply_output.json ]
@@ -391,7 +386,7 @@ then
     fi
 fi
 
-keyvault=$(terraform -chdir="${terraform_module_directory}"  output deployer_kv_user_name | tr -d \")
+keyvault=$(terraform -chdir="${terraform_module_directory}" output deployer_kv_user_name | tr -d \")
 temp=$(echo "${keyvault}" | grep "Warning")
 if [ -z "${temp}" ]
 then
@@ -438,6 +433,21 @@ then
     return_value=0
 fi
 
+deployer_app_config_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw deployer_app_config_name | tr -d \")
+if [ -n "${deployer_app_config_name}" ]
+then
+    echo "deployer_app_config_name: $deployer_app_config_name"
+    save_config_var "deployer_app_config_name" "${deployer_config_information}"
+    return_value=0
+fi
+
+created_resource_group_name=$(terraform -chdir="${terraform_module_directory}" output -no-color -raw created_resource_group_name  | tr -d \")
+if [ -n "${created_resource_group_name}" ]
+then
+    echo "created_resource_group_name: $created_resource_group_name"
+    save_config_var "created_resource_group_name" "${deployer_config_information}"
+    return_value=0
+fi
 
 unset TF_DATA_DIR
 

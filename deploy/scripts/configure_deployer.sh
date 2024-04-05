@@ -67,6 +67,13 @@ if [ -z "${TF_VERSION}" ]; then
   TF_VERSION="1.7.0"
 fi
 
+#
+# Dotnet Version settings
+#
+
+if [ -z "${DOTNET_VERSION}" ]; then
+  DOTNET_VERSION="7.0"
+fi
 
 # Fail if attempting to access and unset variable or parameter
 set -o nounset
@@ -146,6 +153,10 @@ pkg_mgr_init()
         pkg_mgr="yum"
         pkg_type="rpm"
         ;;
+    (mariner)
+        pkg_mgr="tdnf"
+        pkg_type="rpm"
+        ;;
     (*)
         error "Unsupported distibution: '${distro_name}'"
         exit 1
@@ -207,6 +218,9 @@ pkg_mgr_upgrade()
     (yum)
         sudo "${pkg_mgr}" upgrade --quiet -y
         ;;
+    (tdnf)
+        sudo "${pkg_mgr}" updateinfo --quiet
+        ;;
     esac
 
     pkg_mgr_upgraded=true
@@ -231,6 +245,10 @@ pkg_mgr_install()
         ;;
     (yum)
         sudo "${pkg_mgr}" --nogpgcheck --quiet  install --assumeyes "${@}"
+        ;;
+
+    (tdnf)
+        sudo "${pkg_mgr}" install --quiet --assumeyes "${@}"
         ;;
     esac
 }
@@ -282,21 +300,29 @@ case "$(get_distro_name_version)" in
 (rhel*)
     echo "${distro_name_version} is supported."
     ;;
+(mariner)
+    echo "${distro_name_version} is supported."
+    ;;
 (*)
     error "Unsupported distro: ${distro_name_version} not currently supported."
     exit 1
     ;;
 esac
 
-if [ "$(get_distro_version)" == "15.4" ]; then
-    error "Unsupported distro: ${distro_name_version} at this time."
-    exit 1
-fi
-if [ "$(get_distro_version)" == "15.5" ]; then
-    error "Unsupported distro: ${distro_name_version} at this time."
-    exit 1
-fi
-
+case "$(get_distro_name)" in
+    (sles)
+        if [ "$(get_distro_version)" == "15.4" ]; then
+            error "Unsupported distro: ${distro_name_version} at this time."
+            exit 1
+        fi
+        if [ "$(get_distro_version)" == "15.5" ]; then
+            error "Unsupported distro: ${distro_name_version} at this time."
+            exit 1
+        fi
+        ;;
+    *)
+        ;;
+esac
 
 case "$(get_distro_name_version)" in
 (sles*)
@@ -346,6 +372,20 @@ case "$(get_distro_name)" in
   ansible_pip3="${ansible_venv_bin}/pip3"
   sudo python3 -m pip install virtualenv;
   ;;
+(mariner)
+    echo "we are inside Mariner"
+    ansible_version="2.11"
+    ansible_major="${ansible_version%%.*}"
+    ansible_minor=$(echo "${ansible_version}." | cut -d . -f 2)
+    # Ansible installation directories
+    ansible_base="/opt/ansible"
+    ansible_bin="${ansible_base}/bin"
+    ansible_venv="${ansible_base}/venv/${ansible_version}"
+    ansible_venv_bin="${ansible_venv}/bin"
+    ansible_collections="${ansible_base}/collections"
+    ansible_pip3="${ansible_venv_bin}/pip3"
+    sudo python3 -m pip install virtualenv;
+    ;;
 (*)
   echo "we are in the default case statement"
   ;;
@@ -399,6 +439,21 @@ case "$(get_distro_name)" in
         python3-pip
         python3-virtualenv
     )
+    ;;
+(mariner)
+    cli_pkgs+=(
+        azure-cli
+    )
+    required_pkgs+=(
+        sshpass
+        python3
+        python3-pip
+        python3-virtualenv
+    )
+    ;;
+(*)
+    error "Unsupported distro: ${distro_name_version} not currently supported."
+    exit 1
     ;;
 esac
 # Include distro version specific packages into required packages list
@@ -458,9 +513,8 @@ sudo mkdir -p \
     "${tf_dir}" \
     "${tf_bin}"
 wget -nv -O /tmp/"${tf_zip}" "https://releases.hashicorp.com/terraform/${tfversion}/${tf_zip}"
-sudo unzip -o /tmp/"${tf_zip}" -d "${tf_dir}"
-sudo ln -vfs "../$(basename "${tf_dir}")/terraform" "${tf_bin}/terraform"
-
+sudo unzip -o /tmp/"${tf_zip}" -d /tmp
+sudo install -Dm755 /tmp/terraform "${tf_dir}/terraform"
 sudo rm /tmp/"${tf_zip}"
 
 # Uninstall Azure CLI - For some platforms
@@ -523,10 +577,13 @@ case "$(get_distro_name)" in
     fi
     set -o errexit
     ;;
-  (rhel*)
+(rhel*)
     sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
     sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm
     sudo dnf install -y azure-cli
+    ;;
+(mariner)
+    sudo tdnf install azure-cli -y
     ;;
 esac
 
@@ -541,19 +598,21 @@ export DOTNET_ROOT=${DOTNET_INSTALL_DIR}
 # Install dotNet
 case "$(get_distro_name)" in
 (ubuntu)
-    sudo snap install dotnet-sdk --classic --channel=7.0
+    sudo snap install dotnet-sdk --classic --channel=${DOTNET_VERSION}
     sudo snap alias dotnet-sdk.dotnet dotnet
     ;;
 (sles)
     sudo wget https://dot.net/v1/dotnet-install.sh -O "/home/${local_user}/dotnet-install.sh"
     sudo chmod +x "/home/${local_user}/dotnet-install.sh"
-    sudo /home/"${local_user}"/dotnet-install.sh --install-dir "${DOTNET_ROOT}" --channel 7.0
+    sudo /home/"${local_user}"/dotnet-install.sh --install-dir "${DOTNET_ROOT}" --channel ${DOTNET_VERSION}
     ;;
-  (rhel*)
+(rhel*)
     sudo wget https://dot.net/v1/dotnet-install.sh -O "/home/${local_user}/dotnet-install.sh"
     sudo chmod +x "/home/${local_user}/dotnet-install.sh"
-    sudo /home/"${local_user}"/dotnet-install.sh --install-dir "${DOTNET_ROOT}" --channel 7.0
+    sudo /home/"${local_user}"/dotnet-install.sh --install-dir "${DOTNET_ROOT}" --channel ${DOTNET_VERSION}
     ;;
+(mariner)
+    sudo tdnf install dotnet-sdk-${DOTNET_VERSION} -y
 esac
 
 az config set extension.use_dynamic_install=yes_without_prompt
@@ -752,12 +811,6 @@ if [ -f "$AGENT_DIR/.agent" ]; then
 
     echo "Azure DevOps Agent is configured."
     echo export "PATH=${ansible_bin}:${tf_bin}:${PATH}" | tee -a /tmp/deploy_server.sh
-
-    devops_extension_installed=$(az extension list --query "[?name=='azure-devops'].name | [0]")
-    if [ -z "$devops_extension_installed" ]; then
-      az extension add --name azure-devops --output none
-    fi
-
 else
     echo "Azure DevOps Agent is not configured."
 
@@ -788,10 +841,10 @@ else
       echo "export ARM_CLIENT_ID=${client_id}" | tee -a /tmp/deploy_server.sh
     fi
 
-    # if [ -n "${tenant_id}" ]; then
-    #   export ARM_TENANT_ID=${tenant_id}
-    #   echo "export ARM_TENANT_ID=${tenant_id}" | tee -a /tmp/deploy_server.sh
-    # fi
+    if [ -n "${tenant_id}" ]; then
+      export ARM_TENANT_ID=${tenant_id}
+      echo "export ARM_TENANT_ID=${tenant_id}" | tee -a /tmp/deploy_server.sh
+    fi
 fi
 
 

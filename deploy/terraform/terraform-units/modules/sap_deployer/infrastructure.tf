@@ -34,7 +34,6 @@ data "azurerm_resource_group" "deployer" {
 // TODO: Add management lock when this issue is addressed https://github.com/terraform-providers/terraform-provider-azurerm/issues/5473
 //        Management lock should be implemented id a seperate Terraform workspace
 
-
 // Create/Import management vnet
 resource "azurerm_virtual_network" "vnet_mgmt" {
   count                                = (!local.vnet_mgmt_exists) ? 1 : 0
@@ -94,7 +93,6 @@ data "azurerm_storage_account" "deployer" {
   count                                = length(var.deployer.deployer_diagnostics_account_arm_id) > 0 ? 1 : 0
   name                                 = split("/", var.deployer.deployer_diagnostics_account_arm_id)[8]
   resource_group_name                  = split("/", var.deployer.deployer_diagnostics_account_arm_id)[4]
-
 }
 
 resource "azurerm_role_assignment" "deployer_boot_diagnostics_contributor" {

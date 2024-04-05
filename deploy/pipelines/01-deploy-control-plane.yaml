@@ -231,7 +231,6 @@ stages:
                           if [ "$USE_WEBAPP" = "true" ]; then
                               echo "Use WebApp is selected"
                           fi
-
                             export TF_LOG_PATH=$CONFIG_REPO_PATH/.sap_deployment_automation/terraform.log
                             set +eu
 

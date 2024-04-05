@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "redhat.ansible",
+        "github.vscode-github-actions",
+        "ms-azuretools.vscode-azureterraform",
+        "editorconfig.editorconfig",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.vscodeintellicode-csharp",
+        "ms-vscode.azurecli",
+        "ms-vscode-remote.remote-containers",
+        "donjayamanne.git-extension-pack"
+    ]
+}

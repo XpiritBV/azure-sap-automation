@@ -535,7 +535,7 @@ else
     tfstate_parameter=" -var tfstate_resource_id=${tfstate_resource_id}"
 fi
 
-terraform_module_directory="$(realpath "${SAP_AUTOMATION_REPO_PATH}"/deploy/terraform/run/"${deployment_system}" )"
+terraform_module_directory="$(realpath "${SAP_AUTOMATION_REPO_PATH}/deploy/terraform/run/${deployment_system}" )"
 
 if [ ! -d "${terraform_module_directory}" ]
 then
@@ -730,9 +730,9 @@ echo "##########################################################################
 echo ""
 
 if [ 1 == $called_from_ado ] ; then
-  terraform -chdir="${terraform_module_directory}" plan -no-color -detailed-exitcode  -var-file=${var_file} $tfstate_parameter $deployer_tfstate_key_parameter  | tee -a plan_output.log
+  terraform -chdir="${terraform_module_directory}" plan -no-color -detailed-exitcode  -var-file=${var_file} $tfstate_parameter $deployer_tfstate_key_parameter  >> plan_output.log
 else
-  terraform -chdir="${terraform_module_directory}" plan -detailed-exitcode  -var-file=${var_file} $tfstate_parameter $deployer_tfstate_key_parameter  | tee -a plan_output.log
+  terraform -chdir="${terraform_module_directory}" plan -detailed-exitcode  -var-file=${var_file} $tfstate_parameter $deployer_tfstate_key_parameter  >> plan_output.log
 fi
 return_value=$?
 
@@ -850,11 +850,11 @@ if [ 1 == $ok_to_proceed ]; then
     fi
 
     if [ 1 == $called_from_ado ] ; then
-        terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -no-color -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  | tee -a  apply_output.json
+        terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -no-color -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  >> apply_output.json
     else
         if [ -n "${approve}" ]
         then
-          terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  | tee -a  apply_output.json
+          terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  >> apply_output.json
         else
           terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter
         fi
@@ -894,9 +894,9 @@ then
         echo ""
         echo ""
         if [ 1 == $called_from_ado ] ; then
-            terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -no-color -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -no-color -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  >> apply_output.json
         else
-            terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  | tee -a  apply_output.json
+            terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  >> apply_output.json
         fi
         return_value=$?
 
@@ -932,9 +932,9 @@ then
             echo ""
             echo ""
             if [ 1 == $called_from_ado ] ; then
-                terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -no-color -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  | tee -a  apply_output.json
+                terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -no-color -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  >> apply_output.json
             else
-                terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  | tee -a  apply_output.json
+                terraform -chdir="${terraform_module_directory}" apply ${approve} -parallelism="${parallelism}" -var-file=${var_file} $tfstate_parameter $landscape_tfstate_key_parameter $deployer_tfstate_key_parameter -json  >> apply_output.json
             fi
             return_value=$?
         fi

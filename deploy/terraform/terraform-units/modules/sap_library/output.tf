@@ -26,7 +26,6 @@ output "created_resource_group_name"            {
                                                   )
                                                 }
 
-
 ###############################################################################
 #                                                                             #
 #                             Storage Accounts                                #
@@ -78,7 +77,6 @@ output "random_id_b64"                           {
                                                    value = random_id.post_fix.b64_url
                                                  }
 
-
 output "remote_state_storage_account_name"       {
                                                    description = "Storage account name for Terraform remote state"
                                                    value = local.sa_tfstate_exists ? (
@@ -88,7 +86,6 @@ output "remote_state_storage_account_name"       {
                                                        var.naming.storageaccount_names.LIBRARY.terraformstate_storageaccount_name
                                                    ))
                                                  }
-
 
 output "tfstate_resource_id"                     {
                                                    description = "value of the Azure resource id for the tfstate storage account"

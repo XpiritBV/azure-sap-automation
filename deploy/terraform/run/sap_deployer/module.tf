@@ -18,7 +18,7 @@ module "sap_deployer" {
   Agent_IP                                      = var.add_Agent_IP ? var.Agent_IP : ""
   agent_pat                                     = var.agent_pat
   agent_pool                                    = var.agent_pool
-  ansible_core_version                          = var.ansible_core_version
+  platform                                      = var.PLATFORM
   app_registration_app_id                       = var.use_webapp ? var.app_registration_app_id : ""
   app_service                                   = local.app_service
   arm_client_id                                 = var.arm_client_id
@@ -50,25 +50,27 @@ module "sap_deployer" {
   spn_id                                        = var.spn_id
   ssh-timeout                                   = var.ssh-timeout
   subnets_to_add                                = var.subnets_to_add_to_firewall_for_keyvaults_and_storage
-  tf_version                                    = var.tf_version
   use_custom_dns_a_registration                 = var.use_custom_dns_a_registration
   use_private_endpoint                          = var.use_private_endpoint
   use_service_endpoint                          = var.use_service_endpoint
   use_webapp                                    = var.use_webapp
   webapp_client_secret                          = var.webapp_client_secret
-
+  app_token                                     = var.APP_TOKEN
+  repository                                    = var.REPOSITORY
+  server_url                                    = var.SERVER_URL
+  api_url                                       = var.API_URL
 }
 
 module "sap_namegenerator" {
-  source                                               = "../../terraform-units/modules/sap_namegenerator"
-  codename                                             = lower(local.infrastructure.codename)
-  deployer_environment                                 = lower(local.infrastructure.environment)
-  deployer_vm_count                                    = var.deployer_count
-  environment                                          = lower(local.infrastructure.environment)
-  location                                             = lower(local.infrastructure.region)
-  management_vnet_name                                 = coalesce(
-                                                          var.management_network_logical_name,
-                                                          local.vnet_mgmt_name_part
-                                                        )
-  random_id                                            = module.sap_deployer.random_id
+  source                                        = "../../terraform-units/modules/sap_namegenerator"
+  codename                                      = lower(local.infrastructure.codename)
+  deployer_environment                          = lower(local.infrastructure.environment)
+  deployer_vm_count                             = var.deployer_count
+  environment                                   = lower(local.infrastructure.environment)
+  location                                      = lower(local.infrastructure.region)
+  management_vnet_name                          = coalesce(
+                                                   var.management_network_logical_name,
+                                                   local.vnet_mgmt_name_part
+                                                 )
+  random_id                                     = module.sap_deployer.random_id
 }

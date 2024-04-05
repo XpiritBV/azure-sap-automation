@@ -285,3 +285,17 @@ variable "dns_zone_names"                        {
                                                    }
                                                  }
 
+#########################################################################################
+#                                                                                       #
+#  App Configuration settings                                                           #
+#                                                                                       #
+#########################################################################################
+
+variable "deployer_pipeline_parameters"              {
+                                                       description = "Values to define the pipeline parameters for the deployer and store them in app configuration"
+                                                       type = map(object({
+                                                         label = string
+                                                         value = string
+                                                       }))
+                                                       default = null
+                                                     }

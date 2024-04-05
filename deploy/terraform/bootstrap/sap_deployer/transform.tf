@@ -191,6 +191,9 @@ locals {
                                            shared_access_key_enabled           = var.shared_access_key_enabled
 
 
+                                           deployer_diagnostics_account_arm_id  = var.deployer_diagnostics_account_arm_id
+                                           app_service_SKU                      = var.app_service_SKU_name
+                                           pipeline_parameters                  = var.deployer_pipeline_parameters
                                          }
 
   authentication                       = {
@@ -218,6 +221,7 @@ locals {
   firewall_allowed_ipaddresses         = try(var.firewall_allowed_ipaddresses, [])
 
   assign_subscription_permissions      = try(var.deployer_assign_subscription_permissions, false)
+
   app_service                          = {
                                            use = var.use_webapp
                                            app_id = var.app_registration_app_id
