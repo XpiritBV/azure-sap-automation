@@ -329,10 +329,10 @@ fi
 
 start_group "Adding variables to platform variable group"
 if [ 0 == $return_code ]; then
-    APP_CONFIGURATION_NAME=$(config_value_with_key "deployer_app_config_name")
-    set_value_with_key "APP_CONFIGURATION_NAME" ${APP_CONFIGURATION_NAME}
-    APP_CONFIGURATION_RESOURCE_GROUP=$(config_value_with_key "created_resource_group_name")
-    set_value_with_key "APP_CONFIGURATION_RESOURCE_GROUP" ${APP_CONFIGURATION_RESOURCE_GROUP}
+    APP_CONFIGURATION_NAME_VALUE=$(config_value_with_key "deployer_app_config_name")
+    set_value_with_key "APP_CONFIGURATION_NAME" ${APP_CONFIGURATION_NAME_VALUE}
+    APP_CONFIGURATION_RESOURCE_GROUP_VALUE=$(config_value_with_key "created_resource_group_name")
+    set_value_with_key "APP_CONFIGURATION_RESOURCE_GROUP" ${APP_CONFIGURATION_RESOURCE_GROUP_VALUE}
 fi
 end_group
 
